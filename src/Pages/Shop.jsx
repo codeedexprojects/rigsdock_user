@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Star, Grid, List, ChevronDown, ChevronUp, Heart } from "lucide-react";
+import { Star, ChevronDown, ChevronUp, Heart } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -104,8 +104,7 @@ function Shop() {
 
         toast.success(response.message);
       } catch (error) {
-        console.error("Error adding to cart:", error);
-        toast.error("failed to add cart");
+        toast.error(error.response.data.message);
       }
     };
 
@@ -121,7 +120,7 @@ function Shop() {
         const response = await addToWishlistAPI(userId, productId);
         toast.success(response.message);
       } catch (error) {
-        console.error("Error adding to wishlist:", error);
+        // console.error("Error adding to wishlist:", error);
         toast.error(error.response.data.message);
       }
     };

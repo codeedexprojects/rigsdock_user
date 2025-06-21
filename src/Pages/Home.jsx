@@ -44,6 +44,8 @@ const blogPosts = [
 
 
 
+
+
 function Home() {
   const [isDark, setIsDark] = useState(false);
   const [dealCurrentIndex, setDealCurrentIndex] = useState(0);
@@ -470,6 +472,47 @@ const fetchCategoriesForMain = async (mainCatId) => {
     toast.error(err.response.data.message);
   }
 };
+
+
+  const brands = [
+    {
+      id: 1,
+      name: "Samsung",
+      image: "https://blog.logomaster.ai/hs-fs/hubfs/samsung-logo-cover.jpg?width=2016&height=1344&name=samsung-logo-cover.jpg"
+    },
+    {
+      id: 2,
+      name: "BOSS",
+      image: "https://th.bing.com/th/id/R.9931d3f39fbdb9b938662d63c51ceab0?rik=1JdVvDOkdHGDpA&riu=http%3a%2f%2fcdn.wallpapersafari.com%2f80%2f15%2fX8QGrT.jpg&ehk=8YN3Dwd8apZsZ0fkwn37DCKnNAngs9lniLlKKF4eT8E%3d&risl=&pid=ImgRaw&r=0"
+    },
+    {
+      id: 3,
+      name: "Dell",
+      image: "https://static.vecteezy.com/system/resources/previews/021/514/963/non_2x/dell-brand-logo-computer-symbol-black-design-usa-laptop-illustration-free-vector.jpg"
+    },
+    {
+      id: 4,
+      name: "ASUS",
+      image: "https://logos-world.net/wp-content/uploads/2020/07/Asus-Logo.png"
+    },
+    {
+      id: 5,
+      name: "JBL",
+      image: "https://cdn.simplycodes.com/images/logo/jblcom.jpg?preset=share_3:2"
+    },
+    {
+      id: 6,
+      name: "Samsung",
+      image: "https://blog.logomaster.ai/hs-fs/hubfs/samsung-logo-cover.jpg?width=2016&height=1344&name=samsung-logo-cover.jpg"
+    },
+    {
+      id: 7,
+      name: "Apple",
+      image: "https://th.bing.com/th/id/OIP.31wjH95quHzwuakOGYdmDAHaEK?w=328&h=184&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
+    }
+  ];
+
+  const duplicatedBrands = [...brands, ...brands];
 
 
 
@@ -1194,11 +1237,24 @@ const fetchCategoriesForMain = async (mainCatId) => {
       </div>
 
       {/* Right: Promo Button Block */}
-      <div className="border border-black rounded-lg flex flex-col justify-center h-[100] p-6">
-        <button className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-          Add Vendor Product
-        </button>
-      </div>
+<div className="border border-black rounded-lg relative min-h-[300px] max-h-[300px] overflow-hidden group">
+  <img 
+    src="https://th.bing.com/th/id/OIP.hazIISjrgxkwQfBs38lxZgHaEK?rs=1&pid=ImgDetMain&cb=idpwebp2&o=7&rm=3" 
+    alt="Special Promotion"
+    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+    onError={(e) => {
+      e.target.src = "https://via.placeholder.com/300x180?text=Promotion+Image";
+      e.target.className = "w-full h-full object-contain";
+    }}
+  />
+  <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-center p-4">
+    <h3 className="text-white text-xl font-bold mb-2">Special Offer</h3>
+    <p className="text-white/90 text-sm mb-4">Limited time only</p>
+    <button className="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
+      Shop Now
+    </button>
+  </div>
+</div>
     </div>
   </div>
 </section>
@@ -1324,50 +1380,69 @@ const fetchCategoriesForMain = async (mainCatId) => {
     </div>
   )}
 
-<div className="py-12 px-4 sm:px-6 lg:px-8">
-  {/* Section Heading */}
-  <h2 className="text-2xl font-semibold mb-6">
-    Brands
-  </h2>
+<div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+      {/* Section Heading */}
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
+        Brands
+      </h2>
 
-  {/* Brands Grid */}
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-6">
-    {/* Brand 1 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://th.bing.com/th/id/R.9931d3f39fbdb9b938662d63c51ceab0?rik=1JdVvDOkdHGDpA&riu=http%3a%2f%2fcdn.wallpapersafari.com%2f80%2f15%2fX8QGrT.jpg&ehk=8YN3Dwd8apZsZ0fkwn37DCKnNAngs9lniLlKKF4eT8E%3d&risl=&pid=ImgRaw&r=0" alt="Samsung" className="h-12 object-contain" />
-    </div>
+      {/* Carousel Container */}
+      <div className="relative overflow-hidden">
+        {/* Gradient Overlays */}
+        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
+        
+        {/* Sliding Container */}
+        <div className="flex animate-scroll">
+          {duplicatedBrands.map((brand, index) => (
+            <div
+              key={`${brand.id}-${index}`}
+              className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 bg-white border border-gray-100 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 group w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 lg:w-52 lg:h-32"
+            >
+              <div className="flex items-center justify-center h-full p-3 sm:p-4 md:p-6">
+                <img
+                  src={brand.image}
+                  alt={brand.name}
+                  className="max-h-8 sm:max-h-10 md:max-h-12 lg:max-h-16 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-    {/* Brand 2 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://th.bing.com/th/id/R.9931d3f39fbdb9b938662d63c51ceab0?rik=1JdVvDOkdHGDpA&riu=http%3a%2f%2fcdn.wallpapersafari.com%2f80%2f15%2fX8QGrT.jpg&ehk=8YN3Dwd8apZsZ0fkwn37DCKnNAngs9lniLlKKF4eT8E%3d&risl=&pid=ImgRaw&r=0" alt="BOSS" className="h-12 object-contain" />
-    </div>
+      {/* Custom CSS for animation */}
+      <style jsx>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        
+        .animate-scroll {
+          animation: scroll 25s linear infinite;
+        }
+        
+        .animate-scroll:hover {
+          animation-play-state: paused;
+        }
 
-    {/* Brand 3 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://static.vecteezy.com/system/resources/previews/021/514/963/non_2x/dell-brand-logo-computer-symbol-black-design-usa-laptop-illustration-free-vector.jpg" alt="UBL" className="h-12 object-contain" />
-    </div>
+        @media (max-width: 640px) {
+          .animate-scroll {
+            animation: scroll 20s linear infinite;
+          }
+        }
 
-    {/* Brand 4 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://logos-world.net/wp-content/uploads/2020/07/Asus-Logo.png" alt="Brand 4" className="h-12 object-contain" />
+        @media (max-width: 768px) {
+          .animate-scroll {
+            animation: scroll 22s linear infinite;
+          }
+        }
+      `}</style>
     </div>
-
-    {/* Brand 5 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://cdn.simplycodes.com/images/logo/jblcom.jpg?preset=share_3:2" alt="Brand 5" className="h-12 object-contain" />
-    </div>
-
-    {/* Brand 6 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://blog.logomaster.ai/hs-fs/hubfs/samsung-logo-cover.jpg?width=2016&height=1344&name=samsung-logo-cover.jpg" alt="Brand 6" className="h-12 object-contain" />
-    </div>
-
-    {/* Brand 7 */}
-    <div className="bg-gray-50 p-4 rounded-md shadow-md hover:shadow-lg transition-shadow flex items-center justify-center h-24">
-      <img src="https://th.bing.com/th/id/OIP.31wjH95quHzwuakOGYdmDAHaEK?w=328&h=184&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Brand 7" className="h-12 object-contain" />
-    </div>
-  </div>
-</div>
 
 
 
@@ -1390,7 +1465,7 @@ const fetchCategoriesForMain = async (mainCatId) => {
               {blog.description}
             </p>
             <a
-              href="#"
+              href="/blog"
               className="text-blue-600 font-semibold hover:underline"
             >
               Read more

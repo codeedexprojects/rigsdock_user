@@ -183,20 +183,20 @@ useEffect(() => {
 
               {/* Ship to Different Address */}
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center mb-4">
-                  <input
-                    type="text"
-                    id="different-address"
-                   onClick={handleNavigate} 
-                    className="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <label
-                    htmlFor="different-address"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Ship to a different address?
-                  </label>
-                </div>
+               <div className="flex items-center mb-4">
+  <input
+    type="checkbox"
+    id="different-address"
+    onChange={handleNavigate}
+    className="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+  />
+  <label
+    htmlFor="different-address"
+    className="text-sm font-medium text-gray-700 cursor-pointer"
+  >
+    Ship to a different address?
+  </label>
+</div>
 
                 {shipToDifferentAddress && (
                   <div className="space-y-4 border-t pt-4">

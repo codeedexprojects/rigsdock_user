@@ -147,7 +147,6 @@ useEffect(() => {
         setAddressList((prevList) => [...prevList, res.address]);
       }
 
-      // Reset form and state
       setNewAddress({
         firstName: "",
         lastName: "",
@@ -178,6 +177,12 @@ useEffect(() => {
       toast.error("Failed to load addresses");
     }
   };
+
+  useEffect(() => {
+  if (location.state?.section === "Addresses") {
+    setActiveSection("Addresses");
+  }
+}, [location]);
 
   const handleDeleteAddress = async (addressId) => {
     try {
@@ -262,6 +267,15 @@ useEffect(() => {
     setActiveSection(itemName);
     setIsMobileMenuOpen(false);
   };
+
+  const handleLogout = () => {
+  localStorage.removeItem("userId");
+  localStorage.removeItem("token"); 
+  localStorage.removeItem("pendingPhonePeOrder"); 
+  toast.success("Logged out successfully");
+  navigate("/login"); 
+};
+
 
   console.log(addressList);
 
@@ -819,7 +833,7 @@ useEffect(() => {
                       Are you sure you want to log out?
                     </p>
                     <div className="flex space-x-4">
-                      <button className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors">
+                      <button onClick={handleLogout} className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition-colors">
                         Yes, Log Out
                       </button>
                       <button

@@ -43,3 +43,18 @@ export const viewSubCategoriesAPI = async (mainCatId, catId) => {
     throw error;
   }
 };
+
+export const viewProductsAPI = async (mainCatId, catId, subCatId) => {
+  try {
+    // Convert "null" string to actual null (if coming from URL)
+    const finalSubCatId = subCatId === "null" ? null : subCatId;
+    
+    const response = await axios.get(
+      `${BASE_URL}/user/product/get/${mainCatId}/${catId}/${finalSubCatId || 'null'}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch products', error); // Changed error message
+    throw error;
+  }
+};

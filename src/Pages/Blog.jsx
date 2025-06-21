@@ -65,13 +65,10 @@ function Blog() {
               </div>
               
               <p className="text-gray-700 mb-6">
-                Why the world would end without travel coupons. The 16 worst songs about spa deals. How daily me person. The 11 worst business software in history. Why latest electronic gadgets will make you question everything. The evolution of cool science experiments. 16 facts about cool tech gadgets that will impress you up at night. How carnival...
+                Why the world would end without travel coupons. The 16 worst songs about spa deals. How daily me person. The 11 worst business software in history. Why latest electronic gadgets will make you question everything. The evolution of cool science experiments. 16 facts about cool tech gadgets that will impress you up at night. 
               </p>
               
-              <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors group">
-                READ MORE
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+             
             </div>
           </div>
 
@@ -109,13 +106,10 @@ function Blog() {
               </div>
               
               <p className="text-gray-700 mb-6">
-                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories. How to be unpopular in the science article world....
+                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories.
               </p>
               
-              <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors group">
-                READ MORE
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+             
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -152,13 +146,10 @@ function Blog() {
               </div>
               
               <p className="text-gray-700 mb-6">
-                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories. How to be unpopular in the science article world....
+                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories. 
               </p>
               
-              <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors group">
-                READ MORE
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+            
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -195,13 +186,10 @@ function Blog() {
               </div>
               
               <p className="text-gray-700 mb-6">
-                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories. How to be unpopular in the science article world....
+                Why do people think wholesale accessories are a good idea? Unbelievable cool tech gadget success stories. How cool tech gadgets can help you predict the future. The 10 best passport application twitter feeds to follow. 9 uses for business software. The unconventional guide to wholesale accessories. 
               </p>
               
-              <button className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors group">
-                READ MORE
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+           
             </div>
           </div>
 
