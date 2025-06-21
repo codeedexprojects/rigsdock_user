@@ -20,7 +20,7 @@ function Checkout() {
     totalPrice: 0,
     appliedCoupon: null,
   });
-
+  
   const navigate = useNavigate();
 
   const handleNavigate = ()=>{

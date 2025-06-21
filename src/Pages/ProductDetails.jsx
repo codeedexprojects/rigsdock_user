@@ -29,63 +29,7 @@ const handleViewProducts = (productId) => {
   const productId = useParams();
   const SERVER_URL = "https://rigsdock.com";
 
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Apple AirPods Pro (2nd Gen) with MagSafe Charging Case",
-  //     price: 299,
-  //     originalPrice: 1900,
-  //     rating: 4,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-  //     features: ["Brand-sony"],
-  //     buttonText: "Add to cart",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Apple HomePod Assistant and Voice Recognition",
-  //     price: 397,
-  //     originalPrice: null,
-  //     rating: 4,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-  //     features: ["Brand-sony"],
-  //     buttonText: "Add to cart",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Apple HomePod Assistant and Voice Recognition",
-  //     price: 249,
-  //     originalPrice: 349,
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-  //     features: ["Brand-sony"],
-  //     buttonText: "Add to carts",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Apple HomePod Assistant and Voice Recognition",
-  //     price: 349,
-  //     originalPrice: 399,
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-  //     features: ["Brand-sony"],
-  //     buttonText: "Add to cart",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Apple HomePod Assistant and Voice Recognition",
-  //     price: 799,
-  //     originalPrice: 899,
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-  //     features: ["Brand-sony"],
-  //     buttonText: "Add to cart",
-  //   },
-  // ];
+ 
 
 const handleAddToWishlist = async () => {
   try {

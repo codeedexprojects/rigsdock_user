@@ -9,30 +9,26 @@ import { addToWishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
-
 function Shop() {
-  const [viewMode, setViewMode] = useState("horizontal");
   const navigate = useNavigate();
-  const [AllProducts, setAllProducts] = useState([])
-  const[loading, setLoading]= useState(true)
+  const [AllProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      const allProducts = await getAllProducts();
-      console.log("Fetched Products:", allProducts);
-      setAllProducts(allProducts);
-    } catch (err) {
-      console.error("Error fetching Products", err);
-    } finally {
-      setLoading(false); 
-    }
-  };
+    const fetchProducts = async () => {
+      try {
+        const allProducts = await getAllProducts();
+        console.log("Fetched Products:", allProducts);
+        setAllProducts(allProducts);
+      } catch (err) {
+        console.error("Error fetching Products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchProducts(); 
-}, []);
+    fetchProducts();
+  }, []);
 
   const [expandedFilters, setExpandedFilters] = useState({
     categories: true,
@@ -42,8 +38,7 @@ function Shop() {
     ratings: true,
   });
 
-const products = AllProducts;
-
+  const products = AllProducts;
 
   const categories = [
     { name: "Our Store", count: 24 },
@@ -96,146 +91,96 @@ const products = AllProducts;
       navigate(`/product-details/${product.id}`);
     };
 
-
     const handleAddToCart = async (productId) => {
-  try {
-    const userId = localStorage.getItem("userId") 
- if (!userId) {
-      toast.error("Please login to use wishlist.");
-      return;
-    }
+      try {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          toast.error("Please login to use wishlist.");
+          return;
+        }
 
-   
-    const response=await addToCartAPI(userId,productId)
-    console.log('response',response);
-    
-    toast.success(response.message);
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-   toast.error("failed to add cart")
-  }
-};
+        const response = await addToCartAPI(userId, productId);
+        console.log("response", response);
 
+        toast.success(response.message);
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast.error("failed to add cart");
+      }
+    };
 
+    const handleAddToWishlist = async (productId, e) => {
+      e.stopPropagation();
+      try {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          toast.error("Please login to use wishlist.");
+          return;
+        }
 
-     const handleAddToWishlist = async (productId, e) => {
-  e.stopPropagation(); 
-  try {
-  const userId = localStorage.getItem("userId") 
- if (!userId) {
-      toast.error("Please login to use wishlist.");
-      return;
-    }
-   
-    const response = await addToWishlistAPI(userId, productId);
-    toast.success(response.message);
-  } catch (error) {
-    console.error("Error adding to wishlist:", error);
-    toast.error(error.response.data.message)
-  }
-};
+        const response = await addToWishlistAPI(userId, productId);
+        toast.success(response.message);
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        toast.error(error.response.data.message);
+      }
+    };
 
     const ImageWithWishlist = (
-      <div className="relative group">
+      <div className="relative group h-full">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover cursor-pointer"
+          className="w-full h-full object-contain cursor-pointer"
           onClick={handleProductClick}
         />
         <button
           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
-          onClick={(e) => handleAddToWishlist(product.id, e) }
+          onClick={(e) => handleAddToWishlist(product.id, e)}
         >
           <Heart className="text-red-500 w-5 h-5" />
         </button>
       </div>
     );
 
-    if (viewMode === "vertical") {
-      return (
-        <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
-          <div className="h-56 mb-4 bg-gray-100 rounded-lg overflow-hidden">
-            {ImageWithWishlist}
-          </div>
-          <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
-            {product.name}
-          </h3>
-          <div className="flex items-center mb-3">
-            {renderStars(product.rating)}
-          </div>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xl font-semibold text-blue-800">
-              ₹{product.price}
-            </span>
-            {product.originalPrice && (
-              <span className="text-base text-gray-500 line-through">
-                ₹{product.originalPrice}
-              </span>
-            )}
-          </div>
-          <ul className="text-sm text-gray-600 mb-4 space-y-2">
-            {product.features.map((feature, index) => (
-              <li key={index} className="flex items-center">
-                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
-                {feature}
-              </li>
-            ))}
-          </ul>
-           <button 
-    className="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors text-base"
-    onClick={() => handleAddToCart(product.id)}
-  >
-    {product.buttonText}
-  </button>
-        </div>
-      );
-    }
-
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
-        <div className="flex flex-col sm:flex-row gap-6">
-          <div className="w-full sm:w-40 h-40 bg-gray-100 rounded-lg overflow-hidden">
-            {ImageWithWishlist}
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-medium text-gray-900 mb-3">
-              {product.name}
-            </h3>
-            <div className="flex items-center mb-4">
-              {renderStars(product.rating)}
-            </div>
-            <div className="flex items-center gap-3 mb-5">
-              <span className="text-2xl font-semibold text-blue-800">
-                ₹{product.price}
-              </span>
-              {product.originalPrice && (
-                <span className="text-lg text-gray-500 line-through">
-                  ₹{product.originalPrice}
-                </span>
-              )}
-            </div>
-            <ul className="text-gray-600 mb-6 space-y-2 text-base">
-              {product.features.map((feature, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full mr-3"></span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-              <button 
-    className="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors text-base"
-    onClick={() => handleAddToCart(product.id)}
-  >
-    {product.buttonText}
-  </button>
-          </div>
+      <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow h-full flex flex-col">
+        <div className="h-64 mb-4 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+          {ImageWithWishlist}
         </div>
+        <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
+          {product.name}
+        </h3>
+        <div className="flex items-center mb-3">
+          {renderStars(product.rating)}
+        </div>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xl font-semibold text-blue-800">
+            ₹{product.price}
+          </span>
+          {product.originalPrice && (
+            <span className="text-base text-gray-500 line-through">
+              ₹{product.originalPrice}
+            </span>
+          )}
+        </div>
+        <ul className="text-sm text-gray-600 mb-4 space-y-2">
+          {product.features.map((feature, index) => (
+            <li key={index} className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+        <button
+          className="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors text-base mt-auto"
+          onClick={() => handleAddToCart(product.id)}
+        >
+          {product.buttonText}
+        </button>
       </div>
     );
   };
-
- 
 
   return (
     <>
@@ -447,50 +392,26 @@ const products = AllProducts;
                 <p className="text-gray-600 text-base">
                   Showing 1–{products.length} of {products.length} results
                 </p>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1">
-                    <button
-                      onClick={() => setViewMode("horizontal")}
-                      className={`p-3 rounded ${
-                        viewMode === "horizontal"
-                          ? "bg-blue-800 text-white"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      <List size={22} />
-                    </button>
-                    <button
-                      onClick={() => setViewMode("vertical")}
-                      className={`p-3 rounded ${
-                        viewMode === "vertical"
-                          ? "bg-blue-800 text-white"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      <Grid size={22} />
-                    </button>
-                  </div>
-                </div>
               </div>
 
-              <div
-                className={`gap-6 ${
-                  viewMode === "vertical"
-                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                    : "space-y-6"
-                }`}
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
-<ProductCard key={product._id} product={{
-  id: product._id,
-  name: product.name,
-  price: product.finalPrice || product.price,
-  originalPrice: product.price !== product.finalPrice ? product.price : null,
-  image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
-  rating: product.averageRating || 0,
-  features: [`Brand-${product.brand}`],
-  buttonText: "Add to cart",
-}} />
+                  <ProductCard
+                    key={product._id}
+                    product={{
+                      id: product._id,
+                      name: product.name,
+                      price: product.finalPrice || product.price,
+                      originalPrice:
+                        product.price !== product.finalPrice
+                          ? product.price
+                          : null,
+                      image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
+                      rating: product.averageRating || 0,
+                      features: [`Brand-${product.brand}`],
+                      buttonText: "Add to cart",
+                    }}
+                  />
                 ))}
               </div>
 
@@ -516,8 +437,7 @@ const products = AllProducts;
             </div>
           </div>
         </div>
-                <ToastContainer position="top-right" autoClose={3000} />
-        
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
       <Footer />
     </>

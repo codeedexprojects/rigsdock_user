@@ -18,6 +18,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Blog from './Pages/Blog'
 import Orderconformation from './Pages/Orderconformation'
+import PaymentStatus from './Pages/PaymentStatus'
 
 
 
@@ -41,6 +42,7 @@ function App() {
       <Route path='/otp-login' element={<Otp/>}/>
       <Route path='/blog' element={<Blog/>}/>
       <Route path='/order-confirmed' element={<Orderconformation/>}/>
+      <Route path='/payment-status' element={<PaymentStatus/>}/>
     </Routes>
     {/* <Footer/> */}
      
