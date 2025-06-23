@@ -11,3 +11,20 @@ export const confirmOrderAPI = async (orderData) => {
     throw error;
   }
 };
+
+
+// GetBlog
+
+export const getBlogAPI = async ()=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/blog/view`,{
+
+    })
+    return response.data
+
+  }catch(error){
+    console.error("Failed to view Blog", error);
+    throw error
+    
+  }
+}

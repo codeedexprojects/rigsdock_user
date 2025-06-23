@@ -295,7 +295,7 @@ useEffect(() => {
                   {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
                 <h1 className="ml-2 md:ml-0 text-xl font-semibold text-gray-900">
-                  welcome : {profile.name}
+                  Welcome : {profile.name}
                 </h1>
               </div>
               <div className="flex items-center space-x-4">

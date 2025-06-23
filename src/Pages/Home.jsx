@@ -1134,7 +1134,7 @@ const fetchCategoriesForMain = async (mainCatId) => {
 
 <section className="bg-white py-14 px-6 md:px-10">
   <div className="max-w-none">
-    <h2 className="text-2xl font-bold mb-6">Shop By Category</h2>
+    <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
 
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1250,9 +1250,7 @@ const fetchCategoriesForMain = async (mainCatId) => {
   <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-center p-4">
     <h3 className="text-white text-xl font-bold mb-2">Special Offer</h3>
     <p className="text-white/90 text-sm mb-4">Limited time only</p>
-    <button className="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
-      Shop Now
-    </button>
+   
   </div>
 </div>
     </div>
