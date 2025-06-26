@@ -8,6 +8,7 @@ import { addToWishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToCartAPI } from "../Services/cartAPI";
+import { buyNowAPI } from "../Services/buynowAPI";
 
 
 
@@ -17,14 +18,11 @@ const ProductDetail = () => {
   const [productDetails, setProductDetails] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const navigate = useNavigate()
+  const [showShareModal, setShowShareModal] = useState(false);
 
 const handleViewProducts = (productId) => {
-  // Force a page reload by using window.location if needed
   window.location.href = `/product-details/${productId}`;
-  
-  // Or alternatively, force a navigation with state reset
-  // navigate(`/product-details/${productId}`, { replace: true });
-};
+  };
 
   const productId = useParams();
   const SERVER_URL = "https://rigsdock.com";
@@ -45,8 +43,6 @@ const handleAddToWishlist = async () => {
     }
 
     const res = await addToWishlistAPI(userId, product._id);
-
-    // Backend might return message like "Product already in wishlist"
     if (res?.message?.includes("already")) {
       toast.info("Product is already in your wishlist.");
     } else {
@@ -120,6 +116,65 @@ const handleAddtoCart= async ()=>{
     ));
   };
 
+  const productURL = window.location.href;
+  const encodedURL = encodeURIComponent(productURL);
+const text = encodeURIComponent(`Check out this product: ${product.name}`);
+
+const handleCopyLink = () => {
+  navigator.clipboard.writeText(productURL);
+  toast.success("Link copied to clipboard!");
+};
+
+const handleShare = (platform) => {
+  let shareURL = "";
+
+  switch (platform) {
+    case "whatsapp":
+      shareURL = `https://wa.me/?text=${text}%0A${encodedURL}`;
+      break;
+    case "facebook":
+      shareURL = `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}`;
+      break;
+    case "twitter":
+      shareURL = `https://twitter.com/intent/tweet?text=${text}&url=${encodedURL}`;
+      break;
+    default:
+      return;
+  }
+
+  window.open(shareURL, "_blank");
+  setShowShareModal(false);
+};
+
+const handleBuyNow = async () => {
+  const userId = localStorage.getItem("userId");
+  const productId = product._id;
+  const quantity = 1;
+
+  console.log("Buy Now Payload:", { userId, productId, quantity });
+
+  if (!userId || !productId) {
+    toast.error("Missing user or product ID.");
+    return;
+  }
+
+if (!product.stock || product.stock < quantity) {
+  toast.error("Sorry, the product is out of stock.");
+  return;
+}
+
+  try {
+    const res = await buyNowAPI(userId, productId, quantity);
+    console.log("Buy Now API Response:", res);
+    toast.success("Buy now request successful!");
+    navigate("/cart");
+  } catch (error) {
+    console.error("Buy Now Error:", error);
+    toast.error(error?.response?.data?.message || "Failed to process Buy Now.");
+  }
+};
+
+
   return (
     <>
       <Header />
@@ -142,7 +197,7 @@ const handleAddtoCart= async ()=>{
           </div>
           <div className="flex-1 max-w-md aspect-square bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden order-1 sm:order-2">
             <img
-              src={`${SERVER_URL}/uploads/${product?.images}`}
+             src={`${SERVER_URL}/uploads/${product?.images?.[0]}`}
               alt="Main Product"
               className="w-full h-full object-cover"
             />
@@ -182,17 +237,21 @@ const handleAddtoCart= async ()=>{
           <button onClick={handleAddtoCart} className="w-full bg-blue-800 hover:bg-blue-800 text-white font-semibold py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
             Add To Cart
           </button>
-          <button className="w-full bg-blue-800 hover:bg-blue-800 text-white font-semibold py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-            Buy Now
-          </button>
+         <button onClick={handleBuyNow} className="w-full bg-blue-800 hover:bg-blue-800 text-white font-semibold py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
+  Buy Now
+</button>
 
           <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
             <button onClick={handleAddToWishlist}  className="flex-1 border border-gray-300 text-gray-700 py-1 sm:py-2 rounded-lg hover:bg-gray-100 text-xs sm:text-sm">
               Add to Wishlist
             </button>
-            <button className="flex-1 border border-gray-300 text-gray-700 py-1 sm:py-2 rounded-lg hover:bg-gray-100 text-xs sm:text-sm">
-              Share
-            </button>
+<button
+  onClick={() => setShowShareModal(true)}
+  className="flex-1 border border-gray-300 text-gray-700 py-1 sm:py-2 rounded-lg hover:bg-gray-100 text-xs sm:text-sm"
+>
+  Share
+</button>
+
           </div>
 
           <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 items-center justify-between">
@@ -322,6 +381,45 @@ const handleAddtoCart= async ()=>{
 </button>
     </div>
   ))}
+  {showShareModal && (
+<div className="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-4 w-72 shadow-lg relative">
+      <button
+        className="absolute top-2 right-2 text-gray-500"
+        onClick={() => setShowShareModal(false)}
+      >
+        ✖
+      </button>
+      <h3 className="text-lg font-semibold mb-4 text-center">Share Product</h3>
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={handleCopyLink}
+          className="bg-gray-100 py-2 rounded text-sm hover:bg-gray-200"
+        >
+          📎 Copy Link
+        </button>
+        <button
+          onClick={() => handleShare("whatsapp")}
+          className="bg-green-100 text-green-800 py-2 rounded text-sm hover:bg-green-200"
+        >
+          📱 Share via WhatsApp
+        </button>
+        <button
+          onClick={() => handleShare("facebook")}
+          className="bg-blue-100 text-blue-800 py-2 rounded text-sm hover:bg-blue-200"
+        >
+          📘 Share on Facebook
+        </button>
+        <button
+          onClick={() => handleShare("twitter")}
+          className="bg-sky-100 text-sky-800 py-2 rounded text-sm hover:bg-sky-200"
+        >
+          🐦 Share on Twitter
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
         </div>
         

@@ -17,6 +17,7 @@ import {
   viewSubCategoriesAPI,
 } from "../Services/categoryAPI";
 import { cartCountAPI } from "../Services/cartAPI";
+// import logo from '/src/assets/RigsdockLogo.pdf'
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -209,7 +210,7 @@ function Header() {
               <img
                 src="https://i.postimg.cc/MKZkQfTh/logo.png"
                 alt="logo"
-                className="w-24 h-8 md:w-40 md:h-12"
+ className="w-96 h-20 md:w-60 md:h-24"
               />
             </Link>
           </div>

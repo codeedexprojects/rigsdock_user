@@ -2,9 +2,11 @@ import axios from "axios";
 import { commonApi } from "./commonApi";
 import { BASE_URL } from "./baseUrl";
 
-export const filterProductsByBrandAPI = async (brand) => {
+export const filterByBrandAPI = async (brandId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/user/product/filter-by-brand?brand=${brand}`);
+    const response = await axios.get(`${BASE_URL}/user/product/filter/brand/${brandId}`);
+console.log("res[onse",response);
+
     return response.data;
   } catch (error) {
     console.error("Error filtering by brand:", error);
@@ -12,9 +14,9 @@ export const filterProductsByBrandAPI = async (brand) => {
   }
 };
 
-export const filterProductsByPriceAPI = async (minPrice, maxPrice) => {
+export const filterByPriceAPI = async (minPrice, maxPrice) => {
   try {
-    const response = await axios.get(`${BASE_URL}/user/product/filter-by-price-range?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+    const response = await axios.get(`${BASE_URL}/user/product/filter/price?minPrice=${minPrice}&maxPrice=${maxPrice}`);
     return response.data;
   } catch (error) {
     console.error("Error filtering by price range:", error);
@@ -22,13 +24,15 @@ export const filterProductsByPriceAPI = async (minPrice, maxPrice) => {
   }
 };
 
-
-export const filterProductsByRatingAPI = async (minRating) => {
-  try {
-    const response = await axios.get(`${BASE_URL}/user/product/filter-by-rating?minRating=${minRating}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error filtering by rating:", error);
-    throw error;
+export const filterByyRatingAPI = async(minRate, maxRate)=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/product/filter/rating?minRating=${minRate}&maxRate=${maxRate}`)    
+    return response.data
+  }catch(error){
+    console.error("Error filtering by Ratings", error);
+    throw error
+    
   }
-};
+}
+
+

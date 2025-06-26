@@ -19,18 +19,15 @@ export const viewMainCategoriesAPI = async () => {
 
 // view categories
 export const viewCategoriesAPI = async (mainCatId) => {
-     console.log("Calling viewCategoriesAPI with:", mainCatId);
-
   try {
     const response = await axios.get(`${BASE_URL}/user/category/view/${mainCatId}`, {
     });
-     console.log("viewCategoriesAPI RESPONSE:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Failed to view categories', error);
+    console.error('Failed to vie categories', error);
     throw error;
   }
-}
+};
 
 // view sub categories
 export const viewSubCategoriesAPI = async (mainCatId, catId) => {
@@ -46,7 +43,6 @@ export const viewSubCategoriesAPI = async (mainCatId, catId) => {
 
 export const viewProductsAPI = async (mainCatId, catId, subCatId) => {
   try {
-    // Convert "null" string to actual null (if coming from URL)
     const finalSubCatId = subCatId === "null" ? null : subCatId;
     
     const response = await axios.get(
@@ -54,7 +50,7 @@ export const viewProductsAPI = async (mainCatId, catId, subCatId) => {
     );
     return response.data;
   } catch (error) {
-    console.error('Failed to fetch products', error); // Changed error message
+    console.error('Failed to fetch products', error); 
     throw error;
   }
 };

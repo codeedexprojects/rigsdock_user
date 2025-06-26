@@ -81,8 +81,6 @@ export const userOrdersAPI = async(id)=>{
   }
 }
 
-
-
 // orderDetails
 
 export const orderDetailsAPI = async (orderId) => {
@@ -97,6 +95,16 @@ export const orderDetailsAPI = async (orderId) => {
 };
 
 
-// addreviews 
+export const getEditProfileAPI = async (id, data) => {
+  try {
+    const response = await axios.patch(`${BASE_URL}/user/auth/profile/${id}`,data, {
+      headers:{ "Content-Type": "application/json"}
+    });
+    console.log("error",response)
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}; 
 
 

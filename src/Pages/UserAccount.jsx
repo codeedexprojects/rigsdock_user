@@ -4,7 +4,6 @@ import {
   X,
   User,
   Package,
-  Download,
   MapPin,
   Settings,
   BarChart3,
@@ -12,6 +11,7 @@ import {
   LogOut,
   Trash,
   Pencil,
+  Star
 } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -19,6 +19,7 @@ import {
   addAddressAPI,
   deleteAddressAPI,
   editAddressAPI,
+  getEditProfileAPI,
   getProfileAPI,
   orderDetailsAPI,
   userAddressViewAPI,
@@ -28,9 +29,11 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToCartAPI } from "../Services/cartAPI";
-import { getWishlistAPI } from "../Services/wishlistAPI";
-import { BASE_URL } from "../Services/baseUrl";
+import { getWishlistAPI, removewishlistAPI } from "../Services/wishlistAPI";
 import { useLocation } from "react-router-dom";
+import { getUserReviews } from "../Services/getUserReviewAPI";
+
+
 
 function UserAccount() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -40,10 +43,14 @@ function UserAccount() {
   const [editAddressId, setEditAddressId] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [profile, setProfile] = useState(null);
+
   const navigate = useNavigate();
   const BASE_URL = "https://rigsdock.com";
 
-  const [profile, setProfile] = useState({
+  const [editProfile, setEditProfile] = useState({
     name: "",
     email: "",
     mobileNumber: "",
@@ -60,6 +67,34 @@ function UserAccount() {
     country: "",
     addressType: "",
   });
+
+  const handleEditInputChange = (e) => {
+  const { name, value } = e.target;
+  setEditProfile((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleSaveProfile = async () => {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return toast.error("User not logged in");
+
+  try {
+    const res = await getEditProfileAPI(userId, editProfile);
+    toast.success(res.message || "Profile updated successfully");
+
+    setProfile(res.user);
+    setEditProfile({
+      name: res.user.name,
+      email: res.user.email,
+      mobileNumber: res.user.mobileNumber,
+    });
+
+    setIsEditingProfile(false);
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message || "Failed to update profile"
+    );
+  }
+};
 
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -92,6 +127,7 @@ useEffect(() => {
   const menuItems = [
     { name: "Dashboard", icon: BarChart3 },
     { name: "Orders", icon: Package },
+    { name: "My Reviews", icon: Star },
     { name: "Addresses", icon: MapPin },
     { name: "Account details", icon: Settings },
     { name: "Wishlist", icon: Heart },
@@ -105,7 +141,13 @@ useEffect(() => {
 
       try {
         const res = await getProfileAPI(userId);
-        setProfile(res); // assuming response is the user object
+        setProfile(res); 
+        setEditProfile({
+          name: res.name || "",
+          email: res.email || "",
+          mobileNumber: res.mobileNumber || ""
+,
+        }); 
       } catch (error) {
         console.error("Error fetching profile", error);
       }
@@ -130,18 +172,14 @@ useEffect(() => {
       };
 
       if (editAddressId) {
-        // Editing an address
         const res = await editAddressAPI(editAddressId, reqBody);
         toast.success(res.message || "Address updated successfully");
-
-        // Replace updated address in list
         setAddressList((prevList) =>
           prevList.map((addr) =>
             addr._id === editAddressId ? res.address : addr
           )
         );
       } else {
-        // Adding new address
         const res = await addAddressAPI(reqBody);
         toast.success(res.message || "Address added successfully");
         setAddressList((prevList) => [...prevList, res.address]);
@@ -188,13 +226,11 @@ useEffect(() => {
     try {
       const res = await deleteAddressAPI(addressId);
       toast.success(res.message || "Address deleted");
-
-      // Update the addressList state to remove the deleted address
       setAddressList((prevList) =>
         prevList.filter((addr) => addr._id !== addressId)
       );
     } catch (error) {
-      toast.error("Failed to delete address");
+      toast.error("Failed to delete address");      
     }
   };
 
@@ -230,6 +266,25 @@ useEffect(() => {
       toast.error("Failed to load wishlist");
     }
   };
+
+  const handleRemoveFromWishlist = async(productId)=>{
+    const userId = localStorage.getItem("userId")
+    if(!userId)return
+     
+    try{
+await removewishlistAPI(userId, productId);
+      toast.success("Product Removed From Wishlist")
+    setWishlistItems((prev) =>
+      prev.filter((item) => item._id !== productId)
+    );
+
+    }catch(error){
+      toast.error(error.response.data.message)
+      console.log("error",error);
+      
+    }
+
+  }
 
   const handleAddToCart = async (productId) => {
     try {
@@ -276,8 +331,18 @@ useEffect(() => {
   navigate("/login"); 
 };
 
+useEffect(() => {
+  if (activeSection === "My Reviews") {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
 
-  console.log(addressList);
+    getUserReviews(userId)
+      .then((data) => {
+        setReviews(data || []);
+      })
+      .catch(() => toast.error("Failed to load reviews"));
+  }
+}, [activeSection]);
 
   return (
     <>
@@ -295,14 +360,14 @@ useEffect(() => {
                   {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
                 <h1 className="ml-2 md:ml-0 text-xl font-semibold text-gray-900">
-                  Welcome : {profile.name}
+                 MY DASHBOARD
                 </h1>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <User className="w-8 h-8 text-gray-600" />
                   <span className="hidden sm:block text-sm font-medium text-gray-700">
-                    {profile.name}
+                    {profile?.name}
                   </span>
                 </div>
               </div>
@@ -416,22 +481,57 @@ useEffect(() => {
                         <div className="border-t pt-4 mb-4">
                           <h4 className="font-semibold mb-2">Products</h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {selectedOrder.items?.map((item) => (
-                              <div
-                                key={item._id}
-                                className="p-4 bg-gray-100 rounded-md"
-                              >
-                                <img
-                                  src={`${BASE_URL}/uploads/${item.product.images?.[0]}`}
-                                  alt={item.product.name}
-                                  className="w-full h-32 object-cover mb-2 rounded"
-                                />
-                                <p>{item.product.name}</p>
-                                <p>Brand: {item.product.brand}</p>
-                                <p>Qty: {item.quantity}</p>
-                                <p>Price: ${item.price}</p>
-                              </div>
-                            ))}
+                          {selectedOrder.items?.map((item) => (
+  <div key={item._id} className="p-4 bg-gray-100 rounded-md">
+    <img
+      src={`${BASE_URL}/uploads/${item.product.images?.[0]}`}
+      alt={item.product.name}
+      className="w-full h-32 object-cover mb-2 rounded"
+    />
+    <p>{item.product.name}</p>
+    <p>Brand: {item.product.brand}</p>
+    <p>Qty: {item.quantity}</p>
+    <p>Price: ${item.price}</p>
+
+   {selectedOrder.orderStatus === "Delivered" && (
+  <div className="flex flex-wrap gap-2 mt-2"> 
+    <button
+      onClick={() =>
+        navigate("/add-review", {
+          state: {
+            productId: item.product._id,
+            orderId: selectedOrder._id,
+            name: item.product.name,
+            image: item.product.images?.[0],
+          },
+        })
+      }
+      className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+    >
+      Add Review
+    </button>
+    <button
+      onClick={() =>
+        navigate("/return-order", {
+          state: {
+            productId: item.product._id,
+            orderId: selectedOrder._id,
+            name: item.product.name,
+            image: item.product.images?.[0],
+          },
+        })
+      }
+      className="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700"
+    >
+      Return Product
+    </button>
+  </div>
+)}
+  </div>
+))}
+
+
+
                           </div>
                         </div>
 
@@ -543,6 +643,41 @@ useEffect(() => {
                     )}
                   </div>
                 )}
+
+{activeSection === "My Reviews" && (
+  <div>
+    <h2 className="text-2xl font-bold text-gray-900 mb-6">My Reviews</h2>
+
+    {reviews.length === 0 ? (
+      <p className="text-gray-500">You have not submitted any reviews yet.</p>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {reviews.map((rev) => (
+          <div key={rev._id} className="bg-white p-4 rounded-md shadow border">
+            <h3 className="font-semibold text-lg mb-1">{rev.product?.name}</h3>
+            <p className="text-sm text-gray-500 mb-1">₹{rev.product?.price}</p>
+            <p className="text-yellow-600 font-medium mb-1">Rating: {rev.rating} / 5 ⭐</p>
+            <p className="text-gray-700 text-sm mb-2">"{rev.review}"</p>
+            <p className="text-xs text-gray-400 mb-2">
+              Posted on {new Date(rev.createdAt).toLocaleDateString()}
+            </p>
+            <p className="text-xs text-blue-600 mb-2">
+              Report Status: {rev.report?.status}
+            </p>
+            {rev.images?.length > 0 && (
+              <img
+                src={`https://rigsdock.com/uploads/${rev.images[0]}`}
+                alt="Review"
+                className="w-full h-32 object-cover rounded"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
 
                 {activeSection === "Addresses" && (
                   <div>
@@ -717,41 +852,85 @@ useEffect(() => {
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Account Details
                     </h2>
-                    <form className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            First Name
-                          </label>
-                          <input
-                            type="text"
-                            value={profile.name}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Email Id
-                          </label>
-                          <input
-                            type="text"
-                            value={profile.email}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                        </div>
-                      </div>
+                  <form className="space-y-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Name
+      </label>
+      <input
+        type="text"
+        name="name"
+        value={editProfile?.name}
+        onChange={handleEditInputChange}
+        disabled={!isEditingProfile}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+      />
+    </div>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Email
+      </label>
+      <input
+        type="email"
+        name="email"
+        value={editProfile.email}
+        onChange={handleEditInputChange}
+        disabled={!isEditingProfile}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+      />
+    </div>
+  </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Phone Number
-                        </label>
-                        <input
-                          type="text"
-                          value={profile.mobileNumber}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                    </form>
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      Phone Number
+    </label>
+    <input
+      type="text"
+      name="mobileNumber"
+      value={editProfile.mobileNumber}
+      onChange={handleEditInputChange}
+      disabled={!isEditingProfile}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+    />
+  </div>
+
+  <div className="flex space-x-4">
+    {!isEditingProfile ? (
+      <button
+        type="button"
+        onClick={() => setIsEditingProfile(true)}
+        className="bg-blue-600 text-white px-6 py-2 rounded-md"
+      >
+        Edit Profile
+      </button>
+    ) : (
+      <>
+        <button
+          type="button"
+          onClick={handleSaveProfile}
+          className="bg-green-600 text-white px-6 py-2 rounded-md"
+        >
+          Save Changes
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+setEditProfile({
+  name: profile?.name || "",
+  email: profile?.email || "",
+  mobileNumber: profile?.mobileNumber || "",
+});            setIsEditingProfile(false);
+          }}
+          className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md"
+        >
+          Cancel
+        </button>
+      </>
+    )}
+  </div>
+</form>
                   </div>
                 )}
 

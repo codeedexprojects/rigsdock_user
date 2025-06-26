@@ -18,6 +18,9 @@ import Blog from './Pages/Blog'
 import Orderconformation from './Pages/Orderconformation'
 import PaymentStatus from './Pages/PaymentStatus'
 import CategoryProducts from './Pages/CategoryProducts'
+import ScrollTop from './Components/ScrollTop'
+import AddReview from './Pages/AddReview'
+import ReturnOrder from './Pages/ReturnOrder'
 
 
 
@@ -25,6 +28,7 @@ function App() {
 
   return (
     <>
+    <ScrollTop/>
     <Routes>
       <Route path='/' element={<Home/>}/>
       <Route path='/product-details/:id' element={<ProductDetails/>}/>
@@ -42,7 +46,9 @@ function App() {
       <Route path='/order-confirmed' element={<Orderconformation/>}/>
       <Route path='/payment-status' element={<PaymentStatus/>}/>
       <Route path="/category/:mainCatId/:catId/:subCatId" element={<CategoryProducts/>}/>
-    </Routes>
+ <Route path="/add-review" element={<AddReview />} />
+ <Route path="/return-order" element={<ReturnOrder />} />
+     </Routes>
     {/* <Footer/> */}
      
     </>

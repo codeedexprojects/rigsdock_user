@@ -64,7 +64,7 @@ export const searchProductAPI = async(query)=>{
   }
 }
 
-// to rated
+// top rated
 
 export const getLatestProductsAPI = async () => {
   try {
@@ -91,3 +91,58 @@ export const dealOfTheDayAPI = async () => {
     throw error;
   }
 };
+
+// brandAPI
+export const getBrandAPI = async () =>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/brand/view`,{
+
+    })
+    return response.data
+
+  }catch(error){
+    console.error("Failed to view brand",error);
+    throw error
+    
+  }
+ 
+};
+// OFFER API
+
+export const getHomeOfferAPI =async()=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/homeoffer/get`,{
+
+    })
+    return response.data
+
+  }catch(err){
+    console.error("Failed to get",err);
+    throw err
+    
+  }
+}
+export const getHomeCategoryAPI =async()=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/homecategory/get`,{
+
+    })
+    return response.data
+
+  }catch(err){
+    console.error("Failed to get",err);
+    throw err
+    
+  }
+}
+
+// productCarousel
+ export const productCarouselAPI = async()=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/productcarousel/get`,{})
+    return response.data
+  }catch(error){
+    console.error("error display carousel",error);
+    throw error
+  }
+ }

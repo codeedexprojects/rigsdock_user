@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X, Plus, Minus, Heart, RefreshCw, Gift } from "lucide-react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [platformFee, setPlatformFee] = useState(0);
+
   const [cartCountNumber, setCartCountNumber] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
@@ -37,6 +39,7 @@ function Cart() {
   }, []);
 
   const fetchCartItems = async () => {
+    
     try {
       const userId = localStorage.getItem("userId");
       if (!userId) {
@@ -62,6 +65,7 @@ function Cart() {
       );
 
       setTotalPrice(res.totalPrice || 0);
+      setPlatformFee(res.platformFee || 0);
       setAppliedCoupon(res.cart?.coupon || null); // ✅ move this inside try block
       setLoading(false);
     } catch (err) {
@@ -294,7 +298,7 @@ function Cart() {
   );
   const shippingCost =
     selectedShipping === "free" ? 0 : selectedShipping === "flat" ? 5 : 10;
-  const total = subtotal + shippingCost;
+const total = subtotal + shippingCost + platformFee;
 
   if (cartItems.length === 0) {
     return (
@@ -613,6 +617,10 @@ function Cart() {
                         ₹{subtotal}
                       </span>
                     </div>
+                    <div className="flex justify-between text-base">
+  <span className="text-gray-600">Platform Fee</span>
+  <span className="text-blue-600 font-medium">₹{platformFee}</span>
+</div>
 
                     <div className="border-t pt-4">
                       <h3 className="font-semibold text-gray-800 mb-3 text-base">

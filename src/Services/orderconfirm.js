@@ -12,6 +12,26 @@ export const confirmOrderAPI = async (orderData) => {
   }
 };
 
+export const returnOrderAPI = async(formData) => {
+  try {
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+        if (!formData.has('productId') || !formData.get('productId')) {
+      throw new Error('Product ID is missing');
+    }
+    
+    const response = await axios.post(`${BASE_URL}/user/complaint/register`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to add review", error);
+    throw error;
+  }
+}
 
 // GetBlog
 
@@ -28,3 +48,5 @@ export const getBlogAPI = async ()=>{
     
   }
 }
+
+

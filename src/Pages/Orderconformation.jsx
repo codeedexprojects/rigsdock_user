@@ -1,10 +1,6 @@
 import React, { useEffect } from "react";
 import {
   CheckCircle,
-  ShoppingBag,
-  Truck,
-  CreditCard,
-  ShieldCheck,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -30,10 +26,10 @@ function Orderconformation() {
             being processed.
           </p>
           <div className="mt-6 bg-blue-600 text-white py-2 px-4 inline-block rounded-md">
-            Order #: {orderId || "Unavailable"}
+            Order #:{orderId || "Unavailable"}
           </div>
         </div>
-
+ 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link

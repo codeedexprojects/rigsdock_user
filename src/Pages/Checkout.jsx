@@ -340,46 +340,27 @@ useEffect(() => {
                     </ul>
 
                     {/* Order Totals */}
-                    <div className="border-t pt-4">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-600">Subtotal</span>
-                        <span className="font-medium">
-                          ₹
-                          {checkoutData.items
-                            .reduce(
-                              (sum, item) => sum + item.price * item.quantity,
-                              0
-                            )
-                            .toFixed(2)}
-                        </span>
-                      </div>
+                   {/* Subtotal (before discount) */}
 
-                      {checkoutData.appliedCoupon &&
-                        Object.keys(checkoutData.appliedCoupon).length > 0 && (
-                          <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Discount</span>
-                            <span className="text-green-600 font-medium">
-                              {checkoutData.appliedCoupon.discountType ===
-                              "percentage"
-                                ? `${checkoutData.appliedCoupon.discountValue}%`
-                                : `-$${checkoutData.appliedCoupon.discountValue}`}
-                            </span>
-                          </div>
-                        )}
+{/* Discount from coupon */}
+{checkoutData.appliedCoupon?.couponCode && checkoutData.appliedCoupon.discountAmount > 0 ? (
+  <div className="flex justify-between mb-2">
+    <span className="text-gray-600">Coupon ({checkoutData.appliedCoupon.couponCode})</span>
+    <span className="text-green-600 font-medium">
+      -₹{checkoutData.appliedCoupon.discountAmount.toFixed(2)}
+    </span>
+  </div>
+) : null}
 
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-600">Platform Fee</span>
-                        <span className="font-medium">₹5.00</span>{" "}
-                        {/* Adjust as needed */}
-                      </div>
 
-                      <div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
-                        <span>Total</span>
-                        <span className="text-blue-600">
-                          ₹{checkoutData.totalPrice.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
+{/* Final total */}
+<div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
+  <span>Total</span>
+  <span className="text-blue-600">
+    ₹{checkoutData.totalPrice.toFixed(2)}
+  </span>
+</div>
+
                   </>
                 ) : (
                   <p>Your order is empty</p>
