@@ -17,7 +17,6 @@ import {
   viewSubCategoriesAPI,
 } from "../Services/categoryAPI";
 import { cartCountAPI } from "../Services/cartAPI";
-// import logo from '/src/assets/RigsdockLogo.pdf'
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,6 +32,8 @@ function Header() {
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const navigate = useNavigate()
 
   const toggleCategoryDropdown = () => {
     setCategoryOpen(!categoryOpen);
@@ -168,7 +169,10 @@ function Header() {
     fetchCartCount();
   }, []);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+  const userId = localStorage.getItem("userId");
+  setIsLoggedIn(!!userId);
+}, []);
 
   const handleScrollToTopRated = () => {
     navigate("/");
@@ -210,7 +214,7 @@ function Header() {
               <img
                 src="https://i.postimg.cc/MKZkQfTh/logo.png"
                 alt="logo"
- className="w-96 h-20 md:w-60 md:h-24"
+ className="w-32 h-12 md:w-60 md:h-24"
               />
             </Link>
           </div>
@@ -323,13 +327,15 @@ function Header() {
 
           {/* User Actions */}
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-white">
-            <Link
-              to="/login"
-              className="hidden sm:flex items-center gap-1 cursor-pointer"
-            >
-              <User size={16} md:size={18} />
-              <span className="hidden md:inline">Log In</span>
-            </Link>
+       {!isLoggedIn && (
+  <Link
+    to="/login"
+    className="hidden sm:flex items-center gap-1 cursor-pointer"
+  >
+    <User size={16} md:size={18} />
+    <span className="hidden md:inline">Log In</span>
+  </Link>
+)}
             <div className="hidden sm:block h-5 w-px bg-white"></div>
             <Link
               to="/wishlist"
@@ -338,16 +344,21 @@ function Header() {
               <Heart size={16} md:size={18} />
               <span className="hidden md:inline">Wishlist</span>
             </Link>
-            <div className="hidden sm:block h-5 w-px bg-white"></div>
-            <Link to="/cart">
-              <div className="flex items-center gap-1 relative cursor-pointer">
-                <ShoppingCart size={18} md:size={20} />
-                <span className="hidden md:inline">My Cart</span>
-                <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
-                  {cartCount}
-                </span>
-              </div>
-            </Link>
+           {/* Hide Cart from header on mobile */}
+                       <div className="hidden sm:block h-5 w-px bg-white"></div>
+
+<div className="hidden sm:block">
+  <Link to="/cart">
+    <div className="flex items-center gap-1 relative cursor-pointer">
+      <ShoppingCart size={18} />
+      <span className="hidden md:inline">My Cart</span>
+      <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
+        {cartCount}
+      </span>
+    </div>
+  </Link>
+</div>
+
           </div>
         </div>
 
@@ -873,10 +884,17 @@ to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
             </Link>
             <Link
               to="/wishlist"
-              className="flex items-center gap-3 text-gray-700"
+              className="flex items-center gap-3 mb-3 text-gray-700"
             >
               <Heart size={20} />
               <span>My Wishlist</span>
+            </Link>
+            <Link
+              to="/cart"
+              className="flex items-center gap-3 text-gray-700"
+            >
+              <ShoppingCart size={20} />
+              <span>My Cart</span>
             </Link>
           </div>
 

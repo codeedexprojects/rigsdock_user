@@ -139,7 +139,7 @@ export const getHomeCategoryAPI =async()=>{
 // productCarousel
  export const productCarouselAPI = async()=>{
   try{
-    const response = await axios.get(`${BASE_URL}/user/productcarousel/get`,{})
+    const response = await axios.get(`${BASE_URL}/admin/carousel/view`)
     return response.data
   }catch(error){
     console.error("error display carousel",error);

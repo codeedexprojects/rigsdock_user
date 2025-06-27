@@ -214,7 +214,7 @@ if (!product.stock || product.stock < quantity) {
           </h2>
 
           <div className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
-            ${product.price} {product.maxPrice && `– $${product.maxPrice}`}
+            ₹{product.price} {product.maxPrice && `– $${product.maxPrice}`}
           </div>
 
           <div className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
@@ -317,7 +317,7 @@ if (!product.stock || product.stock < quantity) {
               within 24 hours.
             </p>
             <ul className="list-disc list-inside mb-3 sm:mb-4 text-sm">
-              <li>Free shipping on orders over $99</li>
+              <li>Free shipping on orders over ₹99</li>
               <li>Delivery within 5-7 business days</li>
               <li>Easy 30-day return and exchange policy</li>
             </ul>
@@ -365,11 +365,11 @@ if (!product.stock || product.stock < quantity) {
       <div className="text-xs sm:text-sm text-center mb-2">
         {product.originalPrice && (
           <span className="text-gray-400 line-through mr-1">
-            ${product.originalPrice}
+            ₹{product.originalPrice}
           </span>
         )}
         <span className="text-blue-600 font-bold">
-          ${product.finalPrice || product.price}
+          ₹{product.finalPrice || product.price}
         </span>
       </div>
       {/* Add View Product Button */}

@@ -50,9 +50,12 @@ function Otp() {
   return (
     <div className="min-h-screen bg-black/30 backdrop-blur-md flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-sm rounded-xl shadow-lg p-6 relative space-y-6 text-center">
-        <button className="absolute top-4 right-4 text-gray-500 hover:text-black">
-          <X size={20} />
-        </button>
+       <button
+  className="absolute top-4 right-4 text-gray-500 hover:text-black"
+  onClick={() => navigate("/login")}
+>
+  <X size={20} />
+</button>
 
         <div className="flex justify-center">
           <div className="bg-cyan-500 p-3 rounded-full">

@@ -275,17 +275,7 @@ function About() {
     </ul>
   </div>
 )}
-{activeTab === "Cancellation" && (
-  <div className="space-y-4">
-    <h3 className="font-semibold text-gray-900">CONTACT INFORMATION</h3>
-    <p>For any questions regarding DOA products or this procedure, please contact:</p>
-    <ul className="list-disc pl-6">
-      <li>Email (Returns): returns@rigsdock.com</li>
-      <li>Phone (India): +91 9778466748</li>
-      <li>Live Chat: Available 9 AM – 9 PM IST on rigsdock.com</li>
-    </ul>
-  </div>
-)}
+
 </div>
       </div>
 <div className="bg-gray-50 py-8 sm:py-12 md:py-16">
@@ -314,7 +304,7 @@ function About() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }

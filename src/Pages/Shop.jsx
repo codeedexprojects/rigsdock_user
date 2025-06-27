@@ -97,7 +97,6 @@ useEffect(() => {
   const fetchBrands = async () => {
     try {
       const res = await getBrandAPI(); 
-          console.log("Returned brands:", brands);  
       setBrandsList(res || []);
     } catch (err) {
       console.error("Error fetching brands", err);

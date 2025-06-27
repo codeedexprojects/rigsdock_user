@@ -139,7 +139,6 @@ const fetchMainAndCategories = async () => {
 
     for (const mainCat of mainCategories) {
       if (mainCat && mainCat._id) {
-        console.log("Fetching subcategories for:", mainCat._id);
         try {
           const categories = await viewCategoriesAPI(mainCat._id);
           newCategoryMap[mainCat._id] = categories;
@@ -210,7 +209,8 @@ useEffect(() => {
   const fetchCarouselCards = async () => {
     try {
       const res = await productCarouselAPI();
-      setCarouselCards(res.data || []);
+        console.log("Carousel API Response:", res);
+      setCarouselCards(res);
     } catch (error) {
       console.error("Error fetching carousel cards", error);
     }
@@ -459,9 +459,10 @@ const navigateToProduct = (productId) => {
   return (
     <>
       <Header />
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center mt-5">
-       Welcome to <span className="text-blue-700">RIGSDOCK</span> - Your Ultimate Gadgets Sale Destination
-      </h2>
+     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 text-center mt-5">
+  Welcome to <span className="text-blue-700">RIGSDOCK</span> - Your Ultimate Gadgets Sale Destination
+</h2>
+
 <div className="w-full px-4 lg:px-8 py-8">
   <div className="flex flex-col lg:flex-row gap-6">
     {homeOffers.slice(0, 3).map((offer, index) => {
@@ -1014,36 +1015,29 @@ const navigateToProduct = (productId) => {
 {/* deal 3 card product */}
 <div className="w-full px-4 py-8">
   <div className="flex flex-wrap justify-around gap-6">
-    {(carouselCards.length > 0
-      ? Array(3).fill(carouselCards[0])
-      : []
-    ).map((card, index) => {
-      const imageUrl =
-        card.image?.replace(
-          "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\uploads\\",
-          `${SERVER_URL}/uploads/`
-        ) || "https://source.unsplash.com/600x400/?sale";
+    {carouselCards.map((card) => {
+      const imageUrl = `https://rigsdock.com/uploads/${card?.image}`;
 
       return (
         <div
-          key={index}
-          className="w-full sm:w-[30rem] rounded-xl overflow-hidden shadow border bg-white"
+          key={card._id}
+          className="w-full sm:w-[30rem]  overflow-hidden shadow rounded-sm bg-white cursor-pointer hover:shadow-lg transition"
+          onClick={() => window.open(card.link, "_blank")}
         >
           <img
             src={imageUrl}
             alt={card.title}
-            className="w-full h-36 object-cover"
+            className="w-full h-60 object-cover"
             onError={(e) => {
               e.target.src = "https://source.unsplash.com/600x400/?gadget";
             }}
           />
-          <div className="p-4">
-            <h3 className="text-lg font-bold text-gray-800 mb-1">
+          <div className="p-4 bg-blue-800">
+            <h3 className="text-lg text-center font-bold text-white mb-1">
               {card.title}
             </h3>
-            <p className="text-sm text-gray-600 mb-1">{card.subtitle}</p>
-            <p className="text-sm text-gray-500 font-medium">
-              Starting from ₹{card.startingPrice}
+            <p className="text-sm text-white">
+              {card.subtitle}
             </p>
           </div>
         </div>
@@ -1051,8 +1045,6 @@ const navigateToProduct = (productId) => {
     })}
   </div>
 </div>
-
-
 
 {/* shop by category section */}
 
@@ -1220,8 +1212,7 @@ const navigateToProduct = (productId) => {
   </div>
 </section>
 
-
-  <div className="mt-10 px-4 py-4">
+<div className="mt-10 px-4 py-4">
   <div className="flex justify-between items-center mb-6">
     <h2 className="text-2xl font-bold " id="newarrival">New Arrivals</h2>
     <div className="flex gap-2">

@@ -176,7 +176,6 @@ function Cart() {
   const fetchAvailableCoupons = async () => {
     try {
       const res = await getCouponsAPI();
-      console.log("Fetched coupons:", res);
       setAvailableCoupons(res?.coupons || []);
     } catch (error) {
       toast.error("Unable to load coupons.");
@@ -300,49 +299,77 @@ function Cart() {
     selectedShipping === "free" ? 0 : selectedShipping === "flat" ? 5 : 10;
 const total = subtotal + shippingCost + platformFee;
 
-  if (cartItems.length === 0) {
-    return (
-      <>
-        <Header />
-        <div className="min-h-screen bg-gray-50 py-8">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8">
-              <div className="mb-6">
-                <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-12 h-12 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 0L3 3m0 0h2m0 0l.4 2M7 13L5.4 5M7 13l-2.293-2.293a1 1 0 00-1.414 0L9 16h6m0 0v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-1m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v7.293"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                  Your cart is empty
-                </h2>
-                <p className="text-gray-600">
-                  Add some products to get started!
-                </p>
-              </div>
-              <a
-                href="/shop"
-                className="inline-block bg-blue-800 hover:bg-blue-800 text-black font-semibold py-3 px-6 rounded-lg transition-colors text-base mt-4"
-              >
-                Continue Shopping
-              </a>
-            </div>
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+  return (
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Please login to view your cart
+            </h2>
+            <p className="text-gray-600 mb-4">
+              You need to log in to see your saved cart items.
+            </p>
+            <a
+              href="/login"
+              className="inline-block bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-base"
+            >
+              Login Now
+            </a>
           </div>
         </div>
-        <Footer />
-      </>
-    );
-  }
+      </div>
+      <Footer />
+    </>
+  );
+}
+
+if (cartItems.length === 0) {
+  return (
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8">
+            <div className="mb-6">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-12 h-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 0L3 3m0 0h2m0 0l.4 2M7 13L5.4 5M7 13l-2.293-2.293a1 1 0 00-1.414 0L9 16h6m0 0v1a2 2 0 01-2 2H9a2 2 0 01-2-2v-1m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v7.293"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                Your cart is empty
+              </h2>
+              <p className="text-gray-600">Add some products to get started!</p>
+            </div>
+            <a
+              href="/shop"
+              className="inline-block bg-blue-800 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-base mt-4"
+            >
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+}
+
 
   return (
     <>

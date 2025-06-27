@@ -10,7 +10,6 @@ import Home from './Pages/Home'
 import Seller from './Pages/Seller'
 import Shop from './Pages/Shop'
 import About from './Pages/About'
-import Register from './Pages/Register'
 import UserAccount from './Pages/UserAccount'
 import Otp from './Pages/Otp'
 import 'react-toastify/dist/ReactToastify.css';
@@ -39,7 +38,6 @@ function App() {
       <Route path='/seller' element={<Seller/>}/>
       <Route path='/shop' element={<Shop/>}/>
       <Route path='/about' element={<About/>}/>
-      <Route path='/register' element={<Register/>}/>
       <Route path='/user' element={<UserAccount/>}/>
       <Route path='/otp-login' element={<Otp/>}/>
       <Route path='/blog' element={<Blog/>}/>
