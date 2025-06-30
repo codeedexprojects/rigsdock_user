@@ -12,9 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { viewCategoriesAPI, viewMainCategoriesAPI, viewSubCategoriesAPI } from "../Services/categoryAPI";
 import { getBlogAPI } from "../Services/orderconfirm";
 
-
-
-
 function Home() {
   const [isDark, setIsDark] = useState(false);
   const [dealCurrentIndex, setDealCurrentIndex] = useState(0);
@@ -38,28 +35,22 @@ const [carouselCards, setCarouselCards] = useState([]);
   const [homeCategories, setHomeCategories] = useState([]);
   const navigate = useNavigate()
     const SERVER_URL = "https://rigsdock.com";
-    const [timeLeft, setTimeLeft] = useState({
-  days: 0,
-  hours: 0,
-  minutes: 0,
-  seconds: 0,
-});
+const [dealTimers, setDealTimers] = useState({});
 
-  const getTimeLeftFromCreatedAt = (createdAt) => {
-  const endTime = new Date(createdAt).getTime() + 7 * 24 * 60 * 60 * 1000; 
+
+const calculateTimeLeft = (createdAt) => {
+  const endTime = new Date(createdAt).getTime() + 7 * 24 * 60 * 60 * 1000;
   const now = new Date().getTime();
   const diff = endTime - now;
 
-  if (diff <= 0) {
-    return null; // deal expired
-  }
+  if (diff <= 0) return null;
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
-
-  return { days, hours, minutes, seconds };
+  return {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    seconds: Math.floor((diff / 1000) % 60),
+  };
 };
 useEffect(() => {
   const fetchProducts = async () => {
@@ -70,8 +61,7 @@ useEffect(() => {
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 10);
       setLatestProducts(sortedLatest);
-
-      const topRatedResponse = await axios.get(`${BASE_URL}/user/product/get`);
+const topRatedResponse = await axios.get(`${BASE_URL}/user/product/get`);
       const sortedTopRated = topRatedResponse.data.products
         .sort((a, b) => b.averageRating - a.averageRating)
         .slice(0, 10);
@@ -79,6 +69,14 @@ useEffect(() => {
 
       const dealResponse = await axios.get(`${BASE_URL}/user/dealoftheday/get`);
       setDealProducts(dealResponse.data);
+      const initialTimers = {};
+dealResponse.data.forEach((deal) => {
+  const timeLeft = calculateTimeLeft(deal.createdAt);
+  if (timeLeft) {
+    initialTimers[deal._id] = timeLeft;
+  }
+});
+setDealTimers(initialTimers);
 
       setLoading(false);
     } catch (err) {
@@ -90,30 +88,22 @@ useEffect(() => {
 
   fetchProducts();
 }, []);
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        } else if (prev.days > 0) {
-          return {
-            ...prev,
-            days: prev.days - 1,
-            hours: 23,
-            minutes: 59,
-            seconds: 59,
-          };
-        }
-        return prev;
-      });
-    }, 1000);
+useEffect(() => {
+  const interval = setInterval(() => {
+    setDealTimers((prevTimers) => {
+      const updated = {};
+      for (const dealId in prevTimers) {
+        const deal = dealProducts.find((d) => d._id === dealId);
+        if (!deal) continue;
+        const timeLeft = calculateTimeLeft(deal.createdAt);
+        if (timeLeft) updated[dealId] = timeLeft;
+      }
+      return updated;
+    });
+  }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
+  return () => clearInterval(interval);
+}, [dealProducts]);
 
   useEffect(() => {
   const fetchCategories = async () => {
@@ -460,7 +450,7 @@ const navigateToProduct = (productId) => {
     <>
       <Header />
      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 text-center mt-5">
-  Welcome to <span className="text-blue-700">RIGSDOCK</span> - Your Ultimate Gadgets Sale Destination
+  Welcome to <span className="text-blue-700">RIGSDOCK</span>
 </h2>
 
 <div className="w-full px-4 lg:px-8 py-8">
@@ -547,7 +537,7 @@ const navigateToProduct = (productId) => {
       (() => {
         // ✅ Filter only active deals
         const activeDeals = dealProducts.filter((deal) =>
-          getTimeLeftFromCreatedAt(deal.createdAt)
+          calculateTimeLeft(deal.createdAt)
         );
 
         return activeDeals.length > 0 ? (
@@ -559,7 +549,7 @@ const navigateToProduct = (productId) => {
                 style={{ transform: `translateX(-${dealCurrentIndex * 100}%)` }}
               >
                 {activeDeals.map((deal) => {
-                  const timeLeft = getTimeLeftFromCreatedAt(deal.createdAt);
+const timeLeft = dealTimers[deal._id];
                   const imageUrl = deal.product.images?.[0]
                     ? `${SERVER_URL}/uploads/${deal.product.images[0]}`
                     : "https://via.placeholder.com/300";
@@ -687,30 +677,9 @@ const navigateToProduct = (productId) => {
 
             {/* Main Products Section */}
 <div className="px-4 py-4">
-  <div className="flex justify-between items-center mb-6">
+  <div className="flex justify-between items-center mb-4">
     <h2 className="text-2xl font-bold">On Sale Products</h2>
-    <div className="flex gap-2">
-      <button
-        onClick={prevOnSaleSlide}
-        className={`p-2 rounded-full ${
-          isDark
-            ? "bg-gray-700 hover:bg-gray-600"
-            : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={nextOnSaleSlide}
-        className={`p-2 rounded-full ${
-          isDark
-            ? "bg-gray-700 hover:bg-gray-600"
-            : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-    </div>
+
   </div>
 
   {/* Products Slider */}
@@ -724,6 +693,13 @@ const navigateToProduct = (productId) => {
     </div>
   ) : (
     <div className="relative overflow-hidden mb-8">
+      <button onClick={prevOnSaleSlide} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100">
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+            <button onClick={nextOnSaleSlide} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100">
+        <ChevronRight className="w-5 h-5" />
+
+      </button>
       <div className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${onSaleCurrentIndex * 100}%)` }}>
         {Array.from({ length: Math.ceil(latestProducts.length / itemsPerSlide) }, (_, slideIndex) => (
@@ -816,12 +792,7 @@ const navigateToProduct = (productId) => {
   {/* Image Cards Section - Now positioned after the products */}
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
   {homeOffers.slice(0, 2).map((offer) => {
-    const product = offer.productIds?.[0]; // First product in the offer
-    // const backgroundImage = offer.image.replace(
-    //   "C:/Users/Abhijith KK/Desktop/Abhijith/Codeedex/rigsdock_backend/uploads/",
-    //   `${SERVER_URL}/uploads/`
-    // );
-
+    const product = offer.productIds?.[0]; 
     return (
       <div
         key={offer._id}
@@ -891,27 +862,10 @@ const navigateToProduct = (productId) => {
         </div>
       </div>
 {/* Top Rated Section */}
-    <div className="px-4 py-4">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-2xl font-bold" id="top-rated-section">Top Rated Item's</h2>
-    <div className="flex gap-2">
-      <button
-        onClick={prevTopRatedSlide}
-        className={`p-2 rounded-full ${
-          isDark ? "bg-gray-700 hover:bg-gray-600" : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={nextTopRatedSlide}
-        className={`p-2 rounded-full ${
-          isDark ? "bg-gray-700 hover:bg-gray-600" : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-    </div>
+<div className="px-4 py-4">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold">Top Rated Item's</h2>
+   
   </div>
 
   {loading ? (
@@ -921,133 +875,186 @@ const navigateToProduct = (productId) => {
   ) : error ? (
     <div className="text-center py-10 text-red-500">{error}</div>
   ) : (
-    <div className="relative overflow-hidden">
-      <div className="flex transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${topRatedCurrentIndex * 100}%)` }}>
-        {Array.from({ length: Math.ceil(topRatedProducts.length / itemsPerSlide) }, (_, slideIndex) => (
-          <div key={slideIndex} className="w-full flex-shrink-0">
-            <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {topRatedProducts
-                .slice(
-                  slideIndex * itemsPerSlide,
-                  (slideIndex + 1) * itemsPerSlide
-                )
-                .map((product) => (
-                  <div
-  key={product._id}
-  className={`rounded-xl p-4 flex flex-col h-full ${
-    isDark ? "bg-gray-800" : "bg-white"
-  } shadow-md hover:shadow-lg transition-shadow relative`}
->
-  {/* Sale Badge */}
-  {product.price !== product.finalPrice && (
-    <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
-      Sale
-    </span>
-  )}
+    <div className="relative overflow-hidden mb-8">
+      {/* Left Arrow */}
+      <button
+        onClick={prevTopRatedSlide}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
 
-  {/* Wishlist Button */}
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleAddToWishlist(product._id);
-    }}
-    className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-  >
-    <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-  </button>
+      {/* Right Arrow */}
+      <button
+        onClick={nextTopRatedSlide}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
 
-  {/* Product Image */}
-  <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
-    <img
-      src={
-        product.images && product.images.length > 0
-          ? `${SERVER_URL}/uploads/${product.images[0]}`
-          : "https://via.placeholder.com/300"
-      }
-      alt={product.name}
-      className="w-full h-full object-contain p-2"
-      onError={(e) => {
-        e.target.src = "https://via.placeholder.com/300";
-      }}
-    />
-  </div>
+      {/* Product Slider */}
+      <div
+        className="flex transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${topRatedCurrentIndex * 100}%)` }}
+      >
+        {Array.from(
+          { length: Math.ceil(topRatedProducts.length / itemsPerSlide) },
+          (_, slideIndex) => (
+            <div key={slideIndex} className="w-full flex-shrink-0">
+              <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {topRatedProducts
+                  .slice(
+                    slideIndex * itemsPerSlide,
+                    (slideIndex + 1) * itemsPerSlide
+                  )
+                  .map((product) => (
+                    <div
+                      key={product._id}
+                      className={`rounded-xl p-4 flex flex-col h-full ${
+                        isDark ? "bg-gray-800" : "bg-white"
+                      } shadow-md hover:shadow-lg transition-shadow relative`}
+                    >
+                      {/* Sale Badge */}
+                      {product.price !== product.finalPrice && (
+                        <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
+                          Sale
+                        </span>
+                      )}
 
-  {/* Product Info */}
-  <div className="flex-grow">
-    <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
-      {product.name}
-    </h3>
+                      {/* Wishlist Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToWishlist(product._id);
+                        }}
+                        className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                      >
+                        <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                      </button>
 
-    <div className="flex text-yellow-400 text-sm mb-1">
-      {renderStars(product.averageRating)}
-    </div>
+                      {/* Product Image */}
+                      <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
+                        <img
+                          src={
+                            product.images && product.images.length > 0
+                              ? `${SERVER_URL}/uploads/${product.images[0]}`
+                              : "https://via.placeholder.com/300"
+                          }
+                          alt={product.name}
+                          className="w-full h-full object-contain p-2"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/300";
+                          }}
+                        />
+                      </div>
 
-    <div className="text-sm mb-3">
-      {product.price !== product.finalPrice && (
-        <span className="text-gray-400 line-through mr-1">
-          ₹{product.price}
-        </span>
-      )}
-      <span className="text-blue-600 font-bold">
-        ₹{product.finalPrice}
-      </span>
-    </div>
-  </div>
+                      {/* Product Info */}
+                      <div className="flex-grow">
+                        <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                          {product.name}
+                        </h3>
+                        <div className="flex text-yellow-400 text-sm mb-1">
+                          {renderStars(product.averageRating)}
+                        </div>
+                        <div className="text-sm mb-3">
+                          {product.price !== product.finalPrice && (
+                            <span className="text-gray-400 line-through mr-1">
+                              ₹{product.price}
+                            </span>
+                          )}
+                          <span className="text-blue-600 font-bold">
+                            ₹{product.finalPrice}
+                          </span>
+                        </div>
+                      </div>
 
-  {/* View Product Button */}
-  <button 
-    onClick={() => navigateToProduct(product._id)}
-    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
-  >
-    View Product
-  </button>
-</div>
-                ))}
+                      {/* View Product Button */}
+                      <button
+                        onClick={() => navigateToProduct(product._id)}
+                        className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
+                      >
+                        View Product
+                      </button>
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   )}
 </div>
-
 {/* deal 3 card product */}
-<div className="w-full px-4 py-8">
-  <div className="flex flex-wrap justify-around gap-6">
+<div className="w-full px-4 py-12">
+  {/* Section Header */}
+  <div className="text-center mb-12">
+    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      Latest Tech & Gadgets
+    </h2>
+    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+      Explore cutting-edge technology and innovative gadgets that redefine your digital lifestyle
+    </p>
+    <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-6 rounded-full"></div>
+  </div>
+
+  <div className="flex flex-wrap justify-center gap-8">
     {carouselCards.map((card) => {
       const imageUrl = `https://rigsdock.com/uploads/${card?.image}`;
-
       return (
         <div
           key={card._id}
-          className="w-full sm:w-[30rem]  overflow-hidden shadow rounded-sm bg-white cursor-pointer hover:shadow-lg transition"
+          className="group basis-[320px] flex-grow-0 flex-shrink-0 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
           onClick={() => window.open(card.link, "_blank")}
         >
-          <img
-            src={imageUrl}
-            alt={card.title}
-            className="w-full h-60 object-cover"
-            onError={(e) => {
-              e.target.src = "https://source.unsplash.com/600x400/?gadget";
-            }}
-          />
-          <div className="p-4 bg-blue-800">
-            <h3 className="text-lg text-center font-bold text-white mb-1">
+          {/* Image Container with Overlay */}
+          <div className="relative overflow-hidden">
+            <img
+              src={imageUrl}
+              alt={card.title}
+              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.target.src = "https://source.unsplash.com/600x400/?gadget";
+              }}
+            />
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Floating Action Button */}
+            <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
               {card.title}
             </h3>
-            <p className="text-sm text-white">
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
               {card.subtitle}
             </p>
+            
+            {/* Action Bar */}
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                View Product
+              </span>
+              <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       );
     })}
   </div>
 </div>
-
 {/* shop by category section */}
-
 <section className="bg-white py-12 px-4 md:px-10">
   <div className="max-w-none">
     <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
@@ -1211,28 +1218,11 @@ const navigateToProduct = (productId) => {
     </div>
   </div>
 </section>
-
 <div className="mt-10 px-4 py-4">
-  <div className="flex justify-between items-center mb-6">
-    <h2 className="text-2xl font-bold " id="newarrival">New Arrivals</h2>
-    <div className="flex gap-2">
-      <button
-        onClick={prevNewArrivalsSlide}
-        className={`p-2 rounded-full ${
-          isDark ? "bg-gray-700 hover:bg-gray-600" : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={nextNewArrivalsSlide}
-        className={`p-2 rounded-full ${
-          isDark ? "bg-gray-700 hover:bg-gray-600" : "bg-white hover:bg-gray-100"
-        } shadow-md transition-colors`}
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-    </div>
+<div className="px-4 py-4">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold" id="newarrival">New Arrivals</h2>
+   
   </div>
 
   {loading ? (
@@ -1242,88 +1232,102 @@ const navigateToProduct = (productId) => {
   ) : error ? (
     <div className="text-center py-10 text-red-500">{error}</div>
   ) : (
-    <div className="relative overflow-hidden">
-      <div className="flex transition-transform duration-500 ease-in-out"
-       style={{ transform: `translateX(-${newArrivalsCurrentIndex * 100}%)` }}>
-        {Array.from({length: Math.ceil(latestProducts.length / itemsPerSlide) }, (_, slideIndex) => (
+    <div className="relative overflow-hidden mb-8">
+      {/* Left Arrow */}
+      <button
+        onClick={prevNewArrivalsSlide}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      {/* Right Arrow */}
+      <button
+        onClick={nextNewArrivalsSlide}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* Product Slider */}
+      <div
+        className="flex transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${newArrivalsCurrentIndex * 100}%)` }}
+      >
+        {Array.from({ length: Math.ceil(latestProducts.length / itemsPerSlide) }, (_, slideIndex) => (
           <div key={slideIndex} className="w-full flex-shrink-0">
             <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {latestProducts
-                .slice(
-                  slideIndex * itemsPerSlide,
-                  (slideIndex + 1) * itemsPerSlide
-                )
+                .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
                 .map((product) => (
-                 <div
-  key={product._id}
-  className={`rounded-xl p-4 flex flex-col h-full ${
-    isDark ? "bg-gray-800" : "bg-white"
-  } shadow-md hover:shadow-lg transition-shadow relative`}
->
-  {/* Sale Badge */}
-  {product.price !== product.finalPrice && (
-    <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
-      Sale
-    </span>
-  )}
+                  <div
+                    key={product._id}
+                    className={`rounded-xl p-4 flex flex-col h-full ${
+                      isDark ? "bg-gray-800" : "bg-white"
+                    } shadow-md hover:shadow-lg transition-shadow relative`}
+                  >
+                    {/* Sale Badge */}
+                    {product.price !== product.finalPrice && (
+                      <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
+                        Sale
+                      </span>
+                    )}
 
-  {/* Wishlist Button */}
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleAddToWishlist(product._id);
-    }}
-    className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-  >
-    <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-  </button>
+                    {/* Wishlist Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToWishlist(product._id);
+                      }}
+                      className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                    >
+                      <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                    </button>
 
-  {/* Product Image */}
-  <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
-    <img
-      src={
-        product.images && product.images.length > 0
-          ? `${SERVER_URL}/uploads/${product.images[0]}`
-          : "https://via.placeholder.com/300"
-      }
-      alt={product.name}
-      className="w-full h-full object-contain p-2"
-      onError={(e) => {
-        e.target.src = "https://via.placeholder.com/300";
-      }}
-    />
-  </div>
+                    {/* Product Image */}
+                    <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
+                      <img
+                        src={
+                          product.images && product.images.length > 0
+                            ? `${SERVER_URL}/uploads/${product.images[0]}`
+                            : "https://via.placeholder.com/300"
+                        }
+                        alt={product.name}
+                        className="w-full h-full object-contain p-2"
+                        onError={(e) => {
+                          e.target.src = "https://via.placeholder.com/300";
+                        }}
+                      />
+                    </div>
 
-  {/* Product Info */}
-  <div className="flex-grow">
-    <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
-      {product.name}
-    </h3>
+                    {/* Product Info */}
+                    <div className="flex-grow">
+                      <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                        {product.name}
+                      </h3>
+                      <div className="flex text-yellow-400 text-sm mb-1">
+                        {renderStars(product.averageRating)}
+                      </div>
+                      <div className="text-sm mb-3">
+                        {product.price !== product.finalPrice && (
+                          <span className="text-gray-400 line-through mr-1">
+                            ₹{product.price}
+                          </span>
+                        )}
+                        <span className="text-blue-600 font-bold">
+                          ₹{product.finalPrice}
+                        </span>
+                      </div>
+                    </div>
 
-    <div className="flex text-yellow-400 text-sm mb-1">
-      {renderStars(product.averageRating)}
-    </div>
-
-    <div className="text-sm mb-3">
-      {product.price !== product.finalPrice && (
-        <span className="text-gray-400 line-through mr-1">
-          ₹{product.price}
-        </span>
-      )}
-      <span className="text-blue-600 font-bold">
-        ₹{product.finalPrice}
-      </span>
-    </div>
-  </div>
-
-  {/* View Product Button */}
-  <button 
-    onClick={() => navigateToProduct(product._id)}
-    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
-  >
-    View Product
-  </button>
-</div>
+                    {/* View Product Button */}
+                    <button 
+                      onClick={() => navigateToProduct(product._id)}
+                      className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
+                    >
+                      View Product
+                    </button>
+                  </div>
                 ))}
             </div>
           </div>
@@ -1331,7 +1335,7 @@ const navigateToProduct = (productId) => {
       </div>
     </div>
   )}
-
+</div>
 <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
   {/* Section Heading */}
   <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
@@ -1404,7 +1408,6 @@ const navigateToProduct = (productId) => {
     }
   `}</style>
 </div>
-
 <section className="px-4 py-12">
 <div className="flex justify-between items-center mb-6">
   <h2 className="text-2xl font-semibold">From Our Blog</h2>

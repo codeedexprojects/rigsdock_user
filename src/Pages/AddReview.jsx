@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { addReviews, getUserReviews } from '../Services/getUserReviewAPI';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from '../Components/Header';
 function AddReview() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -116,6 +117,8 @@ function AddReview() {
     checkReviewExists();
   }, [userId, productId]);
   return (
+    <>
+    <Header/>
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-semibold mb-4">Add a Review</h2>
       {image && (
@@ -168,6 +171,7 @@ function AddReview() {
             <ToastContainer position="top-right" autoClose={3000} />
       
     </div>
+    </>
   );
 }
 export default AddReview;

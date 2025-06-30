@@ -64,7 +64,7 @@ export const searchProductAPI = async(query)=>{
   }
 }
 
-// top rated
+// top rated products
 
 export const getLatestProductsAPI = async () => {
   try {

@@ -8,24 +8,24 @@ import { addToCartAPI } from "../Services/cartAPI";
 import { addToWishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { filterByBrandAPI, filterByPriceAPI, filterByyRatingAPI } from "../Services/filterAPI";
+import {
+  filterByBrandAPI,
+  filterByPriceAPI,
+  filterByyRatingAPI,
+} from "../Services/filterAPI";
 import axios from "axios";
 import { BASE_URL } from "../Services/baseUrl";
-
-
-
-
 
 function Shop() {
   const navigate = useNavigate();
   const [AllProducts, setAllProducts] = useState([]);
   const [minPrice, setMinPrice] = useState("");
-const [maxPrice, setMaxPrice] = useState("");
-const [selectedRating, setSelectedRating] = useState(null)
-const [brandsList, setBrandsList] = useState([]);
-const [selectedBrand, setSelectedBrand] = useState(null);
-const [loading, setLoading] = useState(true);
-const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [maxPrice, setMaxPrice] = useState("");
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [brandsList, setBrandsList] = useState([]);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,98 +42,94 @@ const [showMobileFilters, setShowMobileFilters] = useState(false);
     fetchProducts();
   }, []);
 
-  const handlePriceFilter = async ()=>{
-    if(!minPrice || !maxPrice){
-      toast.warn("Please enter both min and max Price.")
-      return
+  const handlePriceFilter = async () => {
+    if (!minPrice || !maxPrice) {
+      toast.warn("Please enter both min and max Price.");
+      return;
     }
-    try{
-      const result = await filterByPriceAPI(minPrice, maxPrice)
-      console.log("eroorr",result);
-      
-         setAllProducts(result.products || [])
-          toast.success("Product filtered by Price")
-           setShowMobileFilters(false);
-         
-    }catch(error){
-      toast.success("price filter error",error)
-      
-    }
-  }
-
-  const handleRatingFilter = async (rating) => {
-  const minRating = rating;
-  const maxRate = 5;
-
-  const newRating = selectedRating === rating ? null : rating;
-  setSelectedRating(newRating);
-
-  if (!newRating) {
     try {
-      const allProducts = await getAllProducts();
-      setAllProducts(allProducts);
-      toast.info("Rating filter cleared");
-    } catch (error) {
-      toast.error("Failed to reset products");
-        }
+      const result = await filterByPriceAPI(minPrice, maxPrice);
+      console.log("eroorr", result);
+
+      setAllProducts(result.products || []);
+      toast.success("Product filtered by Price");
       setShowMobileFilters(false);
-
-    return;
-  }
-
-  try {
-    const response = await filterByyRatingAPI(minRating, maxRate);
-    setAllProducts(response.products || []);
-    toast.success(`Filtered products with rating ${rating} & up`);
-  } catch (error) {
-    toast.error("Failed to filter by rating");
-    
-    console.error(error);
-  }
-    setShowMobileFilters(false); 
-};
-
-useEffect(() => {
-  const fetchBrands = async () => {
-    try {
-      const res = await getBrandAPI(); 
-      setBrandsList(res || []);
-    } catch (err) {
-      console.error("Error fetching brands", err);
+    } catch (error) {
+      toast.success("price filter error", error);
     }
   };
 
-  fetchBrands();
-}, []);
+  const handleRatingFilter = async (rating) => {
+    const minRating = rating;
+    const maxRate = 5;
 
-const handleBrandFilter = async (brandId) => {
-  const isSameBrand = selectedBrand === brandId;
-  const newBrand = isSameBrand ? null : brandId;
-  setSelectedBrand(newBrand);
+    const newRating = selectedRating === rating ? null : rating;
+    setSelectedRating(newRating);
 
-  if (!newBrand) {
-    try {
-      const allProducts = await getAllProducts();
-      setAllProducts(allProducts);
-      toast.info("Brand filter cleared");
-    } catch (error) {
-      toast.error("Failed to reset products");
+    if (!newRating) {
+      try {
+        const allProducts = await getAllProducts();
+        setAllProducts(allProducts);
+        toast.info("Rating filter cleared");
+      } catch (error) {
+        toast.error("Failed to reset products");
+      }
+      setShowMobileFilters(false);
+
+      return;
     }
-    return;
-  }
 
-  try {
-    const res = await filterByBrandAPI(newBrand);
-    setAllProducts(res.products || []);
-    toast.success("Filtered by brand");
-  } catch (error) {
-    toast.error("Failed to filter by brand");
-  }
-};
+    try {
+      const response = await filterByyRatingAPI(minRating, maxRate);
+      setAllProducts(response.products || []);
+      toast.success(`Filtered products with rating ${rating} & up`);
+    } catch (error) {
+      toast.error("Failed to filter by rating");
 
+      console.error(error);
+    }
+    setShowMobileFilters(false);
+  };
 
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const res = await getBrandAPI();
+        setBrandsList(res || []);
+      } catch (err) {
+        console.error("Error fetching brands", err);
+      }
+    };
 
-const [expandedFilters, setExpandedFilters] = useState({
+    fetchBrands();
+  }, []);
+
+  const handleBrandFilter = async (brandId) => {
+    const isSameBrand = selectedBrand === brandId;
+    const newBrand = isSameBrand ? null : brandId;
+    setSelectedBrand(newBrand);
+
+    if (!newBrand) {
+      try {
+        const allProducts = await getAllProducts();
+        setAllProducts(allProducts);
+        toast.info("Brand filter cleared");
+      } catch (error) {
+        toast.error("Failed to reset products");
+      }
+      return;
+    }
+
+    try {
+      const res = await filterByBrandAPI(newBrand);
+      setAllProducts(res.products || []);
+      toast.success("Filtered by brand");
+    } catch (error) {
+      toast.error("Failed to filter by brand");
+    }
+  };
+
+  const [expandedFilters, setExpandedFilters] = useState({
     categories: true,
     highlight: true,
     brand: true,
@@ -152,7 +148,6 @@ const [expandedFilters, setExpandedFilters] = useState({
     { name: "Output Devices", count: 20 },
     { name: "Gaming Chairs", count: 7 },
   ];
-
 
   const brands = [
     "Apple",
@@ -296,114 +291,116 @@ const [expandedFilters, setExpandedFilters] = useState({
       </div>
 
       <div className="lg:hidden flex justify-end ">
-  <button
-    onClick={() => setShowMobileFilters(true)}
-    className="bg-blue-800 text-white px-5 py-2 me-3 rounded-md text-sm font-medium"
-  >
-    Filter
-  </button>
-</div>
-
-{showMobileFilters && (
-  <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-end">
-    <div className="w-4/5 max-w-xs bg-white h-full p-4 overflow-y-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-        <button onClick={() => setShowMobileFilters(false)} className="text-gray-600 text-xl">
-          ✕
-        </button>
-      </div>
-
-      {/* Brand Filter */}
-      <div className="mb-6">
-        <h3 className="text-md font-semibold mb-2">Brand</h3>
-      {brandsList.map((brand) => (
-  <label
-    key={brand._id}
-    className={`block mb-2 cursor-pointer ${
-      selectedBrand === brand._id ? "text-blue-800" : ""
-    }`}
-  >
-    <input
-      type="checkbox"
-      checked={selectedBrand === brand._id}
-      onChange={() => handleBrandFilter(brand._id)}
-      className="mr-2"
-    />
-    {brand.name}
-  </label>
-))}
-
-      </div>
-
-      {/* Price Filter */}
-      <div className="mb-6">
-        <h3 className="text-md font-semibold mb-2">Price</h3>
-        <div className="flex gap-3 mb-2">
-          <input
-            type="number"
-            placeholder="Min"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-          />
-        </div>
         <button
-          onClick={handlePriceFilter}
-          className="w-full bg-blue-800 text-white py-2 rounded-md text-sm font-medium"
+          onClick={() => setShowMobileFilters(true)}
+          className="bg-blue-800 text-white px-5 py-2 me-3 rounded-md text-sm font-medium"
         >
-          Apply Price Filter
+          Filter
         </button>
       </div>
 
-      {/* Rating Filter */}
-      <div className="mb-6">
-        <h3 className="text-md font-semibold mb-2">Rating</h3>
-        {[5, 4, 3, 2, 1].map((rating) => (
-          <label
-            key={rating}
-            className={`flex items-center mb-2 cursor-pointer ${
-              selectedRating === rating ? "text-blue-800" : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              className="mr-2"
-              checked={selectedRating === rating}
-              onChange={() => handleRatingFilter(rating)}
-            />
-            <div className="flex items-center">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  className={`w-4 h-4 ${
-                    index < rating ? "text-yellow-400 fill-current" : "text-gray-300"
-                  }`}
-                />
-              ))}
-              <span className="ml-2 text-sm">& Up</span>
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-end">
+          <div className="w-4/5 max-w-xs bg-white h-full p-4 overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="text-gray-600 text-xl"
+              >
+                ✕
+              </button>
             </div>
-          </label>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
 
+            {/* Brand Filter */}
+            <div className="mb-6">
+              <h3 className="text-md font-semibold mb-2">Brand</h3>
+              {brandsList.map((brand) => (
+                <label
+                  key={brand._id}
+                  className={`block mb-2 cursor-pointer ${
+                    selectedBrand === brand._id ? "text-blue-800" : ""
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedBrand === brand._id}
+                    onChange={() => handleBrandFilter(brand._id)}
+                    className="mr-2"
+                  />
+                  {brand.name}
+                </label>
+              ))}
+            </div>
 
+            {/* Price Filter */}
+            <div className="mb-6">
+              <h3 className="text-md font-semibold mb-2">Price</h3>
+              <div className="flex gap-3 mb-2">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
+              </div>
+              <button
+                onClick={handlePriceFilter}
+                className="w-full bg-blue-800 text-white py-2 rounded-md text-sm font-medium"
+              >
+                Apply Price Filter
+              </button>
+            </div>
+
+            {/* Rating Filter */}
+            <div className="mb-6">
+              <h3 className="text-md font-semibold mb-2">Rating</h3>
+              {[5, 4, 3, 2, 1].map((rating) => (
+                <label
+                  key={rating}
+                  className={`flex items-center mb-2 cursor-pointer ${
+                    selectedRating === rating ? "text-blue-800" : ""
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={selectedRating === rating}
+                    onChange={() => handleRatingFilter(rating)}
+                  />
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, index) => (
+                      <Star
+                        key={index}
+                        className={`w-4 h-4 ${
+                          index < rating
+                            ? "text-yellow-400 fill-current"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-2 text-sm">& Up</span>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
-<div className="flex flex-col-reverse lg:flex-row gap-8">
+          <div className="flex flex-col-reverse lg:flex-row gap-8">
             {/* Left Sidebar - Filters */}
-<div className="hidden lg:block w-full lg:w-80 space-y-6">
+            <div className="hidden lg:block w-full lg:w-80 space-y-6">
               {/* Filter by Brand */}
               <div className="bg-white rounded-lg p-6">
                 <div
@@ -421,22 +418,24 @@ const [expandedFilters, setExpandedFilters] = useState({
                 </div>
                 {expandedFilters.brand && (
                   <div className="mt-5 space-y-3">
-                   {brandsList.map((brand) => (
-  <label
-    key={brand._id}
-    className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
-      selectedBrand === brand._id ? "bg-blue-50" : ""
-    }`}
-  >
-    <input
-      type="checkbox"
-      className="mr-3 text-blue-800 w-4 h-4"
-      checked={selectedBrand === brand._id}
-      onChange={() => handleBrandFilter(brand._id)}
-    />
-    <span className="text-gray-700 text-base">{brand.name}</span>
-  </label>
-))}
+                    {brandsList.map((brand) => (
+                      <label
+                        key={brand._id}
+                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
+                          selectedBrand === brand._id ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-3 text-blue-800 w-4 h-4"
+                          checked={selectedBrand === brand._id}
+                          onChange={() => handleBrandFilter(brand._id)}
+                        />
+                        <span className="text-gray-700 text-base">
+                          {brand.name}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>
@@ -470,11 +469,14 @@ const [expandedFilters, setExpandedFilters] = useState({
                         type="number"
                         placeholder="Max"
                         value={maxPrice}
-                       onChange={(e) => setMaxPrice(e.target.value)}
-                       className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 text-base"
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 text-base"
                       />
                     </div>
-                    <button onClick={handlePriceFilter} className="w-full bg-blue-800 text-white py-3 px-4 rounded-md hover:bg-blue-800 transition-colors text-base font-medium">
+                    <button
+                      onClick={handlePriceFilter}
+                      className="w-full bg-blue-800 text-white py-3 px-4 rounded-md hover:bg-blue-800 transition-colors text-base font-medium"
+                    >
                       Filter
                     </button>
                   </div>
@@ -498,32 +500,36 @@ const [expandedFilters, setExpandedFilters] = useState({
                 </div>
                 {expandedFilters.ratings && (
                   <div className="mt-5 space-y-3">
-                  {[5, 4, 3, 2, 1].map((rating) => (
-  <label
-    key={rating}
-    className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
-      selectedRating === rating ? "bg-blue-50" : ""
-    }`}
-  >
-    <input
-      type="checkbox"
-      className="mr-3 text-blue-800 w-4 h-4"
-      checked={selectedRating === rating}
-      onChange={() => handleRatingFilter(rating)}
-    />
-    <div className="flex items-center">
-      {[...Array(5)].map((_, index) => (
-        <Star
-          key={index}
-          className={`w-4 h-4 ${
-            index < rating ? "text-yellow-400 fill-current" : "text-gray-300"
-          }`}
-        />
-      ))}
-      <span className="ml-2 text-gray-700 text-base">& Up</span>
-    </div>
-  </label>
-))}
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                      <label
+                        key={rating}
+                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
+                          selectedRating === rating ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-3 text-blue-800 w-4 h-4"
+                          checked={selectedRating === rating}
+                          onChange={() => handleRatingFilter(rating)}
+                        />
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, index) => (
+                            <Star
+                              key={index}
+                              className={`w-4 h-4 ${
+                                index < rating
+                                  ? "text-yellow-400 fill-current"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="ml-2 text-gray-700 text-base">
+                            & Up
+                          </span>
+                        </div>
+                      </label>
+                    ))}
                   </div>
                 )}
               </div>
@@ -537,7 +543,7 @@ const [expandedFilters, setExpandedFilters] = useState({
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {products.map((product) => (
                   <ProductCard
                     key={product._id}

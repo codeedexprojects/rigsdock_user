@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { returnOrderAPI } from '../Services/orderconfirm';
+import Header from '../Components/Header';
 const BASE_URL = "https://rigsdock.com";
 function ReturnOrder() {
   const location = useLocation();
@@ -64,6 +65,8 @@ setTimeout(() => {
     }
   };
   return (
+    <>
+    <Header/>
     <div className="max-w-xl mx-auto p-6 bg-white shadow rounded mt-10">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
         Reason for <span className='text-blue-700'>Returning</span> Product
@@ -126,6 +129,7 @@ setTimeout(() => {
       </form>
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
+    </>
   );
 }
 export default ReturnOrder;
