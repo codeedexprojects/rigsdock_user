@@ -211,7 +211,6 @@ function Shop() {
         const response = await addToWishlistAPI(userId, productId);
         toast.success(response.message);
       } catch (error) {
-        // console.error("Error adding to wishlist:", error);
         toast.error(error.response.data.message);
       }
     };
@@ -224,20 +223,35 @@ function Shop() {
           className="w-full h-full object-contain cursor-pointer"
           onClick={handleProductClick}
         />
-        <button
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
-          onClick={(e) => handleAddToWishlist(product.id, e)}
-        >
-          <Heart className="text-red-500 w-5 h-5" />
-        </button>
+      <button
+  className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
+  onClick={(e) => handleAddToWishlist(product.id, e)}
+>
+  <Heart className="text-red-500 w-5 h-5" />
+</button>
+
       </div>
     );
 
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow h-full flex flex-col">
-        <div className="h-64 mb-4 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-          {ImageWithWishlist}
-        </div>
+        <div className="h-64 mb-4 bg-white rounded-lg overflow-hidden">
+  <div className="relative group w-full h-full">
+    <img
+  src={product.image}
+  alt={product.name}
+  className="w-full h-full object-contain p-4 cursor-pointer"
+  onClick={handleProductClick}
+/>
+   <button
+  className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
+  onClick={(e) => handleAddToWishlist(product.id, e)}
+>
+  <Heart className="text-red-500 w-5 h-5" />
+</button>
+
+  </div>
+</div>
         <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
           {product.name}
         </h3>

@@ -14,15 +14,23 @@ function Otp() {
   const [otpError, setOtpError] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (value, index) => {
-    const updated = [...otpDigits];
-    updated[index] = value.replace(/[^0-9]/g, "");
-    setOtpDigits(updated);
+const handleChange = (value, index) => {
+  const isNumber = /^[0-9]$/.test(value);
 
-    if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`)?.focus();
-    }
-  };
+  if (!isNumber && value !== "") {
+    toast.error("Only numbers are allowed in OTP");
+    return;
+  }
+
+  const updated = [...otpDigits];
+  updated[index] = value;
+  setOtpDigits(updated);
+  setOtpError(false);
+
+  if (value && index < 5) {
+    document.getElementById(`otp-${index + 1}`)?.focus();
+  }
+};
 
   const handleVerify = async () => {
     const otp = otpDigits.join("");
@@ -42,14 +50,16 @@ function Otp() {
     } catch (err) {
       toast.error(err.response?.data?.message || "OTP verification failed");
       setOtpError(true);
+      setOtpDigits(Array(6).fill("")); 
+  document.getElementById("otp-0")?.focus();
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black/30 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-sm rounded-xl shadow-lg p-6 relative space-y-6 text-center">
+    <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-sm rounded-xl shadow-xl p-6 relative space-y-6 text-center">
        <button
   className="absolute top-4 right-4 text-gray-500 hover:text-black"
   onClick={() => navigate("/login")}
@@ -73,7 +83,7 @@ function Otp() {
             <input
               key={i}
               id={`otp-${i}`}
-              type="text"
+              type="tel"
               maxLength="1"
               value={digit}
               onChange={(e) => {
@@ -94,7 +104,7 @@ function Otp() {
         )}
 
         <button
-          className="w-full bg-black text-white py-3 rounded-md font-medium hover:opacity-90 transition"
+          className="w-full bg-blue-800 text-white py-3 rounded-md font-medium hover:opacity-90 transition"
           onClick={handleVerify}
           disabled={loading}
         >

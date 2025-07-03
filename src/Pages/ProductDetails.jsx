@@ -87,6 +87,11 @@ const handleAddtoCart= async ()=>{
 
   const product = productDetails;
 
+  const averageRating =
+  product?.reviews?.length > 0
+    ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
+    : 0;
+
   useEffect(() => {
     fetchProductDetails();
   }, []);
@@ -94,9 +99,7 @@ const handleAddtoCart= async ()=>{
   const fetchProductDetails = async () => {
     try {
       const result = await viewProductsByIdAPI(productId.id);
-      // console.log(result);
       setProductDetails(result.product);
-      
       const similar = await getSimilarProductsAPI(productId.id);
     setSimilarProducts(similar);
     } catch (err) {
@@ -206,23 +209,26 @@ if (!product.stock || product.stock < quantity) {
 
         {/* Right Section - Info */}
         <div>
-          <p className="text-gray-500 text-xs sm:text-sm mb-1">
+          <p className="text-gray-600 font-bold text-xs sm:text-sm mb-1">
             Brand: {product.brand}
           </p>
           <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2 sm:mb-4">
             {product.name}
           </h2>
 
-          <div className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
+          <div className="text-lg sm:text-xl font-bold text-red-600 mb-2">
             ₹{product.price} {product.maxPrice && `– $${product.maxPrice}`}
           </div>
-
-          <div className="text-lg sm:text-xl font-bold text-blue-700 mb-2">
-            {product.description}
-          </div>
+{product.description && (
+  <ul className="list-disc list-inside text-gray-700 mb-4 sm:mb-6 space-y-1 text-sm sm:text-base">
+    {product.description.split(',').map((line, index) => (
+      <li key={index}>{line.trim()}</li>
+    ))}
+  </ul>
+)}
 
           <div className="flex items-center gap-1 mb-3 sm:mb-4">
-            {renderStars(product.rating)}
+            {renderStars(averageRating)}
             <span className="ml-1 sm:ml-2 text-gray-600 text-xs sm:text-sm">
               ({product.totalReviews} review)
             </span>
@@ -349,13 +355,14 @@ if (!product.stock || product.stock < quantity) {
           )}%
         </span>
       )}
-      <div className="aspect-square mb-2 sm:mb-3 overflow-hidden rounded-lg">
-        <img
-          src={`https://rigsdock.com/uploads/${product.images[0]}`}
-          alt={product.name}
-          className="w-full h-full object-cover"
-        />
-      </div>
+     <div className="aspect-square mb-2 sm:mb-3 overflow-hidden rounded-lg bg-white flex items-center justify-center">
+  <img
+    src={`https://rigsdock.com/uploads/${product.images[0]}`}
+    alt={product.name}
+    className="w-full h-full object-contain p-2"
+  />
+</div>
+
       <h3 className="text-xs sm:text-sm font-semibold mb-1 min-h-[36px] sm:min-h-[40px] line-clamp-2">
         {product.name}
       </h3>

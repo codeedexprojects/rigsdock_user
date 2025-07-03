@@ -385,14 +385,15 @@ const navigate = useNavigate()
                   <X size={14} />
                 </button>
               )}
-              <button
-                type="submit"
-                className="px-4 py-2 text-white font-semibold flex items-center gap-1"
-                style={{ backgroundColor: "rgb(10, 95, 191)" }}
-                disabled={isSearching}
-              >
-                <Search size={14} /> {isSearching ? "Searching..." : ""}
-              </button>
+<button
+  type="submit"
+  className="bg-[rgb(10,95,191)] h-10 w-15 flex items-center justify-center rounded-r-full"
+  disabled={isSearching}
+>
+  <Search size={16} className="text-white" />
+</button>
+
+
             </form>
 
             {/* Mobile Search Results */}
