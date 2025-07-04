@@ -575,7 +575,7 @@ const timeLeft = dealTimers[deal._id];
                           alt={deal.product.name}
                           className="w-48 h-48 mx-auto rounded-lg object-cover mb-4"
                           onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/300";
+                            e.target.src = "https://source.unsplash.com/300x300/?technology"
                           }}
                         />
 
