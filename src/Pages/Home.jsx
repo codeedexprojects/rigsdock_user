@@ -800,17 +800,22 @@ const timeLeft = dealTimers[deal._id];
         onClick={() => product && navigateToProduct(product._id)}
       >
         {/* Background Image */}
-        <div
-          className="absolute inset-0"
-         style={{
-          backgroundImage: `url(${offer.image.replace(
+       <div
+  className="absolute inset-0"
+  style={{
+    backgroundImage: `url(${
+      offer.image
+        ? offer.image.replace(
             "C:/Users/Abhijith KK/Desktop/Abijith/Codeedex/rigsdock_backend/uploads/",
             `${SERVER_URL}/uploads/`
-          )})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        />
+          )
+        : "https://source.unsplash.com/600x400/?electronics,tech"
+    })`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+/>
+
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
@@ -1173,12 +1178,13 @@ const timeLeft = dealTimers[deal._id];
     >
       <img
         src={
-          homeCategories[0].image
-            ? homeCategories[0].image.replace(
-                "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\uploads\\",
-                `${SERVER_URL}/uploads/`
-              )
-            : "https://source.unsplash.com/600x400/?electronics,gadgets"
+         homeCategories[0].image
+  ? homeCategories[0].image.replace(
+      "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\uploads\\",
+      `${SERVER_URL}/uploads/`
+    )
+  : "https://source.unsplash.com/600x400/?electronics,gadgets"
+
         }
         alt={homeCategories[0].title}
         className="absolute inset-0 w-full h-full object-cover z-0"
