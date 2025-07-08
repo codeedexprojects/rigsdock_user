@@ -31,7 +31,7 @@ import "react-toastify/dist/ReactToastify.css";
   return (
     <>
     <Header/>
-     <div className="bg-white border-b">
+     <div className="bg-white border-b mt-5">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <nav className="flex justify-center items-center text-sm text-gray-500 mb-4">
             <span className="hover:text-gray-700 cursor-pointer">Home</span>

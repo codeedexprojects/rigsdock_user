@@ -181,7 +181,7 @@ if (!product.stock || product.stock < quantity) {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 mt-5">
         {/* Left Section - Images */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex sm:flex-col gap-2 sm:gap-3 order-2 sm:order-1">

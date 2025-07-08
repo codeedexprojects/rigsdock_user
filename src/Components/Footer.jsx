@@ -52,7 +52,7 @@ function Footer() {
             Product
           </h3>
           <ul className="space-y-1">
-            <li>PC Periphereals</li>
+            <li>PC Peripherals</li>
             <li>PC Components</li>  
           </ul>
         </div>
@@ -66,7 +66,7 @@ function Footer() {
            <Link to="/seller" > <li>Become an seller</li></Link>
           <Link to="/about" > <li>Terms&Condition</li> </Link>
             <Link to="/about" ><li>Privacy&Policy</li> </Link>
-           <Link to="/about" ><li>Cancellation@Refund</li></Link> 
+           <Link to="/faqs" ><li>FAQs</li></Link> 
             <Link to="/about" ><li>Shipping Policy</li></Link>
             <Link to="/blog" ><li>Blog</li> </Link>
           </ul>

@@ -119,7 +119,7 @@ function AddReview() {
   return (
     <>
     <Header/>
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
+    <div className="max-w-lg mx-auto mt-5 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-semibold mb-4">Add a Review</h2>
       {image && (
         <img

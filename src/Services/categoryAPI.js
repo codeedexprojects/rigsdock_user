@@ -24,7 +24,7 @@ export const viewCategoriesAPI = async (mainCatId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Failed to vie categories', error);
+    console.error('Failed to view categories', error);
     throw error;
   }
 };

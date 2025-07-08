@@ -7,7 +7,6 @@ import {
   Search,
   Heart,
   X,
-  
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { searchProductAPI } from "../Services/allAPIs";
@@ -33,7 +32,7 @@ function Header() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const toggleCategoryDropdown = () => {
     setCategoryOpen(!categoryOpen);
@@ -170,9 +169,9 @@ const navigate = useNavigate()
   }, []);
 
   useEffect(() => {
-  const userId = localStorage.getItem("userId");
-  setIsLoggedIn(!!userId);
-}, []);
+    const userId = localStorage.getItem("userId");
+    setIsLoggedIn(!!userId);
+  }, []);
 
   const handleScrollToTopRated = () => {
     navigate("/");
@@ -192,7 +191,7 @@ const navigate = useNavigate()
 
   return (
     <>
-      <header className="relative z-40 shadow-sm border-b overflow-visible">
+      <header className=" top-0 z-40 shadow-sm border-b overflow-visible bg-white">
         {/* Top Header */}
         <div
           className="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 md:py-7"
@@ -214,7 +213,7 @@ const navigate = useNavigate()
               <img
                 src="https://i.postimg.cc/MKZkQfTh/logo.png"
                 alt="logo"
- className="w-32 h-12 md:w-60 md:h-24"
+                className="w-32 h-12 md:w-60 md:h-24"
               />
             </Link>
           </div>
@@ -305,7 +304,7 @@ const navigate = useNavigate()
                         <p className="text-sm font-semibold text-gray-800 line-clamp-1">
                           {product.name}
                         </p>
-                        <p className="text-sm text-blue-700 font-medium">
+                        <p className="text-sm text-blue-800 font-medium">
                           ₹{product.finalPrice}
                         </p>
                       </div>
@@ -327,15 +326,15 @@ const navigate = useNavigate()
 
           {/* User Actions */}
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-white">
-       {!isLoggedIn && (
-  <Link
-    to="/login"
-    className="hidden sm:flex items-center gap-1 cursor-pointer"
-  >
-    <User size={16} md:size={18} />
-    <span className="hidden md:inline">Log In</span>
-  </Link>
-)}
+            {!isLoggedIn && (
+              <Link
+                to="/login"
+                className="hidden sm:flex items-center gap-1 cursor-pointer"
+              >
+                <User size={16} md:size={18} />
+                <span className="hidden md:inline">Log In</span>
+              </Link>
+            )}
             <div className="hidden sm:block h-5 w-px bg-white"></div>
             <Link
               to="/wishlist"
@@ -344,21 +343,20 @@ const navigate = useNavigate()
               <Heart size={16} md:size={18} />
               <span className="hidden md:inline">Wishlist</span>
             </Link>
-           {/* Hide Cart from header on mobile */}
-                       <div className="hidden sm:block h-5 w-px bg-white"></div>
+            {/* Hide Cart from header on mobile */}
+            <div className="hidden sm:block h-5 w-px bg-white"></div>
 
-<div className="hidden sm:block">
-  <Link to="/cart">
-    <div className="flex items-center gap-1 relative cursor-pointer">
-      <ShoppingCart size={18} />
-      <span className="hidden md:inline">My Cart</span>
-      <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
-        {cartCount}
-      </span>
-    </div>
-  </Link>
-</div>
-
+            <div className="hidden sm:block">
+              <Link to="/cart">
+                <div className="flex items-center gap-1 relative cursor-pointer">
+                  <ShoppingCart size={18} />
+                  <span className="hidden md:inline">My Cart</span>
+                  <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
+                    {cartCount}
+                  </span>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -385,15 +383,13 @@ const navigate = useNavigate()
                   <X size={14} />
                 </button>
               )}
-<button
-  type="submit"
-  className="bg-[rgb(10,95,191)] h-10 w-15 flex items-center justify-center rounded-r-full"
-  disabled={isSearching}
->
-  <Search size={16} className="text-white" />
-</button>
-
-
+              <button
+                type="submit"
+                className="bg-[rgb(10,95,191)] h-10 w-15 flex items-center justify-center rounded-r-full"
+                disabled={isSearching}
+              >
+                <Search size={16} className="text-white" />
+              </button>
             </form>
 
             {/* Mobile Search Results */}
@@ -426,7 +422,7 @@ const navigate = useNavigate()
                           <p className="text-sm font-medium text-gray-800">
                             {product.name}
                           </p>
-                          <p className="text-sm text-blue-600">
+                          <p className="text-sm text-blue-800">
                             ₹{product.finalPrice}
                           </p>
                         </div>
@@ -449,12 +445,12 @@ const navigate = useNavigate()
                 </div>
               </div>
             </Link>
-            <Link to="/shop" className="hover:text-blue-600 transition-colors">
+            <Link to="/shop" className="hover:text-blue-800 transition-colors">
               Shop
             </Link>
             <div className="relative">
               <div
-                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 cursor-pointer hover:text-blue-800 transition-colors"
                 onClick={toggleCategoryDropdown}
               >
                 Categories{" "}
@@ -526,12 +522,14 @@ const navigate = useNavigate()
                                       subCategories[cat._id].length > 0 && (
                                         <div className="w-full bg-gray-100 pl-8">
                                           {subCategories[cat._id].map((sub) => (
-                                           <Link
-  key={sub._id}
-  to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
-  className="block px-4 py-2 ..."
-  onClick={() => setCategoryOpen(false)}
->
+                                            <Link
+                                              key={sub._id}
+                                              to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
+                                              className="block px-4 py-2 ..."
+                                              onClick={() =>
+                                                setCategoryOpen(false)
+                                              }
+                                            >
                                               <span className="text-sm text-gray-600 hover:text-blue-600">
                                                 {sub.name}
                                               </span>
@@ -653,12 +651,14 @@ const navigate = useNavigate()
                                           <div className="bg-white border-t border-gray-100">
                                             {subCategories[cat._id].map(
                                               (sub) => (
-                                             <Link
-  key={sub._id}
-  to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
-  className="block px-4 py-2 ..."
-  onClick={() => setCategoryOpen(false)}
->
+                                                <Link
+                                                  key={sub._id}
+                                                  to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
+                                                  className="block px-4 py-2 ..."
+                                                  onClick={() =>
+                                                    setCategoryOpen(false)
+                                                  }
+                                                >
                                                   <span className="text-xs text-gray-600">
                                                     {sub.name}
                                                   </span>
@@ -688,7 +688,6 @@ const navigate = useNavigate()
               </div>
             </div>
 
-
             <div className="flex items-center gap-2 cursor-pointer hover:text-blue-600">
               <span onClick={handleScrollToTopRated}>Top Rated Items</span>
             </div>
@@ -715,129 +714,151 @@ const navigate = useNavigate()
             <Link to="/blog" className="hover:text-blue-600 transition-colors">
               Blog
             </Link>
+            <div className="h-4 w-px bg-gray-400"></div>
+            <Link to="/faqs" className="hover:text-blue-600 transition-colors">
+              FAQs
+            </Link>
           </div>
         </div>
 
         {/* Mobile Bottom Navigation */}
-<div className="lg:hidden px-4 py-3 bg-white border-t">
-  {/* Mobile Categories Dropdown */}
-  <div className="mb-3">
-    <div
-      className="flex items-center justify-between p-2 bg-gray-50 rounded-lg cursor-pointer"
-      onClick={() => setCategoryOpen(!categoryOpen)}
-    >
-      <span className="font-medium text-gray-800">Browse Categories</span>
-      <ChevronDown
-        size={16}
-        className={`transition-transform duration-200 ${
-          categoryOpen ? "rotate-180" : ""
-        }`}
-      />
-    </div>
+        <div className="lg:hidden px-4 py-3 bg-white border-t">
+          {/* Mobile Categories Dropdown */}
+          <div className="mb-3">
+            <div
+              className="flex items-center justify-between p-2 bg-gray-50 rounded-lg cursor-pointer"
+              onClick={() => setCategoryOpen(!categoryOpen)}
+            >
+              <span className="font-medium text-gray-800">
+                Browse Categories
+              </span>
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-200 ${
+                  categoryOpen ? "rotate-180" : ""
+                }`}
+              />
+            </div>
 
-    {categoryOpen && (
-      <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-sm">
-        {mainCategories.length > 0 ? (
-          mainCategories.map((mainCat) => (
-            <div key={mainCat._id} className="border-b border-gray-100 last:border-b-0">
-              <div
-                className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fetchCategories(mainCat._id);
-                  setActiveCategory(activeCategory === mainCat._id ? null : mainCat._id);
-                }}
-              >
-                <span className="font-medium">{mainCat.name}</span>
-                <ChevronDown
-                  size={14}
-                  className={`transition-transform duration-200 ${
-                    activeCategory === mainCat._id ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-
-              {activeCategory === mainCat._id && categories[mainCat._id] && (
-                <div className="bg-gray-50 pl-6">
-                  {categories[mainCat._id].map((cat) => (
-                    <div key={cat._id} className="border-t border-gray-100">
+            {categoryOpen && (
+              <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+                {mainCategories.length > 0 ? (
+                  mainCategories.map((mainCat) => (
+                    <div
+                      key={mainCat._id}
+                      className="border-b border-gray-100 last:border-b-0"
+                    >
                       <div
-                        className="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          fetchSubCategories(mainCat._id, cat._id);
-                          setActiveSubCategory(activeSubCategory === cat._id ? null : cat._id);
+                          fetchCategories(mainCat._id);
+                          setActiveCategory(
+                            activeCategory === mainCat._id ? null : mainCat._id
+                          );
                         }}
                       >
-                        <span className="text-sm">{cat.name}</span>
-                        {subCategories[cat._id]?.length > 0 && (
-                          <ChevronDown
-                            size={12}
-                            className={`transition-transform duration-200 ${
-                              activeSubCategory === cat._id ? "rotate-180" : ""
-                            }`}
-                          />
-                        )}
+                        <span className="font-medium">{mainCat.name}</span>
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform duration-200 ${
+                            activeCategory === mainCat._id ? "rotate-180" : ""
+                          }`}
+                        />
                       </div>
 
-                      {activeSubCategory === cat._id && subCategories[cat._id] && (
-                        <div className="bg-white pl-6">
-                          {subCategories[cat._id].map((sub) => (
-                            <Link
-                              key={sub._id}
-to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
-                              className="block px-4 py-2 text-sm hover:bg-gray-100"
-                              onClick={() => {
-                                setCategoryOpen(false);
-                                setMobileMenuOpen(false);
-                              }}
-                            >
-                              {sub.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="px-4 py-3 text-center text-gray-500">
-            Loading categories...
-          </div>
-        )}
-      </div>
-    )}
-  </div>
+                      {activeCategory === mainCat._id &&
+                        categories[mainCat._id] && (
+                          <div className="bg-gray-50 pl-6">
+                            {categories[mainCat._id].map((cat) => (
+                              <div
+                                key={cat._id}
+                                className="border-t border-gray-100"
+                              >
+                                <div
+                                  className="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    fetchSubCategories(mainCat._id, cat._id);
+                                    setActiveSubCategory(
+                                      activeSubCategory === cat._id
+                                        ? null
+                                        : cat._id
+                                    );
+                                  }}
+                                >
+                                  <span className="text-sm">{cat.name}</span>
+                                  {subCategories[cat._id]?.length > 0 && (
+                                    <ChevronDown
+                                      size={12}
+                                      className={`transition-transform duration-200 ${
+                                        activeSubCategory === cat._id
+                                          ? "rotate-180"
+                                          : ""
+                                      }`}
+                                    />
+                                  )}
+                                </div>
 
-  {/* Mobile Quick Links */}
-  <div className="grid grid-cols-3 gap-2 text-sm">
-    <Link
-      to="/"
-      className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
-    >
-      Home
-    </Link>
-    <Link
-      to="/shop"
-      className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
-    >
-      Shop
-    </Link>
-    <Link
-      to="/new-arrivals"
-      className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
-      onClick={(e) => {
-        e.preventDefault();
-        handleScrollToNewArrivals();
-      }}
-    >
-      New Arrivals
-    </Link>
-  </div>
-</div>
+                                {activeSubCategory === cat._id &&
+                                  subCategories[cat._id] && (
+                                    <div className="bg-white pl-6">
+                                      {subCategories[cat._id].map((sub) => (
+                                        <Link
+                                          key={sub._id}
+                                          to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
+                                          className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                          onClick={() => {
+                                            setCategoryOpen(false);
+                                            setMobileMenuOpen(false);
+                                          }}
+                                        >
+                                          {sub.name}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-center text-gray-500">
+                    Loading categories...
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Quick Links */}
+          <div className="grid grid-cols-3 gap-2 text-sm">
+            <Link
+              to="/"
+              className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
+            >
+              Home
+            </Link>
+            <Link
+              to="/shop"
+              className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
+            >
+              Shop
+            </Link>
+            <Link
+              to="/new-arrivals"
+              className="text-center py-2 bg-gray-50 rounded text-gray-700 hover:bg-gray-100"
+              onClick={(e) => {
+                e.preventDefault();
+                handleScrollToNewArrivals();
+              }}
+            >
+              New Arrivals
+            </Link>
+          </div>
+        </div>
       </header>
 
       {/* Mobile Menu Sidebar */}
@@ -890,10 +911,7 @@ to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
               <Heart size={20} />
               <span>My Wishlist</span>
             </Link>
-            <Link
-              to="/cart"
-              className="flex items-center gap-3 text-gray-700"
-            >
+            <Link to="/cart" className="flex items-center gap-3 text-gray-700">
               <ShoppingCart size={20} />
               <span>My Cart</span>
             </Link>

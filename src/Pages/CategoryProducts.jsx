@@ -27,7 +27,7 @@ function CategoryProducts() {
   return (
     <>
     <Header/>
-      <div className="p-4 max-w-7xl mx-auto min-h-screen">
+      <div className="p-4 max-w-7xl mx-auto min-h-screen mt-5">
                 <h2 className="text-3xl font-bold mb-8 text-gray-800">Products</h2>
                 {products.length === 0 ? (
                     <div className="text-center py-12">

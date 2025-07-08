@@ -124,12 +124,13 @@ const fetchMainAndCategories = async () => {
     const mainCategories = mainCategoriesResponse?.mainCategories || [];
 
     setMainCategories(mainCategories);
-
     const newCategoryMap = {};
 
     for (const mainCat of mainCategories) {
       if (mainCat && mainCat._id) {
         try {
+          console.log("Fetching categories for:", mainCat._id);
+
           const categories = await viewCategoriesAPI(mainCat._id);
           newCategoryMap[mainCat._id] = categories;
         } catch (err) {
@@ -379,15 +380,27 @@ const handleCategoryClick = async (mainCatId, catId) => {
 
   try {
     const res = await viewSubCategoriesAPI(mainCatId, catId);
-    console.log("Subcategories response:", res);
+
+    const subcategories =
+      Array.isArray(res.subcategories) ? res.subcategories : res;
+
     setSubCategoryMap((prev) => ({
       ...prev,
-      [catId]: Array.isArray(res.subcategories) ? res.subcategories : res,
+      [catId]: subcategories || [], // ✅ Even if empty
     }));
   } catch (err) {
-    console.error("Error fetching subcategories:", err);
+    if (err?.response?.status === 404) {
+      console.warn(`No subcategories found for ${catId}`);
+      setSubCategoryMap((prev) => ({
+        ...prev,
+        [catId]: [], // ✅ Treat as empty, no error shown
+      }));
+    } else {
+      console.error("Error fetching subcategories:", err);
+    }
   }
 };
+
 const toggleMainCategory = (mainCatId) => {
   setExpandedMainCat(prev => {
     if (prev === mainCatId) {
@@ -449,7 +462,7 @@ const navigateToProduct = (productId) => {
   return (
     <>
       <Header />
-     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-6 text-center mt-5">
+     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-5">
   Welcome to <span className="text-blue-700">RIGSDOCK</span>
 </h2>
 
@@ -869,7 +882,7 @@ const timeLeft = dealTimers[deal._id];
 {/* Top Rated Section */}
 <div className="px-4 py-4">
   <div className="flex justify-between items-center mb-4">
-    <h2 className="text-2xl font-bold">Top Rated Item's</h2>
+    <h2 className="text-2xl font-bold" id="top-rated-section">Top Rated Item's</h2>
    
   </div>
 
