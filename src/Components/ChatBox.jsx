@@ -1,45 +1,96 @@
-import React, { useState, useEffect } from 'react';
-import { X, Send, Headset, UserRound } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Send, Bot, User } from 'lucide-react';
 
 function ChatBox() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
-       {
-          id: 5,
-          text: "How Can i help you?",
+        {
+          id: 1,
+          text: "How can I help you?",
           sender: 'bot',
+          timestamp: new Date(),
         },
       ]);
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   const handleSend = () => {
     if (input.trim() === '') return;
+    
     const newMessage = {
       id: Date.now(),
       text: input,
       sender: 'user',
+      timestamp: new Date(),
     };
     setMessages((prev) => [...prev, newMessage]);
     setInput('');
+
+    // Show typing indicator
+    setIsTyping(true);
+
+    // Simulate bot response delay
+    setTimeout(() => {
+      setIsTyping(false);
+      const botResponse = {
+        id: Date.now() + 1,
+        text: "Thank you for your message. I'll help you with that right away!",
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botResponse]);
+    }, 1500);
+  };
+
+  const handleQuickAction = (action) => {
+    const newMessage = {
+      id: Date.now(),
+      text: action,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, newMessage]);
+
+    setIsTyping(true);
+
+    setTimeout(() => {
+      setIsTyping(false);
+      const botResponse = {
+        id: Date.now() + 1,
+        text: `I'll help you with "${action}". Let me get that information for you.`,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botResponse]);
+    }, 2000);
   };
 
   return (
     <>
-      {/* Floating Button and Prompt */}
+      {/* Floating Button */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-2">
-          <div className="bg-yellow-500 text-gray-800 px-5 py-2 rounded-full shadow text-sm font-bold animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">
+          <div className="bg-yellow-300 text-black px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-bounce">
             Need help?
           </div>
           <button
             onClick={() => setIsOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
           >
             💬
           </button>
@@ -48,102 +99,128 @@ function ChatBox() {
 
       {/* Chat Window */}
       {isOpen && (
-<div className="fixed bottom-20 right-6 w-[400px] h-[600px] border border-blue-200 rounded-lg shadow-xl flex flex-col z-50">
+        <div className="fixed bottom-6 right-6 w-96 h-[550px] bg-white rounded-lg shadow-2xl  flex flex-col z-50 animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
-         <div className="bg-blue-50 border-b border-blue-200 px-4 py-3 relative text-center rounded-t-lg">
-  <div>
-    <h4 className="font-bold text-lg text-gray-800">Customer Support</h4>
-    <p className="text-xs text-gray-600">Get help 24x7</p>
-  </div>
+          <div className="bg-blue-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <Bot size={18} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm">Customer Support</h3>
+                <p className="text-xs text-blue-100">Online now</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-white hover:text-blue-200 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
-  <button
-    onClick={() => setIsOpen(false)}
-    className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
-  >
-    <X size={20} />
-  </button>
-</div>
-
-
-          {/* Chat Messages */}
+          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((msg) => (
-              <div key={msg.id} className={`flex items-start space-x-2 ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                {/* Avatar */}
-                {msg.sender === 'bot' ? (
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                      </svg>
-                    </div>
+              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-end space-x-2 max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                  {/* Avatar */}
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    msg.sender === 'bot' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600'
+                  }`}>
+                    {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
                   </div>
-                ) : (
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <UserRound size={16} className="text-blue-600" />
-                  </div>
-                )}
 
-                {/* Message Bubble */}
-                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg text-sm ${
-                  msg.sender === 'bot'
-                    ? 'bg-white text-gray-800 border border-gray-200 rounded-tl-none'
-                    : 'bg-blue-100 text-gray-800 border border-blue-200 rounded-tr-none'
-                }`}>
-                  {msg.text}
+                  {/* Message with timestamp */}
+                  <div className="flex flex-col">
+                    <div className={`px-3 py-2 rounded-lg text-sm ${
+                      msg.sender === 'bot'
+                        ? 'bg-white text-gray-800  shadow-sm rounded-bl-none'
+                        : 'bg-blue-600 text-white rounded-br-none'
+                    }`}>
+                      {msg.text}
+                    </div>
+                    <span className={`text-xs text-gray-500 mt-1 ${
+                      msg.sender === 'user' ? 'text-right' : 'text-left'
+                    }`}>
+                      {formatTime(msg.timestamp)}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
-            
-            {/* Options Menu (like in the image) */}
-            <div className="flex items-start space-x-2">
-              {/* <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
+
+            {/* Quick Actions - Show only after initial message */}
+            {messages.length === 1 && !isTyping && (
+              <div className="flex justify-start">
+                <div className="flex items-end space-x-2 max-w-xs">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Bot size={12} className="text-blue-600" />
+                  </div>
+                  <div className="bg-white  shadow-sm rounded-lg rounded-bl-none p-3">
+                    <p className="text-xs text-gray-600 mb-2">Quick actions:</p>
+                    <div className="space-y-1">
+                      {[
+                        'Track My Order',
+                        'Return Order',
+                        'Payment Issues',
+                        'Speak to Agent'
+                      ].map((action) => (
+                        <button
+                          key={action}
+                          onClick={() => handleQuickAction(action)}
+                          className="block w-full text-left px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        >
+                          {action}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div> */}
-              {/* <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 max-w-xs lg:max-w-md">
-                <div className="space-y-2">
-                  <button className="w-full text-left text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Issue with Delivaery date
-                  </button>
-                  <button className="w-full text-left text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Bills / Payment / Return Order
-                  </button>
-                  <button className="w-full text-left text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    
-                  </button>
-                  <button className="w-full text-left text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Manage account 
-                  </button>
-                  <button className="w-full text-left text-blue-600 hover:text-blue-800 text-sm font-medium ">
-                    More
-                  </button>
+              </div>
+            )}
+
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start">
+                <div className="flex items-end space-x-2 max-w-xs">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Bot size={12} className="text-blue-600" />
+                  </div>
+                  <div className="bg-white  shadow-sm rounded-lg rounded-bl-none px-3 py-2">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  </div>
                 </div>
-              </div> */}
-            </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
-          <div className="p-3 border-t bg-white flex items-center">
-           
-            <input
-              type="text"
-              placeholder="Type your query here..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 px-3 py-2 border-0 focus:outline-none text-sm "
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            />
-           
-            <button
-              onClick={handleSend}
-              className="ml-2 p-2 text-blue-600 hover:text-blue-800"
-            >
-              <Send size={18} />
-            </button>
+          {/* Input */}
+          <div className="p-3 border-t border-zinc-400 bg-white rounded-b-lg">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                placeholder="Type your message..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                className="flex-1 px-3 py-2 border border-zinc-400 rounded-full focus:outline-none focus:border-blue-500 text-sm"
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isTyping}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() || isTyping}
+                className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Send size={16} />
+              </button>
+            </div>
           </div>
         </div>
       )}

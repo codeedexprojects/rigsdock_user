@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getWishlistAPI, removewishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ChatBox from "../Components/ChatBox";
 
 function Wishlist() {
   const navigate = useNavigate();
@@ -58,7 +59,8 @@ function Wishlist() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 mt-5">
+      <ChatBox/>
+      <div className="min-h-screen bg-gray-50 mt-56">
         {/* Header Section */}
         <div className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">

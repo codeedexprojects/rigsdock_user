@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Search, Phone, Mail, MessageCircle, ShoppingCar
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
 import { useNavigate } from 'react-router-dom';
+import ChatBox from '../Components/ChatBox';
 
 function FAQs() {
 
@@ -71,7 +72,8 @@ function FAQs() {
 return (
     <>
     <Header/>
-     <div className="min-h-screen bg-gray-50 mt-5">
+    <ChatBox/>
+     <div className="min-h-screen bg-gray-50 mt-56">
       {/* Header */}
       <div className="bg-blue-800 text-white py-16 mt-5">
         <div className="container mx-auto px-4">

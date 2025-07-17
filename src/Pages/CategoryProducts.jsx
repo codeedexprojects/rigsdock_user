@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { viewProductsAPI } from '../Services/categoryAPI'
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
+import ChatBox from '../Components/ChatBox';
 
 
 function CategoryProducts() {
@@ -27,7 +28,8 @@ function CategoryProducts() {
   return (
     <>
     <Header/>
-      <div className="p-4 max-w-7xl mx-auto min-h-screen mt-5">
+    <ChatBox/>
+      <div className="p-4 max-w-7xl mx-auto min-h-screen mt-56">
                 <h2 className="text-3xl font-bold mb-8 text-gray-800">Products</h2>
                 {products.length === 0 ? (
                     <div className="text-center py-12">

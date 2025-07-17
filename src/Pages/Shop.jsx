@@ -15,6 +15,7 @@ import {
 } from "../Services/filterAPI";
 import axios from "axios";
 import { BASE_URL } from "../Services/baseUrl";
+import ChatBox from "../Components/ChatBox";
 
 function Shop() {
   const navigate = useNavigate();
@@ -216,7 +217,7 @@ function Shop() {
     };
 
     const ImageWithWishlist = (
-      <div className="relative group h-full">
+      <div className="relative group h-full ">
         <img
           src={product.image}
           alt={product.name}
@@ -289,7 +290,8 @@ function Shop() {
   return (
     <>
       <Header />
-      <div className="bg-white shadow-sm">
+      <ChatBox/>
+      <div className="bg-white shadow-sm mt-56">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-4">
             <nav className="text-sm text-gray-600 text-center">

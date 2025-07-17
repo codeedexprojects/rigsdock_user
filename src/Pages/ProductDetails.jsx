@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { addToCartAPI } from "../Services/cartAPI";
 import { buyNowAPI } from "../Services/buynowAPI";
+import ChatBox from "../Components/ChatBox";
 
 
 
@@ -176,12 +177,11 @@ if (!product.stock || product.stock < quantity) {
     toast.error(error?.response?.data?.message || "Failed to process Buy Now.");
   }
 };
-
-
-  return (
+ return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 mt-5">
+      <ChatBox/>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 mt-56">
         {/* Left Section - Images */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex sm:flex-col gap-2 sm:gap-3 order-2 sm:order-1">

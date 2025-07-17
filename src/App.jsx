@@ -20,7 +20,7 @@ import ScrollTop from "./Components/ScrollTop";
 import AddReview from "./Pages/AddReview";
 import ReturnOrder from "./Pages/ReturnOrder";
 import FAQs from "./Pages/FAQs";
-import ChatBox from "./Components/ChatBox";
+import CancelOrder from "./Pages/CancelOrder";
 
 function App() {
   return (
@@ -48,8 +48,8 @@ function App() {
         <Route path="/add-review" element={<AddReview />} />
         <Route path="/return-order" element={<ReturnOrder />} />
         <Route path="/faqs" element={<FAQs />} />
+        <Route path="/cancel-order" element={<CancelOrder />} />
       </Routes>
-      <ChatBox/>
     </>
   );
 }

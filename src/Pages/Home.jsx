@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { viewCategoriesAPI, viewMainCategoriesAPI, viewSubCategoriesAPI } from "../Services/categoryAPI";
 import { getBlogAPI } from "../Services/orderconfirm";
+import ChatBox from "../Components/ChatBox";
 
 function Home() {
   const [isDark, setIsDark] = useState(false);
@@ -462,7 +463,8 @@ const navigateToProduct = (productId) => {
   return (
     <>
       <Header />
-     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-5">
+      <ChatBox/>
+     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-56">
   Welcome to <span className="text-blue-700">RIGSDOCK</span>
 </h2>
 

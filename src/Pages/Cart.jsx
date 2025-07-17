@@ -16,6 +16,7 @@ import {
 } from "../Services/cartAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ChatBox from "../Components/ChatBox";
 
 function Cart() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -305,9 +306,9 @@ if (!userId) {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8 mt-56">
         <div className="container mx-auto px-4 mt-96" >
-          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8">
+          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8 mt-56">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Please login to view your cart
             </h2>
@@ -332,7 +333,8 @@ if (cartItems.length === 0) {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 py-8">
+      <ChatBox/>
+      <div className="min-h-screen bg-gray-50 py-8 mt-56">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8">
             <div className="mb-6">
@@ -374,7 +376,8 @@ if (cartItems.length === 0) {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50 py-8">
+      <ChatBox/>
+      <div className="min-h-screen bg-gray-50 py-8 mt-56">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="w-full">
             {/* Header */}

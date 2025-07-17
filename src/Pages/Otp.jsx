@@ -58,7 +58,7 @@ const handleChange = (value, index) => {
   };
 
   return (
-    <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 mt-5">
+    <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 ">
       <div className="bg-white w-full max-w-sm rounded-xl shadow-xl p-6 relative space-y-6 text-center">
        <button
   className="absolute top-4 right-4 text-gray-500 hover:text-black"

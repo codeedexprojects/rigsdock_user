@@ -294,7 +294,7 @@ const handleIfscVerify = async () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-4 sm:py-8 px-3 mt-5 sm:px-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-4 sm:py-8 px-3 mt-56 sm:px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg sm:rounded-2xl shadow-xl overflow-hidden">
             {/* Header */}

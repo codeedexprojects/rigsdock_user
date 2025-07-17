@@ -33,6 +33,24 @@ export const returnOrderAPI = async(formData) => {
   }
 }
 
+// cancelOrder
+
+export const cancelOrderAPI = async (orderId, reason) =>{
+  const token = localStorage.getItem("rigsdock_accessToken");
+  try{
+    const response = await axios.patch(`${BASE_URL}/user/orders/cancel/${orderId}`,{reason},{
+      headers:{
+        "Content-Type": "application/json",
+         Authorization: `Bearer ${token}`,
+      }
+    })
+    return response.data
+  }catch(error){
+    console.error("failed to cancel Order", error);
+    throw error
+  }
+}
+
 // GetBlog
 
 export const getBlogAPI = async ()=>{

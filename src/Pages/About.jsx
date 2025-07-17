@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Footer from "../Components/Footer";
 import Header from "../Components/Header";
+import ChatBox from "../Components/ChatBox";
+
 
 const tabs = [
   { id: "terms", label: "TERMS & CONDITIONS" },
@@ -20,9 +22,10 @@ function About() {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto mt-5 sm:mt-10 px-2 sm:px-4 mb-6 sm:mb-10">
+      <ChatBox/>
+      <div className="max-w-7xl mx-auto  sm:mt-10 px-2 sm:px-4 mb-6 sm:mb-10">
         {/* Tab Headers - Made horizontal scrollable on mobile */}
-        <div className="flex overflow-x-auto pb-2 sm:pb-0 sm:justify-center border-b border-gray-200 hide-scrollbar">
+        <div className="flex overflow-x-auto pb-2 sm:pb-0 sm:justify-center mt-56 border-b border-gray-200 hide-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -39,7 +42,7 @@ function About() {
         </div>
 
         {/* Tab Content */}
-        <div className="w-full mt-3 sm:mt-4 p-4 sm:p-6 md:p-8 bg-white mb-6 sm:mb-10 text-gray-800 text-xs sm:text-sm md:text-base text-left border border-gray-300 rounded-lg">
+        <div className="w-full mt-3 sm:mt-4 p-4 sm:p-6 md:p-8 bg-white mb-6  sm:mb-10 text-gray-800 text-xs sm:text-sm md:text-base text-left border border-gray-300 rounded-lg">
           {activeTab === "terms" && (
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-gray-900">
