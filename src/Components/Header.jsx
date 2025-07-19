@@ -16,6 +16,9 @@ import {
   viewSubCategoriesAPI,
 } from "../Services/categoryAPI";
 import { cartCountAPI } from "../Services/cartAPI";
+import { Bell } from "lucide-react";
+import { getWishlistAPI } from "../Services/wishlistAPI";
+
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,6 +35,7 @@ function Header() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0)
   const navigate = useNavigate();
 
   const toggleCategoryDropdown = () => {
@@ -189,6 +193,21 @@ function Header() {
     }, 100);
   };
 
+useEffect(() => {
+  const fetchWishlistCount = async () => {
+    try {
+      const userId = localStorage.getItem("userId"); 
+      const wishlist = await getWishlistAPI(userId);
+      setWishlistCount(wishlist?.length || 0);
+    } catch (error) {
+      console.error("Error fetching wishlist count:", error);
+    }
+  };
+
+  fetchWishlistCount();
+}, []);
+
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-40 shadow-sm border-b overflow-visible bg-white">
@@ -332,23 +351,27 @@ function Header() {
             <div className="flex items-center justify-between gap-4">
               {/* User Actions */}
               <div className="flex items-center gap-3">
-                {!isLoggedIn ? (
-                  <Link
-                    to="/login"
-                    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    <User size={18} />
-                    <span className="text-sm font-medium">Login</span>
-                  </Link>
-                ) : (
-                  <Link
-                    to="/user"
-                    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    <User size={18} />
-                    <span className="text-sm font-medium">Account</span>
-                  </Link>
-                )}
+               {!isLoggedIn ? (
+  <Link
+    to="/login"
+    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+  >
+    <User size={18} />
+    <span className="text-sm font-medium">Login</span>
+  </Link>
+) : (
+  <Link
+    to="/notifications"
+    className="relative text-gray-600 hover:text-blue-600 transition-colors"
+  >
+    <Bell size={20} />
+    {/* Optional badge */}
+    {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
+      3
+    </span> */}
+  </Link>
+)}
+
                 <div className="h-4 w-px bg-gray-300"></div>
                 <Link
                   to="/wishlist"
@@ -499,7 +522,7 @@ function Header() {
             </div>
 
             {/* Desktop Search Bar */}
-            <div className="flex items-center border border-[rgb(10,95,191)] rounded-full overflow-visible w-2/5 bg-white relative z-30">
+              <div className="flex items-center rounded-full  w-2/5 bg-white relative z-30">
               <form onSubmit={handleSearch} className="flex flex-1">
                 <input
                   type="text"
@@ -520,7 +543,7 @@ function Header() {
                 )}
                 <button
                   type="submit"
-                  className="px-4 py-2 text-white font-semibold flex items-center gap-1"
+                  className="px-4 py-2 text-white border border-gray-500  rounded-full font-semibold flex items-center gap-1"
                   style={{ backgroundColor: "rgb(10, 95, 191)" }}
                   disabled={isSearching}
                 >
@@ -596,23 +619,41 @@ function Header() {
 
             {/* User Actions */}
             <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-white">
-              {!isLoggedIn && (
-                <Link
-                  to="/login"
-                  className="flex items-center gap-1 cursor-pointer"
-                >
-                  <User size={16} />
-                  <span>Log In</span>
-                </Link>
-              )}
+             {!isLoggedIn ? (
+  <Link
+    to="/login"
+    className="flex items-center gap-1 cursor-pointer"
+  >
+    <User size={16} />
+    <span>Log In</span>
+  </Link>
+) : (
+  <Link
+    to=""
+    className="relative flex items-center gap-1 cursor-pointer"
+  >
+    <Bell size={18} />
+    <span>Notifications</span>
+    {/* <span className="absolute -top-2 -right-3 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+   
+    </span> */}
+    {/* Optional notification count badge */}
+    {/* <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
+      3
+    </span> */}
+  </Link>
+)}
+
               <div className="h-5 w-px bg-white"></div>
-              <Link
-                to="/wishlist"
-                className="flex items-center gap-1 cursor-pointer"
-              >
-                <Heart size={16} />
-                <span>Wishlist</span>
-              </Link>
+              <Link to="/wishlist" className="relative text-gray-700 hover:text-pink-600">
+                 <  h6 className="text-white">Wishlist</h6>
+  {wishlistCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+      {wishlistCount}
+    </span>
+  )}
+</Link>
+
               <div className="h-5 w-px bg-white"></div>
               <Link to="/cart">
                 <div className="flex items-center gap-1 relative cursor-pointer">

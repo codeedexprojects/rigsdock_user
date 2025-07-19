@@ -537,7 +537,7 @@ const navigateToProduct = (productId) => {
     } relative overflow-hidden`}
   >
     <h2 className="text-xl font-bold mb-4 text-center">
-      Weekly Deal Offer
+      Deal of the Day
     </h2>
 
     {loading ? (
@@ -550,7 +550,6 @@ const navigateToProduct = (productId) => {
       </div>
     ) : (
       (() => {
-        // ✅ Filter only active deals
         const activeDeals = dealProducts.filter((deal) =>
           calculateTimeLeft(deal.createdAt)
         );
@@ -1005,6 +1004,7 @@ const timeLeft = dealTimers[deal._id];
     </div>
   )}
 </div>
+
 {/* deal 3 card product */}
 <div className="w-full px-4 py-12">
   {/* Section Header */}
@@ -1024,15 +1024,15 @@ const timeLeft = dealTimers[deal._id];
       return (
         <div
           key={card._id}
-          className="group basis-[320px] flex-grow-0 flex-shrink-0 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
+          className="group w-80 flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
           onClick={() => window.open(card.link, "_blank")}
         >
           {/* Image Container with Overlay */}
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden h-56 flex-shrink-0">
             <img
               src={imageUrl}
               alt={card.title}
-              className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.target.src = "https://source.unsplash.com/600x400/?gadget";
               }}
@@ -1048,12 +1048,12 @@ const timeLeft = dealTimers[deal._id];
             </div>
           </div>
 
-          {/* Content Section */}
-          <div className="p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+          {/* Content Section - flex-grow makes this section expand to fill remaining space */}
+          <div className="p-6 flex flex-col flex-grow">
+            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
               {card.title}
             </h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
               {card.subtitle}
             </p>
             
@@ -1074,6 +1074,7 @@ const timeLeft = dealTimers[deal._id];
     })}
   </div>
 </div>
+
 {/* shop by category section */}
 <section className="bg-white py-12 px-4 md:px-10">
   <div className="max-w-none">
@@ -1239,6 +1240,7 @@ const timeLeft = dealTimers[deal._id];
     </div>
   </div>
 </section>
+
 <div className="mt-10 px-4 py-4">
 <div className="px-4 py-4">
   <div className="flex justify-between items-center mb-4">
@@ -1360,7 +1362,7 @@ const timeLeft = dealTimers[deal._id];
 <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
   {/* Section Heading */}
   <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
-    Brands
+    Our Brands
   </h2>
 
   {/* Carousel Container */}
@@ -1375,7 +1377,7 @@ const timeLeft = dealTimers[deal._id];
         {duplicatedBrands.map((brand, index) => (
           <div
             key={`${brand?._id || index}-${index}`}
-            className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 bg-white border border-gray-100 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 group w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 lg:w-52 lg:h-32"
+            className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 bg-white hover:shadow-xl transition-all duration-300 hover:scale-105 group w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 lg:w-52 lg:h-32"
           >
             <div className="flex items-center justify-center h-full p-3 sm:p-4 md:p-6">
               <img
@@ -1429,6 +1431,7 @@ const timeLeft = dealTimers[deal._id];
     }
   `}</style>
 </div>
+
 <section className="px-4 py-12">
 <div className="flex justify-between items-center mb-6">
   <h2 className="text-2xl font-semibold">From Our Blog</h2>
@@ -1456,8 +1459,7 @@ const timeLeft = dealTimers[deal._id];
               day: "numeric",
               month: "long",
               year: "numeric",
-            })}{" "}
-            &nbsp;•&nbsp; By {blog.ownerrole}
+            })}
           </p>
           <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
           <p className="text-gray-500 mb-4 line-clamp-2">

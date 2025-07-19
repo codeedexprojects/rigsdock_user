@@ -193,8 +193,8 @@ function Cart() {
 
     try {
       const res = await checkoutAPI(userId);
-      console.log("Checkout prepared successfully!", res);
-      toast.success("Checkout initialized!");
+        // console.log("Checkout prepared successfully!", res);
+        // toast.success("Checkout initialized!");
       navigate("/checkout");
     } catch (err) {
       toast.error("Failed to create checkout.");
@@ -291,14 +291,7 @@ function Cart() {
       />
     ));
   };
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const shippingCost =
-    selectedShipping === "free" ? 0 : selectedShipping === "flat" ? 5 : 10;
-const total = subtotal + shippingCost + platformFee;
+const total = totalPrice; 
 
 const userId = localStorage.getItem("userId");
 
@@ -308,7 +301,7 @@ if (!userId) {
       <Header />
       <div className="min-h-screen bg-gray-50 py-8 mt-56">
         <div className="container mx-auto px-4 mt-96" >
-          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8 mt-56">
+          <div className="max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-8 mt-5">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
               Please login to view your cart
             </h2>
@@ -452,6 +445,10 @@ if (cartItems.length === 0) {
                           <p className="text-blue-600 font-semibold text-xl">
                             ₹{item.price}
                           </p>
+                          <p className="text-blue-600 font-semibold text-xl">
+                            ₹{item.finalPrice}
+                          </p>
+                         
                         </div>
                       </div>
 
@@ -641,26 +638,21 @@ if (cartItems.length === 0) {
                   </p>
 
                   <div className="space-y-4 mb-6 mt-5">
-                    <div className="flex justify-between text-base">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="text-blue-600 font-semibold text-lg">
-                        ₹{subtotal}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-base">
-  <span className="text-gray-600">Platform Fee</span>
-  <span className="text-blue-600 font-medium">₹{platformFee}</span>
-</div>
-
-                    <div className="border-t pt-4">
-                      <h3 className="font-semibold text-gray-800 mb-3 text-base">
-                        Shipping
-                      </h3>
+                   {/* <div className="flex justify-between text-xl font-bold">
+  <span>Total</span>
+  <span className="text-blue-600">₹{total}</span>
+</div> */}
+<div className="border-t pt-4">
+                     
                       <div className="space-y-2">
                         <label className="flex items-center gap-2 text-base">
                           <span>Free shipping</span>
                         </label>
                       </div>
+                                           <div className="flex justify-between text-base">
+  <span className="text-gray-600">Platform Fee</span>
+  <span className="text-blue-600 font-medium">₹{platformFee}</span>
+</div> 
                     </div>
                   </div>
 

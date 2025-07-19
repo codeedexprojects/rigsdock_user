@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
+import { chatbotAPI } from '../Services/chatbotAPI';
+import { BASE_URL } from '../Services/baseUrl';
+
 
 function ChatBox() {
-  const [isOpen, setIsOpen] = useState(false);
+ const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const [userId, setUserId] = useState("");
+  const [currentFlow, setCurrentFlow] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+  const [showReturnReason, setShowReturnReason] = useState(false);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -29,56 +37,104 @@ function ChatBox() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim() === '') return;
-    
-    const newMessage = {
+
+    const userMsg = {
       id: Date.now(),
       text: input,
       sender: 'user',
       timestamp: new Date(),
     };
-    setMessages((prev) => [...prev, newMessage]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput('');
-
-    // Show typing indicator
     setIsTyping(true);
 
-    // Simulate bot response delay
-    setTimeout(() => {
+    try {
+      if (currentFlow === 'return' && !orderId) {
+        setOrderId(input);
+        const res = await chatbotAPI({ userId, message: input });
+        setMessages((prev) => [...prev, botReply(res.reply)]);
+        setShowReturnReason(true);
+        return;
+      }
+
+      const res = await chatbotAPI({ userId, message: input });
+      setMessages((prev) => [...prev, botReply(res.reply)]);
+      setCurrentFlow(null);
+      setOrderId(null);
+    } catch (err) {
+      setMessages((prev) => [...prev, botReply(" Error conatcting support.")]);
+    } finally {
       setIsTyping(false);
-      const botResponse = {
-        id: Date.now() + 1,
-        text: "Thank you for your message. I'll help you with that right away!",
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 1500);
+    }
   };
 
-  const handleQuickAction = (action) => {
-    const newMessage = {
+  const handleReturnReasonSubmit = async (reason) => {
+    setShowReturnReason(false);
+    setIsTyping(true);
+
+    const userMsg = {
+      id: Date.now(),
+      text: reason,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMsg]);
+
+    try {
+      const res = await chatbotAPI({ userId, message: reason });
+      setMessages((prev) => [...prev, botReply(res.reply)]);
+    } catch (err) {
+      setMessages((prev) => [...prev, botReply(" Error submitting return reason.")]);
+    } finally {
+      setIsTyping(false);
+      setCurrentFlow(null);
+      setOrderId(null);
+    }
+  };
+
+  const botReply = (text) => ({
+    id: Date.now() + 1,
+    text,
+    sender: 'bot',
+    timestamp: new Date(),
+  });
+
+  const handleQuickAction = async (action) => {
+    const userMsg = {
       id: Date.now(),
       text: action,
       sender: 'user',
       timestamp: new Date(),
     };
-    setMessages((prev) => [...prev, newMessage]);
-
+    setMessages((prev) => [...prev, userMsg]);
     setIsTyping(true);
 
-    setTimeout(() => {
+    let flow = null;
+    if (action === "Where is my order?") flow = "track";
+    else if (action === "Return ") flow = "return";
+    else if (action === "Payment Issues") flow = "payment";
+
+    setCurrentFlow(flow);
+
+    try {
+      const res = await chatbotAPI({ userId, message: action });
+      setMessages((prev) => [...prev, botReply(res.reply)]);
+    } catch (err) {
+      setMessages((prev) => [...prev, botReply("Failed to connect to support.")]);
+    } finally {
       setIsTyping(false);
-      const botResponse = {
-        id: Date.now() + 1,
-        text: `I'll help you with "${action}". Let me get that information for you.`,
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botResponse]);
-    }, 2000);
+    }
   };
+useEffect(() => {
+
+  const storedId = localStorage.getItem("userId");
+   console.log("Loaded userId from localStorage:", storedId);
+  if (storedId) {
+    setUserId(storedId);
+  }
+}, []);
 
   return (
     <>
@@ -161,8 +217,8 @@ function ChatBox() {
                     <p className="text-xs text-gray-600 mb-2">Quick actions:</p>
                     <div className="space-y-1">
                       {[
-                        'Track My Order',
-                        'Return Order',
+                        'Where is my order?',
+                        'Return ',
                         'Payment Issues',
                         'Speak to Agent'
                       ].map((action) => (
@@ -220,6 +276,28 @@ function ChatBox() {
               >
                 <Send size={16} />
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showReturnReason && (
+        <div className="flex justify-start">
+          <div className="flex items-end space-x-2 max-w-xs">
+            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Bot size={12} className="text-blue-600" />
+            </div>
+            <div className="bg-white shadow-sm rounded-lg rounded-bl-none p-3">
+              <p className="text-xs text-gray-600 mb-2">Please select a return reason:</p>
+              {["Defective product", "Wrong item received", "Size/fit issue", "Changed mind", "Other (please specify)"]
+                .map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => handleReturnReasonSubmit(reason)}
+                    className="block w-full text-left px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded"
+                  >
+                    {reason}
+                  </button>
+                ))}
             </div>
           </div>
         </div>

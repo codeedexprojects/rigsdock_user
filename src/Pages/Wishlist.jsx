@@ -65,11 +65,7 @@ function Wishlist() {
         <div className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             {/* Breadcrumb */}
-            <nav className="flex justify-center items-center text-sm text-gray-500 mb-4">
-              <span className="hover:text-gray-700 cursor-pointer">Home</span>
-              <span className="mx-2">/</span>
-              <span className="text-gray-900 font-medium">Wishlist</span>
-            </nav>
+           
 
             {/* Page Title */}
             <div className="relative flex items-center justify-center">

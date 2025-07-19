@@ -291,20 +291,7 @@ function Shop() {
     <>
       <Header />
       <ChatBox/>
-      <div className="bg-white shadow-sm mt-56">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4">
-            <nav className="text-sm text-gray-600 text-center">
-              <span>Home</span>
-              <span className="mx-2">/</span>
-              <span>shop</span>
-            </nav>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            SHOP
-          </h1>
-        </div>
-      </div>
+      <div className="bg-white shadow-sm mt-56"></div>
 
       <div className="lg:hidden flex justify-end ">
         <button
@@ -416,140 +403,140 @@ function Shop() {
         <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col-reverse lg:flex-row gap-8">
             {/* Left Sidebar - Filters */}
-            <div className="hidden lg:block w-full lg:w-80 space-y-6">
-              {/* Filter by Brand */}
-              <div className="bg-white rounded-lg p-6">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleFilter("brand")}
-                >
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Filter by Brand
-                  </h3>
-                  {expandedFilters.brand ? (
-                    <ChevronUp size={22} />
-                  ) : (
-                    <ChevronDown size={22} />
-                  )}
-                </div>
-                {expandedFilters.brand && (
-                  <div className="mt-5 space-y-3">
-                    {brandsList.map((brand) => (
-                      <label
-                        key={brand._id}
-                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
-                          selectedBrand === brand._id ? "bg-blue-50" : ""
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          className="mr-3 text-blue-800 w-4 h-4"
-                          checked={selectedBrand === brand._id}
-                          onChange={() => handleBrandFilter(brand._id)}
-                        />
-                        <span className="text-gray-700 text-base">
-                          {brand.name}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
+<div className="hidden lg:block w-full lg:w-64 space-y-6">
+  {/* Filter by Brand */}
+  <div className="bg-white rounded-lg p-4">
+    <div
+      className="flex items-center justify-between cursor-pointer"
+      onClick={() => toggleFilter("brand")}
+    >
+      <h3 className="text-lg font-semibold text-gray-900">
+        Brand
+      </h3>
+      {expandedFilters.brand ? (
+        <ChevronUp size={18} />
+      ) : (
+        <ChevronDown size={18} />
+      )}
+    </div>
+    {expandedFilters.brand && (
+      <div className="mt-3 space-y-2">
+        {brandsList.map((brand) => (
+          <label
+            key={brand._id}
+            className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
+              selectedBrand === brand._id ? "bg-blue-50" : ""
+            }`}
+          >
+            <input
+              type="checkbox"
+              className="mr-2 text-blue-800 w-3.5 h-3.5"
+              checked={selectedBrand === brand._id}
+              onChange={() => handleBrandFilter(brand._id)}
+            />
+            <span className="text-gray-700">
+              {brand.name}
+            </span>
+          </label>
+        ))}
+      </div>
+    )}
+  </div>
 
-              {/* Filter by Price */}
-              <div className="bg-white rounded-lg p-6">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleFilter("price")}
-                >
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Filter by Price
-                  </h3>
-                  {expandedFilters.price ? (
-                    <ChevronUp size={22} />
-                  ) : (
-                    <ChevronDown size={22} />
-                  )}
-                </div>
-                {expandedFilters.price && (
-                  <div className="mt-5 space-y-4">
-                    <div className="flex gap-3">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 text-base"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 text-base"
-                      />
-                    </div>
-                    <button
-                      onClick={handlePriceFilter}
-                      className="w-full bg-blue-800 text-white py-3 px-4 rounded-md hover:bg-blue-800 transition-colors text-base font-medium"
-                    >
-                      Filter
-                    </button>
-                  </div>
-                )}
-              </div>
+  {/* Filter by Price */}
+  <div className="bg-white rounded-lg p-4">
+    <div
+      className="flex items-center justify-between cursor-pointer"
+      onClick={() => toggleFilter("price")}
+    >
+      <h3 className="text-lg font-semibold text-gray-900">
+        Price
+      </h3>
+      {expandedFilters.price ? (
+        <ChevronUp size={18} />
+      ) : (
+        <ChevronDown size={18} />
+      )}
+    </div>
+    {expandedFilters.price && (
+      <div className="mt-3 space-y-3">
+        <div className="flex gap-2">
+          <input
+            type="number"
+            placeholder="Min"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
+          />
+          <input
+            type="number"
+            placeholder="Max"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
+          />
+        </div>
+        <button
+          onClick={handlePriceFilter}
+          className="w-full bg-blue-800 text-white py-2 px-3 rounded-md hover:bg-blue-800 transition-colors text-sm font-medium"
+        >
+          Filter
+        </button>
+      </div>
+    )}
+  </div>
 
-              {/* Filter by Ratings */}
-              <div className="bg-white rounded-lg p-6">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleFilter("ratings")}
-                >
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    Filter by Ratings
-                  </h3>
-                  {expandedFilters.ratings ? (
-                    <ChevronUp size={22} />
-                  ) : (
-                    <ChevronDown size={22} />
-                  )}
-                </div>
-                {expandedFilters.ratings && (
-                  <div className="mt-5 space-y-3">
-                    {[5, 4, 3, 2, 1].map((rating) => (
-                      <label
-                        key={rating}
-                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-3 rounded ${
-                          selectedRating === rating ? "bg-blue-50" : ""
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          className="mr-3 text-blue-800 w-4 h-4"
-                          checked={selectedRating === rating}
-                          onChange={() => handleRatingFilter(rating)}
-                        />
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, index) => (
-                            <Star
-                              key={index}
-                              className={`w-4 h-4 ${
-                                index < rating
-                                  ? "text-yellow-400 fill-current"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                          <span className="ml-2 text-gray-700 text-base">
-                            & Up
-                          </span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
+  {/* Filter by Ratings */}
+  <div className="bg-white rounded-lg p-4">
+    <div
+      className="flex items-center justify-between cursor-pointer"
+      onClick={() => toggleFilter("ratings")}
+    >
+      <h3 className="text-lg font-semibold text-gray-900">
+        Ratings
+      </h3>
+      {expandedFilters.ratings ? (
+        <ChevronUp size={18} />
+      ) : (
+        <ChevronDown size={18} />
+      )}
+    </div>
+    {expandedFilters.ratings && (
+      <div className="mt-3 space-y-2">
+        {[4, 3].map((rating) => (
+          <label
+            key={rating}
+            className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
+              selectedRating === rating ? "bg-blue-50" : ""
+            }`}
+          >
+            <input
+              type="checkbox"
+              className="mr-2 text-blue-800 w-3.5 h-3.5"
+              checked={selectedRating === rating}
+              onChange={() => handleRatingFilter(rating)}
+            />
+            <div className="flex items-center">
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  className={`w-3.5 h-3.5 ${
+                    index < rating
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-300"
+                  }`}
+                />
+              ))}
+              <span className="ml-1 text-gray-700">
+                & above
+              </span>
             </div>
+          </label>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
 
             {/* Right Side - Products */}
             <div className="flex-1">

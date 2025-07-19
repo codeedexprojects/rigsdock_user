@@ -8,7 +8,6 @@ import { confirmOrderAPI } from "../Services/orderconfirm";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 function Checkout() {
   const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState("COD");
@@ -20,16 +19,16 @@ function Checkout() {
     totalPrice: 0,
     appliedCoupon: null,
   });
-  
+
   const navigate = useNavigate();
 
-  const handleNavigate = ()=>{
-    navigate("/user",{state: {
-      section: "Addresses"
-    }
-  })
-     
-  }
+  const handleNavigate = () => {
+    navigate("/user", {
+      state: {
+        section: "Addresses",
+      },
+    });
+  };
 
   useEffect(() => {
     async function fetchAddressesAndCart() {
@@ -103,33 +102,20 @@ function Checkout() {
       toast.error(error.response.data.message);
     }
   };
+  
 
   const location = useLocation();
 
-useEffect(() => {
-  if (location.state?.section === "Addresses") {
-    setActiveSection("Addresses");
-  }
-}, [location]);
+  useEffect(() => {
+    if (location.state?.section === "Addresses") {
+      setActiveSection("Addresses");
+    }
+  }, [location]);
 
   return (
     <>
       <Header />
-      <Checkout/>
-      <div className="bg-white shadow-sm mt-56">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-4">
-            <nav className="text-sm text-gray-600 text-center">
-              <span>Home</span>
-              <span className="mx-2">/</span>
-              <span>Checkout</span>
-            </nav>
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            CHECKOUT
-          </h1>
-        </div>
-      </div>
+      <div className="bg-white shadow-sm mt-56"></div>
 
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,7 +124,7 @@ useEffect(() => {
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Billing Details
+                  Billing details
                 </h2>
 
                 {addresses.length > 0 ? (
@@ -183,21 +169,20 @@ useEffect(() => {
 
               {/* Ship to Different Address */}
               <div className="bg-white rounded-lg shadow-sm p-6">
-               <div className="flex items-center mb-4">
-  <input
-    type="checkbox"
-    id="different-address"
-    onChange={handleNavigate}
-    className="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
-  />
-  <label
-    htmlFor="different-address"
-    className="text-sm font-medium text-gray-700 cursor-pointer"
-  >
-    Ship to a different address?
-  </label>
-</div>
-
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    id="different-address"
+                    onChange={handleNavigate}
+                    className="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="different-address"
+                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                  >
+                    Ship to a different address?
+                  </label>
+                </div>
                 {shipToDifferentAddress && (
                   <div className="space-y-4 border-t pt-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -340,27 +325,29 @@ useEffect(() => {
                     </ul>
 
                     {/* Order Totals */}
-                   {/* Subtotal (before discount) */}
+                    {/* Subtotal (before discount) */}
 
-{/* Discount from coupon */}
-{checkoutData.appliedCoupon?.couponCode && checkoutData.appliedCoupon.discountAmount > 0 ? (
-  <div className="flex justify-between mb-2">
-    <span className="text-gray-600">Coupon ({checkoutData.appliedCoupon.couponCode})</span>
-    <span className="text-green-600 font-medium">
-      -₹{checkoutData.appliedCoupon.discountAmount.toFixed(2)}
-    </span>
-  </div>
-) : null}
+                    {/* Discount from coupon */}
+                    {checkoutData.appliedCoupon?.couponCode &&
+                    checkoutData.appliedCoupon.discountAmount > 0 ? (
+                      <div className="flex justify-between mb-2">
+                        <span className="text-gray-600">
+                          Coupon ({checkoutData.appliedCoupon.couponCode})
+                        </span>
+                        <span className="text-green-600 font-medium">
+                          -₹
+                          {checkoutData.appliedCoupon.discountAmount.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : null}
 
-
-{/* Final total */}
-<div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
-  <span>Total</span>
-  <span className="text-blue-600">
-    ₹{checkoutData.totalPrice.toFixed(2)}
-  </span>
-</div>
-
+                    {/* Final total */}
+                    <div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
+                      <span>Total</span>
+                      <span className="text-blue-600">
+                        ₹{checkoutData.totalPrice.toFixed(2)}
+                      </span>
+                    </div>
                   </>
                 ) : (
                   <p>Your order is empty</p>

@@ -68,3 +68,18 @@ export const getBlogAPI = async ()=>{
 }
 
 
+// paymentstatus
+export const paymentstatusAPI = async()=>{
+  try{
+    const response = await axios.get(`${BASE_URL}/user/order/payment-status/${mainOrderId}`,{
+
+    })
+
+    return response.data;
+  }catch(error){
+    console.error("failed to get status", error);
+    throw error
+    
+  }
+}
+

@@ -216,9 +216,27 @@ if (!product.stock || product.stock < quantity) {
             {product.name}
           </h2>
 
-          <div className="text-lg sm:text-xl font-bold text-red-600 mb-2">
-            ₹{product.price} {product.maxPrice && `– $${product.maxPrice}`}
-          </div>
+          <div className="text-lg sm:text-xl font-bold text-red-600 mb-2 flex items-center gap-2">
+  {product.finalPrice && product.price && product.finalPrice < product.price ? (
+    <>
+      <span className="text-gray-400 line-through text-base sm:text-lg">
+        ₹{product.price}
+      </span>
+      <span className="text-red-600 font-semibold">
+        ₹{product.finalPrice}
+      </span>
+    </>
+  ) : product.finalPrice ? (
+    <span className="text-red-600 font-semibold">
+      ₹{product.finalPrice}
+    </span>
+  ) : (
+    <span className="text-red-600 font-semibold">
+      ₹{product.price}
+    </span>
+  )}
+</div>
+
 {product.description && (
   <ul className="list-disc list-inside text-gray-700 mb-4 sm:mb-6 space-y-1 text-sm sm:text-base">
     {product.description.split(',').map((line, index) => (
@@ -229,9 +247,9 @@ if (!product.stock || product.stock < quantity) {
 
           <div className="flex items-center gap-1 mb-3 sm:mb-4">
             {renderStars(averageRating)}
-            <span className="ml-1 sm:ml-2 text-gray-600 text-xs sm:text-sm">
+            {/* <span className="ml-1 sm:ml-2 text-gray-600 text-xs sm:text-sm">
               ({product.totalReviews} review)
-            </span>
+            </span> */}
           </div>
 
           <ul className="list-disc list-inside text-gray-700 mb-4 sm:mb-6 space-y-1 text-sm sm:text-base">
