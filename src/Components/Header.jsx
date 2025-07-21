@@ -19,7 +19,6 @@ import { cartCountAPI } from "../Services/cartAPI";
 import { Bell } from "lucide-react";
 import { getWishlistAPI } from "../Services/wishlistAPI";
 
-
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
@@ -35,7 +34,7 @@ function Header() {
   const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [wishlistCount, setWishlistCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0);
   const navigate = useNavigate();
 
   const toggleCategoryDropdown = () => {
@@ -193,20 +192,19 @@ function Header() {
     }, 100);
   };
 
-useEffect(() => {
-  const fetchWishlistCount = async () => {
-    try {
-      const userId = localStorage.getItem("userId"); 
-      const wishlist = await getWishlistAPI(userId);
-      setWishlistCount(wishlist?.length || 0);
-    } catch (error) {
-      console.error("Error fetching wishlist count:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchWishlistCount = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const wishlist = await getWishlistAPI(userId);
+        setWishlistCount(wishlist?.length || 0);
+      } catch (error) {
+        console.error("Error fetching wishlist count:", error);
+      }
+    };
 
-  fetchWishlistCount();
-}, []);
-
+    fetchWishlistCount();
+  }, []);
 
   return (
     <>
@@ -302,19 +300,21 @@ useEffect(() => {
                       <p className="mt-2 text-sm">Searching...</p>
                     </div>
                   )}
-                  
+
                   {searchError && (
                     <div className="p-4 text-center text-red-600 bg-red-50 border-b border-red-100">
                       <p className="text-sm">{searchError}</p>
                     </div>
                   )}
-                  
-                  {!isSearching && !searchError && searchResults.length === 0 && (
-                    <div className="p-4 text-center text-gray-500">
-                      <p className="text-sm">No products found</p>
-                    </div>
-                  )}
-                  
+
+                  {!isSearching &&
+                    !searchError &&
+                    searchResults.length === 0 && (
+                      <div className="p-4 text-center text-gray-500">
+                        <p className="text-sm">No products found</p>
+                      </div>
+                    )}
+
                   {searchResults.map((product) => (
                     <Link
                       key={product._id}
@@ -346,48 +346,31 @@ useEffect(() => {
             </div>
           )}
 
-          {/* Mobile Quick Actions */}
+          {/* Mobile Quick Actions - Updated Version */}
           <div className="px-4 py-3 bg-white border-b">
-            <div className="flex items-center justify-between gap-4">
-              {/* User Actions */}
-              <div className="flex items-center gap-3">
-               {!isLoggedIn ? (
-  <Link
-    to="/login"
-    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-  >
-    <User size={18} />
-    <span className="text-sm font-medium">Login</span>
-  </Link>
-) : (
-  <Link
-    to="/notifications"
-    className="relative text-gray-600 hover:text-blue-600 transition-colors"
-  >
-    <Bell size={20} />
-    {/* Optional badge */}
-    {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">
-      3
-    </span> */}
-  </Link>
-)}
-
-                <div className="h-4 w-px bg-gray-300"></div>
-                <Link
-                  to="/wishlist"
-                  className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                >
-                  <Heart size={18} />
-                  <span className="text-sm font-medium">Wishlist</span>
-                </Link>
-              </div>
+            <div className="flex items-center justify-center gap-4">
+              {/* Home and Shop Links - Made more prominent */}
+              <Link
+                to="/"
+                className="text-center py-2 px-4 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors font-medium text-sm"
+              >
+                Home
+              </Link>
+              <Link
+                to="/shop"
+                className="text-center py-2 px-4 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors font-medium text-sm"
+              >
+                Shop
+              </Link>
 
               {/* Categories Button */}
               <button
                 onClick={() => setCategoryOpen(!categoryOpen)}
-                className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                <span className="text-sm font-medium text-gray-700">Categories</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Categories
+                </span>
                 <ChevronDown
                   size={16}
                   className={`text-gray-600 transition-transform duration-200 ${
@@ -418,7 +401,9 @@ useEffect(() => {
                           );
                         }}
                       >
-                        <span className="font-medium text-gray-800">{mainCat.name}</span>
+                        <span className="font-medium text-gray-800">
+                          {mainCat.name}
+                        </span>
                         <ChevronDown
                           size={16}
                           className={`text-gray-400 transition-transform duration-200 ${
@@ -427,52 +412,63 @@ useEffect(() => {
                         />
                       </div>
 
-                      {activeCategory === mainCat._id && categories[mainCat._id] && (
-                        <div className="bg-gray-50 px-4">
-                          {categories[mainCat._id].map((cat) => (
-                            <div key={cat._id} className="border-t border-gray-200 first:border-t-0">
+                      {activeCategory === mainCat._id &&
+                        categories[mainCat._id] && (
+                          <div className="bg-gray-50 px-4">
+                            {categories[mainCat._id].map((cat) => (
                               <div
-                                className="flex items-center justify-between py-2.5 hover:bg-gray-100 cursor-pointer rounded px-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  fetchSubCategories(mainCat._id, cat._id);
-                                  setActiveSubCategory(
-                                    activeSubCategory === cat._id ? null : cat._id
-                                  );
-                                }}
+                                key={cat._id}
+                                className="border-t border-gray-200 first:border-t-0"
                               >
-                                <span className="text-sm text-gray-700">{cat.name}</span>
-                                {subCategories[cat._id]?.length > 0 && (
-                                  <ChevronDown
-                                    size={14}
-                                    className={`text-gray-400 transition-transform duration-200 ${
-                                      activeSubCategory === cat._id ? "rotate-180" : ""
-                                    }`}
-                                  />
-                                )}
-                              </div>
-
-                              {activeSubCategory === cat._id && subCategories[cat._id] && (
-                                <div className="bg-white ml-4 rounded border border-gray-200 mb-2">
-                                  {subCategories[cat._id].map((sub) => (
-                                    <Link
-                                      key={sub._id}
-                                      to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
-                                      className="block px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors border-b border-gray-100 last:border-b-0"
-                                      onClick={() => {
-                                        setCategoryOpen(false);
-                                        setMobileMenuOpen(false);
-                                      }}
-                                    >
-                                      {sub.name}
-                                    </Link>
-                                  ))}
+                                <div
+                                  className="flex items-center justify-between py-2.5 hover:bg-gray-100 cursor-pointer rounded px-2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    fetchSubCategories(mainCat._id, cat._id);
+                                    setActiveSubCategory(
+                                      activeSubCategory === cat._id
+                                        ? null
+                                        : cat._id
+                                    );
+                                  }}
+                                >
+                                  <span className="text-sm text-gray-700">
+                                    {cat.name}
+                                  </span>
+                                  {subCategories[cat._id]?.length > 0 && (
+                                    <ChevronDown
+                                      size={14}
+                                      className={`text-gray-400 transition-transform duration-200 ${
+                                        activeSubCategory === cat._id
+                                          ? "rotate-180"
+                                          : ""
+                                      }`}
+                                    />
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
+
+                                {activeSubCategory === cat._id &&
+                                  subCategories[cat._id] && (
+                                    <div className="bg-white ml-4 rounded border border-gray-200 mb-2">
+                                      {subCategories[cat._id].map((sub) => (
+                                        <Link
+                                          key={sub._id}
+                                          to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
+                                          className="block px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors border-b border-gray-100 last:border-b-0"
+                                          onClick={() => {
+                                            setCategoryOpen(false);
+                                            setMobileMenuOpen(false);
+                                          }}
+                                        >
+                                          {sub.name}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                     </div>
                   ))
                 ) : (
@@ -484,23 +480,7 @@ useEffect(() => {
             </div>
           )}
 
-          {/* Mobile Navigation Links */}
-          <div className="px-4 py-3 bg-white">
-            <div className="grid grid-cols-2 gap-3">
-              <Link
-                to="/"
-                className="text-center py-2.5 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                to="/shop"
-                className="text-center py-2.5 bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors font-medium"
-              >
-                Shop
-              </Link>
-            </div>
-          </div>
+          
         </div>
 
         {/* Desktop Header (unchanged) */}
@@ -522,7 +502,7 @@ useEffect(() => {
             </div>
 
             {/* Desktop Search Bar */}
-              <div className="flex items-center rounded-full  w-2/5 bg-white relative z-30">
+            <div className="flex items-center rounded-full  w-2/5 bg-white relative z-30">
               <form onSubmit={handleSearch} className="flex flex-1">
                 <input
                   type="text"
@@ -619,40 +599,29 @@ useEffect(() => {
 
             {/* User Actions */}
             <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-white">
-             {!isLoggedIn ? (
-  <Link
-    to="/login"
-    className="flex items-center gap-1 cursor-pointer"
-  >
-    <User size={16} />
-    <span>Log In</span>
-  </Link>
-) : (
-  <Link
-    to=""
-    className="relative flex items-center gap-1 cursor-pointer"
-  >
-    <Bell size={18} />
-    <span>Notifications</span>
-    {/* <span className="absolute -top-2 -right-3 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-   
-    </span> */}
-    {/* Optional notification count badge */}
-    {/* <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
-      3
-    </span> */}
-  </Link>
-)}
-
+              {!isLoggedIn ? (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1 cursor-pointer"
+                >
+                  <User size={16} />
+                  <span>Log In</span>
+                </Link>
+              ) : (
+               null
+              )}
               <div className="h-5 w-px bg-white"></div>
-              <Link to="/wishlist" className="relative text-gray-700 hover:text-pink-600">
-                 <  h6 className="text-white">Wishlist</h6>
-  {wishlistCount > 0 && (
-    <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-      {wishlistCount}
-    </span>
-  )}
-</Link>
+              <Link
+                to="/wishlist"
+                className="relative text-gray-700 hover:text-pink-600"
+              >
+                <h6 className="text-white">Wishlist</h6>
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
 
               <div className="h-5 w-px bg-white"></div>
               <Link to="/cart">
@@ -677,7 +646,10 @@ useEffect(() => {
                   </div>
                 </div>
               </Link>
-              <Link to="/shop" className="hover:text-blue-800 transition-colors">
+              <Link
+                to="/shop"
+                className="hover:text-blue-800 transition-colors"
+              >
                 Shop
               </Link>
               <div className="relative">
@@ -709,7 +681,9 @@ useEffect(() => {
                             <ChevronDown
                               size={16}
                               className={`text-gray-400 transition-transform ${
-                                activeCategory === mainCat._id ? "rotate-180" : ""
+                                activeCategory === mainCat._id
+                                  ? "rotate-180"
+                                  : ""
                               }`}
                             />
                           </div>
@@ -749,18 +723,20 @@ useEffect(() => {
                                         subCategories[cat._id] &&
                                         subCategories[cat._id].length > 0 && (
                                           <div className="w-full bg-gray-100 pl-8">
-                                            {subCategories[cat._id].map((sub) => (
-                                              <Link
-                                                key={sub._id}
-                                                to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
-                                                className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors border-b border-gray-200 last:border-b-0"
-                                                onClick={() =>
-                                                  setCategoryOpen(false)
-                                                }
-                                              >
-                                                {sub.name}
-                                              </Link>
-                                            ))}
+                                            {subCategories[cat._id].map(
+                                              (sub) => (
+                                                <Link
+                                                  key={sub._id}
+                                                  to={`/category/${mainCat._id}/${cat._id}/${sub._id}`}
+                                                  className="block px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors border-b border-gray-200 last:border-b-0"
+                                                  onClick={() =>
+                                                    setCategoryOpen(false)
+                                                  }
+                                                >
+                                                  {sub.name}
+                                                </Link>
+                                              )
+                                            )}
                                           </div>
                                         )}
                                     </div>
@@ -797,19 +773,31 @@ useEffect(() => {
                 Become a Seller
               </Link>
               <div className="h-4 w-px bg-gray-400"></div>
-              <Link to="/about" className="hover:text-blue-600 transition-colors">
+              <Link
+                to="/about"
+                className="hover:text-blue-600 transition-colors"
+              >
                 About
               </Link>
               <div className="h-4 w-px bg-gray-400"></div>
-              <Link to="/user" className="hover:text-blue-600 transition-colors">
+              <Link
+                to="/user"
+                className="hover:text-blue-600 transition-colors"
+              >
                 MY Account
               </Link>
               <div className="h-4 w-px bg-gray-400"></div>
-              <Link to="/blog" className="hover:text-blue-600 transition-colors">
+              <Link
+                to="/blog"
+                className="hover:text-blue-600 transition-colors"
+              >
                 Blog
               </Link>
               <div className="h-4 w-px bg-gray-400"></div>
-              <Link to="/faqs" className="hover:text-blue-600 transition-colors">
+              <Link
+                to="/faqs"
+                className="hover:text-blue-600 transition-colors"
+              >
                 FAQs
               </Link>
             </div>

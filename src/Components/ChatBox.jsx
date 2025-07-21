@@ -10,13 +10,13 @@ function ChatBox() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
-
+  const [selectedImage, setSelectedImage] = useState(null);
   const [userId, setUserId] = useState("");
   const [currentFlow, setCurrentFlow] = useState(null);
   const [orderId, setOrderId] = useState(null);
   const [showReturnReason, setShowReturnReason] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
     if (isOpen && messages.length === 0) {
       setMessages([
         {
@@ -94,12 +94,24 @@ function ChatBox() {
     }
   };
 
-  const botReply = (text) => ({
+const botReply = (text) => {
+  const reasons = [
+    "Defective product",
+    "Wrong item received",
+    "Changed mind",
+    "Other (please specify)"
+  ];
+    const hasReturnOptions = text.includes("provide the reason for return");
+
+  return {
     id: Date.now() + 1,
     text,
     sender: 'bot',
     timestamp: new Date(),
-  });
+    returnOptions: hasReturnOptions ? reasons : null
+  };
+};
+
 
   const handleQuickAction = async (action) => {
     const userMsg = {
@@ -127,8 +139,8 @@ function ChatBox() {
       setIsTyping(false);
     }
   };
-useEffect(() => {
 
+useEffect(() => {
   const storedId = localStorage.getItem("userId");
    console.log("Loaded userId from localStorage:", storedId);
   if (storedId) {
@@ -140,13 +152,13 @@ useEffect(() => {
     <>
       {/* Floating Button */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">
-          <div className="bg-yellow-300 text-black px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-bounce">
+        <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex items-center space-x-3">
+          <div className="hidden sm:block bg-yellow-300 text-black px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-bounce">
             Need help?
           </div>
           <button
             onClick={() => setIsOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
           >
             💬
           </button>
@@ -155,9 +167,9 @@ useEffect(() => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[550px] bg-white rounded-lg shadow-2xl  flex flex-col z-50 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 md:w-96 md:h-[550px] w-full h-full bg-white md:rounded-lg shadow-2xl flex flex-col z-50 animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
-          <div className="bg-blue-600 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
+          <div className="bg-blue-600 text-white px-4 py-3 md:rounded-t-lg flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                 <Bot size={18} />
@@ -168,7 +180,11 @@ useEffect(() => {
               </div>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() =>{
+                setIsOpen(false)
+                setMessages([])
+              }
+              }
               className="text-white hover:text-blue-200 transition-colors"
             >
               <X size={20} />
@@ -176,44 +192,55 @@ useEffect(() => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex items-end space-x-2 max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  {/* Avatar */}
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    msg.sender === 'bot' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600'
-                  }`}>
-                    {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
-                  </div>
+          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-50">
+           {messages.map((msg) => (
+  <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+        msg.sender === 'bot' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600'
+      }`}>
+        {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
+      </div>
+      <div className="flex flex-col">
+        <div className={`px-3 py-2 rounded-lg text-sm ${
+          msg.sender === 'bot'
+            ? 'bg-white text-gray-800 shadow-sm rounded-bl-none'
+            : 'bg-blue-600 text-white rounded-br-none'
+        }`}>
+          {msg.text}
 
-                  {/* Message with timestamp */}
-                  <div className="flex flex-col">
-                    <div className={`px-3 py-2 rounded-lg text-sm ${
-                      msg.sender === 'bot'
-                        ? 'bg-white text-gray-800  shadow-sm rounded-bl-none'
-                        : 'bg-blue-600 text-white rounded-br-none'
-                    }`}>
-                      {msg.text}
-                    </div>
-                    <span className={`text-xs text-gray-500 mt-1 ${
-                      msg.sender === 'user' ? 'text-right' : 'text-left'
-                    }`}>
-                      {formatTime(msg.timestamp)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Show dropdown if returnOptions exist */}
+          {msg.returnOptions && (
+            <select
+              className="mt-2 w-full border border-gray-300 rounded p-1 text-sm"
+              onChange={(e) => handleReturnReasonSubmit(e.target.value)}
+            >
+              <option value="">Select a reason</option>
+              {msg.returnOptions.map((reason) => (
+                <option key={reason} value={reason}>{reason}</option>
+              ))}
+            </select>
+          )}
+        </div>
+        <span className={`text-xs text-gray-500 mt-1 ${
+          msg.sender === 'user' ? 'text-right' : 'text-left'
+        }`}>
+          {formatTime(msg.timestamp)}
+        </span>
+      </div>
+    </div>
+  </div>
+))}
+
 
             {/* Quick Actions - Show only after initial message */}
             {messages.length === 1 && !isTyping && (
               <div className="flex justify-start">
-                <div className="flex items-end space-x-2 max-w-xs">
+                <div className="flex items-end space-x-2 max-w-[85%] sm:max-w-xs">
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Bot size={12} className="text-blue-600" />
                   </div>
-                  <div className="bg-white  shadow-sm rounded-lg rounded-bl-none p-3">
+                  <div className="bg-white shadow-sm rounded-lg rounded-bl-none p-3 w-full">
                     <p className="text-xs text-gray-600 mb-2">Quick actions:</p>
                     <div className="space-y-1">
                       {[
@@ -225,7 +252,7 @@ useEffect(() => {
                         <button
                           key={action}
                           onClick={() => handleQuickAction(action)}
-                          className="block w-full text-left px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                          className="block w-full text-left px-2 py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors"
                         >
                           {action}
                         </button>
@@ -243,7 +270,7 @@ useEffect(() => {
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Bot size={12} className="text-blue-600" />
                   </div>
-                  <div className="bg-white  shadow-sm rounded-lg rounded-bl-none px-3 py-2">
+                  <div className="bg-white shadow-sm rounded-lg rounded-bl-none px-3 py-2">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -258,21 +285,21 @@ useEffect(() => {
           </div>
 
           {/* Input */}
-          <div className="p-3 border-t border-zinc-400 bg-white rounded-b-lg">
+          <div className="p-3 border-t border-zinc-400 bg-white md:rounded-b-lg">
             <div className="flex items-center space-x-2">
               <input
                 type="text"
                 placeholder="Type your message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="flex-1 px-3 py-2 border border-zinc-400 rounded-full focus:outline-none focus:border-blue-500 text-sm"
+                className="flex-1 px-3 py-2.5 md:py-2 border border-zinc-400 rounded-full focus:outline-none focus:border-blue-500 text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 disabled={isTyping}
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2.5 md:p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Send size={16} />
               </button>
@@ -280,28 +307,8 @@ useEffect(() => {
           </div>
         </div>
       )}
-      {showReturnReason && (
-        <div className="flex justify-start">
-          <div className="flex items-end space-x-2 max-w-xs">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <Bot size={12} className="text-blue-600" />
-            </div>
-            <div className="bg-white shadow-sm rounded-lg rounded-bl-none p-3">
-              <p className="text-xs text-gray-600 mb-2">Please select a return reason:</p>
-              {["Defective product", "Wrong item received", "Size/fit issue", "Changed mind", "Other (please specify)"]
-                .map((reason) => (
-                  <button
-                    key={reason}
-                    onClick={() => handleReturnReasonSubmit(reason)}
-                    className="block w-full text-left px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded"
-                  >
-                    {reason}
-                  </button>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
+      
+    
     </>
   );
 }

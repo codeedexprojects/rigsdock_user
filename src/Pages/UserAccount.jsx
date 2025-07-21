@@ -567,14 +567,14 @@ function UserAccount() {
                                               {item.quantity}
                                             </span>
                                           </div>
-                                          <div className="flex items-center gap-2">
+                                          {/* <div className="flex items-center gap-2">
                                             <span className="text-sm text-gray-600">
                                               Price:
                                             </span>
                                             <span className="text-lg font-bold text-gray-900">
                                               ₹{item.price}
                                             </span>
-                                          </div>
+                                          </div> */}
                                         </div>
 
                                         {/* Action Buttons for Delivered Orders */}

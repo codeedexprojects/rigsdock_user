@@ -236,30 +236,29 @@ function Shop() {
 
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow h-full flex flex-col">
-        <div className="h-64 mb-4 bg-white rounded-lg overflow-hidden">
+<div className="h-24 sm:h-48 md:h-64 mb-4 bg-white rounded-lg overflow-hidden">
   <div className="relative group w-full h-full">
     <img
-  src={product.image}
-  alt={product.name}
-  className="w-full h-full object-contain p-4 cursor-pointer"
-  onClick={handleProductClick}
-/>
-   <button
-  className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
-  onClick={(e) => handleAddToWishlist(product.id, e)}
->
-  <Heart className="text-red-500 w-5 h-5" />
-</button>
-
+      src={product.image}
+      alt={product.name}
+      className="w-full h-full object-contain p-2 cursor-pointer"
+      onClick={handleProductClick}
+    />
+    <button
+      className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
+      onClick={(e) => handleAddToWishlist(product.id, e)}
+    >
+      <Heart className="text-red-500 w-4 h-4 sm:w-5 sm:h-5" />
+    </button>
   </div>
 </div>
         <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
           {product.name}
         </h3>
-        <div className="flex items-center mb-3">
+        <div className="flex items-center mb-2">
           {renderStars(product.rating)}
         </div>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2">
           <span className="text-xl font-semibold text-blue-800">
             ₹{product.price}
           </span>
@@ -269,14 +268,14 @@ function Shop() {
             </span>
           )}
         </div>
-        <ul className="text-sm text-gray-600 mb-4 space-y-2">
+        {/* <ul className="text-sm text-gray-600 mb-4 space-y-2">
           {product.features.map((feature, index) => (
             <li key={index} className="flex items-center">
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
               {feature}
             </li>
           ))}
-        </ul>
+        </ul> */}
         <button
           className="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors text-base mt-auto"
           onClick={() => handleAddToCart(product.id)}

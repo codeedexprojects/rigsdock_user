@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { paymentstatusAPI } from "../Services/orderconfirm";
-
+import { XCircle, Loader2 } from "lucide-react";
 
 function PaymentStatus() {
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,6 @@ function PaymentStatus() {
             replace: true,
           });
         } else {
-          toast.error("Payment failed or was cancelled. Please try again.");
           setLoading(false);
         }
       } catch (error) {
@@ -43,13 +42,39 @@ function PaymentStatus() {
     checkStatus();
   }, [location, navigate]);
 
+  const handleBackToCart = () => {
+    navigate("/cart");
+  };
+
   return (
-    <div className="text-center mt-5 py-10">
-      {loading ? (
-        <p className="text-lg font-medium text-gray-600">Processing your payment...</p>
-      ) : (
-        <p className="text-lg text-red-600">Payment failed or not completed.</p>
-      )}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
+        {loading ? (
+          <div className="flex flex-col items-center">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+            <p className="text-lg font-medium text-gray-700">
+              Processing your payment...
+            </p>
+          </div>
+        ) : (
+          <>
+            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-600 mb-2">
+              Payment Failed
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your payment was not completed. Please try again or contact
+              support if the issue persists.
+            </p>
+            <button
+              onClick={handleBackToCart}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors"
+            >
+              Back to Cart
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

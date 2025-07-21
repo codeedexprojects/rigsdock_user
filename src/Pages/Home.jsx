@@ -223,89 +223,6 @@ function Home() {
     fetchCarouselCards();
   }, []);
 
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Lenovo Tab M9 Tablet 4 GB RAM 64 GB",
-  //     price: "$144 - $150",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Samsung R6 Wireless 360° Multiroom Speaker",
-  //     price: "$189 - $199",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Phonokart USB Type C OTG Cable",
-  //     price: "$450",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Xiaomi Redmi Note 12 Pro 5G 128 GB, 6 GB RAM",
-  //     price: "$249 - $265",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Logitech M350 WHITE Optical Wireless Mouse",
-  //     price: "$299",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Apple MacBook Air M2 Chip",
-  //     price: "$1199 - $1399",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 7,
-  //     name: "Sony WH-1000XM4 Headphones",
-  //     price: "$279 - $349",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 8,
-  //     name: "iPad Pro 12.9-inch Wi-Fi 128GB",
-  //     price: "$999 - $1099",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 9,
-  //     name: "Dell XPS 13 Laptop",
-  //     price: "$899 - $1199",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&h=300&fit=crop",
-  //   },
-  //   {
-  //     id: 10,
-  //     name: "Samsung Galaxy Watch 5",
-  //     price: "$249 - $299",
-  //     rating: 5,
-  //     image:
-  //       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop",
-  //   },
-  // ];
-
   const getItemsPerSlide = () => {
     if (typeof window !== "undefined") {
       if (window.innerWidth >= 1280) return 5;
@@ -488,13 +405,13 @@ function Home() {
     <>
       <Header />
       <ChatBox />
-      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-56">
+      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-40">
         Welcome to <span className="text-blue-700">RIGSDOCK</span>
       </h2>
 
       <div className="w-full px-4 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-6">
-          {homeOffers.slice(0, 4).map((offer, index) => {
+          {homeOffers.slice(0, 3).map((offer, index) => {
             const product = offer.productIds?.[0];
           const bgImage = offer.image
   ? `${SERVER_URL}/uploads/${offer.image.split('\\').pop().split('/').pop()}`
