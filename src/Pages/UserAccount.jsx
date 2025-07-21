@@ -449,7 +449,7 @@ function UserAccount() {
                 {activeSection === "Orders" && (
                   <div className="min-h-screen bg-gray-50 py-4 px-4 sm:px-6 lg:px-8">
                     <div className="max-w-7xl mx-auto">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">
+                      <h2 className="text-2xl sm:text-3xl font-bold text-gray-500 mb-6 sm:mb-8">
                         Your Orders
                       </h2>
 
@@ -457,7 +457,7 @@ function UserAccount() {
                       {selectedOrder ? (
                         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
                           {/* Header with back button */}
-                          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-6">
+                          <div className="bg-gray-600 px-6 py-6">
                             <button
                               onClick={() => setSelectedOrder(null)}
                               className="flex items-center text-white hover:text-blue-100 transition-colors mb-4"
@@ -477,8 +477,8 @@ function UserAccount() {
                               </svg>
                               Back to Orders
                             </button>
-                            <h2 className="text-2xl font-bold text-white">
-                              Order #{selectedOrder._id.slice(-8)}
+                            <h2 className="text-2xl  text-white">
+                              OrderID : {selectedOrder._id}
                             </h2>
                           </div>
 
@@ -747,8 +747,8 @@ function UserAccount() {
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                   <div className="space-y-2">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                                      <p className="font-semibold text-gray-900">
-                                        Order #{order._id.slice(-8)}
+                                      <p className=" text-gray-900">
+                                        OrderID : {order._id}
                                       </p>
                                       <span
                                         className={`inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit ${

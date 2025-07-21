@@ -51,7 +51,7 @@ function Orderconformation() {
         <div className="mt-12 text-center">
           <p className="text-sm text-gray-500">
             Need help?{" "}
-            <Link to="/contact" className="text-blue-600 hover:text-blue-500">
+            <Link to="/about" className="text-blue-600 hover:text-blue-500">
               Contact us
             </Link>
           </p>
