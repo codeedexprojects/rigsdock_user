@@ -11,13 +11,13 @@ function PaymentStatus() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
+ useEffect(() => {
     const verifyPayment = async () => {
       const params = new URLSearchParams(location.search);
-      const transactionId = params.get("transaction_id");
+      const orderId = params.get("order_id"); // Changed from transaction_id to order_id
 
-      if (!transactionId) {
-        toast.error("Missing transaction ID");
+      if (!orderId) {
+        toast.error("Missing order ID");
         setLoading(false);
         return;
       }
@@ -26,20 +26,22 @@ function PaymentStatus() {
         // Check local storage for pending order
         const pendingOrder = JSON.parse(localStorage.getItem("pendingPhonePeOrder"));
         
-        if (!pendingOrder || pendingOrder.transactionId !== transactionId) {
+        if (!pendingOrder) {
           toast.error("Order session expired. Please check your orders.");
           setLoading(false);
           return;
         }
 
-        // Verify payment status
-        const result = await paymentstatusAPI(transactionId, "transaction");
+        // Verify payment status using orderId
+        const result = await paymentstatusAPI(orderId, "order"); // Changed to "order" type
         console.log("Payment verification result:", result);
 
         setOrderDetails(result);
 
-        // Handle different status cases
-        if (result.phonepeStatus === "SUCCESS" || result.paymentStatus === "Paid") {
+        // Handle status cases
+        if (result.phonepeStatus === "SUCCESS" || 
+            result.paymentStatus === "Paid" || 
+            result.phonepeStatus === "COMPLETED") {
           // Successful payment
           setStatus("success");
           localStorage.removeItem("pendingPhonePeOrder");
@@ -49,19 +51,14 @@ function PaymentStatus() {
             replace: true,
           });
           
-        } else if (result.isPendingPayment && result.phonepeStatus === "FAILED") {
-          // Payment failed but order is still pending
+        } else if (result.phonepeStatus === "FAILED") {
+          // Payment failed
           setStatus("failed");
-          await handleFailedPayment(result.orderId);
-          
-        } else if (result.isPendingPayment) {
-          // Still processing - retry after delay
+          localStorage.removeItem("pendingPhonePeOrder");
+        } else {
+          // Still processing
           setTimeout(verifyPayment, 2000);
           return;
-          
-        } else {
-          // Other cases
-          setStatus("failed");
         }
 
       } catch (error) {
@@ -70,16 +67,6 @@ function PaymentStatus() {
         setStatus("error");
       } finally {
         setLoading(false);
-      }
-    };
-
-    const handleFailedPayment = async () => {
-      try {
-        // You might want to call an API to clean up the failed order
-        // await cleanupFailedOrderAPI(orderId);
-        localStorage.removeItem("pendingPhonePeOrder");
-      } catch (cleanupError) {
-        console.error("Failed to clean up order:", cleanupError);
       }
     };
 
