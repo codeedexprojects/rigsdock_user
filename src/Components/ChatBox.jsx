@@ -101,11 +101,27 @@ const botReply = (text) => {
     "Changed mind",
     "Other (please specify)"
   ];
-    const hasReturnOptions = text.includes("provide the reason for return");
+  
+  // Split the text at "Thank you" or similar phrases
+  const thankYouPhrases = ["Thank you", "🙏 Thank you"];
+  let mainText = text;
+  let thankYouText = null;
+  
+  for (const phrase of thankYouPhrases) {
+    if (text.includes(phrase)) {
+      const splitIndex = text.indexOf(phrase);
+      mainText = text.substring(0, splitIndex).trim();
+      thankYouText = text.substring(splitIndex).trim();
+      break;
+    }
+  }
+
+  const hasReturnOptions = mainText.includes("provide the reason for return");
 
   return {
     id: Date.now() + 1,
-    text,
+    text: mainText,
+    thankYouText: thankYouText,
     sender: 'bot',
     timestamp: new Date(),
     returnOptions: hasReturnOptions ? reasons : null
@@ -202,27 +218,34 @@ useEffect(() => {
         {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
       </div>
       <div className="flex flex-col">
-        <div className={`px-3 py-2 rounded-lg text-sm ${
-          msg.sender === 'bot'
-            ? 'bg-white text-gray-800 shadow-sm rounded-bl-none'
-            : 'bg-blue-600 text-white rounded-br-none'
-        }`}>
-          {msg.text}
+      <div className={`px-3 py-2 rounded-lg text-sm ${
+  msg.sender === 'bot'
+    ? 'bg-white text-gray-800 shadow-sm rounded-bl-none'
+    : 'bg-blue-600 text-white rounded-br-none'
+}`}>
+  {msg.text}
+  
+  {/* Show thank you text separately if it exists */}
+  {msg.thankYouText && (
+    <div className="mt-2 pt-2 border-t border-gray-100 rounded-2xl text-black">
+      {msg.thankYouText}
+    </div>
+  )}
 
-          {/* Show dropdown if returnOptions exist */}
-          {msg.returnOptions && (
-            <select
-              className="mt-2 w-full border border-gray-300 rounded p-1 text-sm"
-              onChange={(e) => handleReturnReasonSubmit(e.target.value)}
-            >
-              <option value="">Select a reason</option>
-              {msg.returnOptions.map((reason) => (
-                <option key={reason} value={reason}>{reason}</option>
-              ))}
-            </select>
-          )}
-        </div>
-        <span className={`text-xs text-gray-500 mt-1 ${
+  {/* Show dropdown if returnOptions exist */}
+  {msg.returnOptions && (
+    <select
+      className="mt-2 w-full border border-gray-300 rounded p-1 text-sm"
+      onChange={(e) => handleReturnReasonSubmit(e.target.value)}
+    >
+      <option value="">Select a reason</option>
+      {msg.returnOptions.map((reason) => (
+        <option key={reason} value={reason}>{reason}</option>
+      ))}
+    </select>
+  )}
+</div>
+  <span className={`text-xs text-gray-500 mt-1 ${
           msg.sender === 'user' ? 'text-right' : 'text-left'
         }`}>
           {formatTime(msg.timestamp)}
@@ -232,8 +255,7 @@ useEffect(() => {
   </div>
 ))}
 
-
-            {/* Quick Actions - Show only after initial message */}
+{/* Quick Actions - Show only after initial message */}
             {messages.length === 1 && !isTyping && (
               <div className="flex justify-start">
                 <div className="flex items-end space-x-2 max-w-[85%] sm:max-w-xs">

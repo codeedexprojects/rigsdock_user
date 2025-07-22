@@ -99,7 +99,8 @@ function Checkout() {
         }
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error("placed",error);
+      
     }
   };
   

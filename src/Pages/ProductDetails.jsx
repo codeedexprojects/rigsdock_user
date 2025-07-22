@@ -12,7 +12,6 @@ import { buyNowAPI } from "../Services/buynowAPI";
 import ChatBox from "../Components/ChatBox";
 
 
-
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
@@ -244,6 +243,14 @@ if (!product.stock || product.stock < quantity) {
     ))}
   </ul>
 )}
+<div className="text-gray-600 text-xs sm:text-sm mb-1">
+  {product.attributes &&
+    Object.entries(product.attributes).map(([key, value]) => (
+      <p key={key}>
+        <span className="font-bold">{key}:</span> {value}
+      </p>
+    ))}
+</div>
 
           <div className="flex items-center gap-1 mb-3 sm:mb-4">
             {renderStars(averageRating)}

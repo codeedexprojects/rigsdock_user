@@ -8,23 +8,24 @@ function PaymentStatus() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  // console.log("PaymentStatus mounted", location.pathname);
 
   useEffect(() => {
     const checkStatus = async () => {
       const params = new URLSearchParams(location.search);
-      const orderId = params.get("order_id");
+      const transactionId  = params.get("transaction_id");
 
-      if (!orderId) {
+      if (!transactionId) {
         toast.error("No order ID found.");
         setLoading(false);
         return;
       }
 
       try {
-        const result = await paymentstatusAPI(orderId);
+        const result = await paymentstatusAPI(transactionId,"transaction");
         console.log("Payment Status:", result);
 
-        if (result.phonepeStatus === "SUCCESS") {
+        if (result.phonepeStatus === "COMPLETED") {
           navigate("/order-confirmed", {
             state: { orderId: result.orderId },
             replace: true,
