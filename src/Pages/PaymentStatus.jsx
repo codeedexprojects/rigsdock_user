@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { XCircle, Loader2, CheckCircle } from "lucide-react";
 import { BASE_URL } from "../Services/baseUrl";
 
-
 function PaymentStatus() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null);
@@ -14,9 +13,10 @@ function PaymentStatus() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Extract orderId from URL if present
+  // Extract both orderId and mainOrderId from URL if present
   const params = new URLSearchParams(location.search);
   const orderId = params.get("order_id");
+  const mainOrderId = params.get("mainOrderId"); // Get mainOrderId from params (matches backend)
 
   const clearPendingOrder = () => {
     localStorage.removeItem("pendingPhonePeOrder");
@@ -29,28 +29,34 @@ function PaymentStatus() {
       const orderData = JSON.parse(pendingOrder);
       setOrderDetails(orderData);
 
+      // If we have mainOrderId in URL params, use it; otherwise use from orderData
+      const targetMainOrderId = mainOrderId || orderData.mainOrderId;
+
       // If we have an order_id in URL, verify payment
       if (orderId) {
-        verifyPayment(orderId);
+        verifyPayment(orderId, targetMainOrderId);
       } else {
         // If no order_id but we have pending order, check status
-        checkOrderStatus(orderData.mainOrderId);
+        checkOrderStatus(targetMainOrderId);
       }
-    } else if (orderId) {
-      // If we have order_id but no localStorage entry, still try to verify
-      verifyPayment(orderId);
+    } else if (orderId && mainOrderId) {
+      // If we have both IDs but no localStorage entry, still try to verify
+      verifyPayment(orderId, mainOrderId);
+    } else if (mainOrderId) {
+      // If we only have mainOrderId, check its status directly
+      checkOrderStatus(mainOrderId);
     } else {
       // No order information at all
       setStatus("error");
       setMessage("No order information found. Redirecting to home...");
       setTimeout(() => navigate("/"), 3000);
     }
-  }, [orderId, navigate]);
+  }, [orderId, mainOrderId, navigate]);
 
-  const checkOrderStatus = async (mainOrderId) => {
+  const checkOrderStatus = async (targetMainOrderId) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
+        `${BASE_URL}/api/user/order/payment-status/${targetMainOrderId}`
       );
 
       if (response.data.paymentStatus === "Paid") {
@@ -58,20 +64,20 @@ function PaymentStatus() {
         setMessage("Payment successful! Redirecting to order confirmation...");
         clearPendingOrder();
         setTimeout(() => {
-          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+          navigate("/order-confirmation", { state: { orderId: targetMainOrderId } });
         }, 3000);
       } else if (response.data.paymentStatus === "Processing") {
         setStatus("pending");
         setMessage(
           "Payment is still processing. We'll notify you when complete."
         );
-        setTimeout(() => checkOrderStatus(mainOrderId), 5000);
+        setTimeout(() => checkOrderStatus(targetMainOrderId), 5000);
       } else {
         setStatus("error");
         setMessage("Payment failed. Redirecting to checkout...");
         clearPendingOrder();
         setTimeout(() => {
-          navigate(`/checkout?retry_order=${mainOrderId}`);
+          navigate(`/checkout?retry_order=${targetMainOrderId}`);
         }, 3000);
       }
     } catch (error) {
@@ -85,68 +91,61 @@ function PaymentStatus() {
     }
   };
 
- const verifyPayment = async (transactionId) => {
-  try {
-    setStatus("verifying");
-    setMessage("Verifying your payment...");
-    let mainOrderId;
-    if (orderDetails) {
-      mainOrderId = orderDetails.mainOrderId;
-    } else {
-      mainOrderId = transactionId.replace("MT_", "");
-    }
-    const response = await axios.get(
-      `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
-    );
-    // CHANGED: Check for "Paid" instead of "Completed"
-    if (response.data.paymentStatus === "Paid") {
-      setStatus("success");
-      setMessage("Payment successful! Redirecting to order confirmation...");
-      clearPendingOrder();
-      setTimeout(() => {
-        navigate("/order-confirmation", { state: { orderId: mainOrderId } });
-      }, 3000);
-    } else if (response.data.paymentStatus === "Processing") {
-      if (response.data.phonepeStatus) {
-        handlePhonePeStatus(response.data.phonepeStatus, mainOrderId);
+  const verifyPayment = async (transactionId, targetMainOrderId) => {
+    try {
+      setStatus("verifying");
+      setMessage("Verifying your payment...");
+      
+      // Use the mainOrderId passed as parameter (from URL params or orderDetails)
+      const response = await axios.get(
+        `${BASE_URL}/api/user/order/payment-status/${targetMainOrderId}`
+      );
+      
+      // Check for "Paid" status
+      if (response.data.paymentStatus === "Paid") {
+        setStatus("success");
+        setMessage("Payment successful! Redirecting to order confirmation...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate("/order-confirmation", { state: { orderId: targetMainOrderId } });
+        }, 3000);
+      } else if (response.data.paymentStatus === "Processing") {
+        if (response.data.phonepeStatus) {
+          handlePhonePeStatus(response.data.phonepeStatus, targetMainOrderId);
+        } else {
+          setStatus("pending");
+          setMessage(
+            "Payment is still processing. We'll notify you when complete."
+          );
+          setTimeout(() => verifyPayment(transactionId, targetMainOrderId), 5000);
+        }
       } else {
-        setStatus("pending");
-        setMessage(
-          "Payment is still processing. We'll notify you when complete."
-        );
-        setTimeout(() => verifyPayment(transactionId), 5000);
+        setStatus("error");
+        setMessage("Payment failed. Redirecting to checkout...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate(`/checkout?retry_order=${targetMainOrderId}`);
+        }, 3000);
       }
-    } else {
+    } catch (error) {
+      console.error("Payment verification error:", error);
       setStatus("error");
-      setMessage("Payment failed. Redirecting to checkout...");
+      setMessage("Verification failed. Redirecting to home...");
       clearPendingOrder();
-      setTimeout(() => {
-        navigate(`/checkout?retry_order=${mainOrderId}`);
-      }, 3000);
+      setTimeout(() => navigate("/"), 3000);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Payment verification error:", error);
-    setStatus("error");
-    setMessage("Verification failed. Redirecting to home...");
-    clearPendingOrder();
-    setTimeout(() => navigate("/"), 3000);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-
-
-
-
-  const handlePhonePeStatus = (phonepeStatus, mainOrderId) => {
+  const handlePhonePeStatus = (phonepeStatus, targetMainOrderId) => {
     switch (phonepeStatus) {
       case "checkout.order.completed":
         setStatus("success");
         setMessage("Payment successful! Redirecting to order confirmation...");
         clearPendingOrder();
         setTimeout(() => {
-          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+          navigate("/order-confirmation", { state: { orderId: targetMainOrderId } });
         }, 3000);
         break;
       case "checkout.order.failed":
@@ -155,7 +154,7 @@ function PaymentStatus() {
         setMessage("Payment failed. Redirecting to checkout...");
         clearPendingOrder();
         setTimeout(() => {
-          navigate(`/checkout?retry_order=${mainOrderId}`);
+          navigate(`/checkout?retry_order=${targetMainOrderId}`);
         }, 3000);
         break;
       default:
@@ -163,7 +162,7 @@ function PaymentStatus() {
         setMessage(
           "Payment is still processing. We'll notify you when complete."
         );
-        setTimeout(() => verifyPayment(`MT_${mainOrderId}`), 5000);
+        setTimeout(() => verifyPayment(`MT_${targetMainOrderId}`, targetMainOrderId), 5000);
     }
   };
 
