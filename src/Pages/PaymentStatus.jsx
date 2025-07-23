@@ -1,89 +1,177 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { toast } from "react-toastify";
-import { paymentstatusAPI } from "../Services/orderconfirm";
 import { XCircle, Loader2, CheckCircle } from "lucide-react";
+import { BASE_URL } from "../Services/baseUrl";
+
 
 function PaymentStatus() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState(null);
+  const [message, setMessage] = useState("");
   const [orderDetails, setOrderDetails] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Extract orderId from URL if present
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get("order_id");
+
+  const clearPendingOrder = () => {
+    localStorage.removeItem("pendingPhonePeOrder");
+  };
+
   useEffect(() => {
-  const verifyPayment = async () => {
-    const pendingOrder = JSON.parse(localStorage.getItem("pendingPhonePeOrder"));
+    // Check if we have a pending order in localStorage
+    const pendingOrder = localStorage.getItem("pendingPhonePeOrder");
+    if (pendingOrder) {
+      const orderData = JSON.parse(pendingOrder);
+      setOrderDetails(orderData);
 
-    if (!pendingOrder?.orderId) {
-      toast.error("Order session expired. Please check your orders.");
-      setLoading(false);
-      return;
+      // If we have an order_id in URL, verify payment
+      if (orderId) {
+        verifyPayment(orderId);
+      } else {
+        // If no order_id but we have pending order, check status
+        checkOrderStatus(orderData.mainOrderId);
+      }
+    } else if (orderId) {
+      // If we have order_id but no localStorage entry, still try to verify
+      verifyPayment(orderId);
+    } else {
+      // No order information at all
+      setStatus("error");
+      setMessage("No order information found. Redirecting to home...");
+      setTimeout(() => navigate("/"), 3000);
     }
+  }, [orderId, navigate]);
 
+  const checkOrderStatus = async (mainOrderId) => {
     try {
-      const response = await paymentstatusAPI(pendingOrder.orderId, "order");
-      console.log("Payment verification response:", response);
+      const response = await axios.get(
+        `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
+      );
 
-      const result = response.data || response;
-      setOrderDetails(result);
-
-      if (
-        (result.phonepeStatus && 
-          ["SUCCESS", "COMPLETED"].includes(result.phonepeStatus)) ||
-        result.paymentStatus === "Paid"
-      ) {
+      if (response.data.paymentStatus === "Completed") {
         setStatus("success");
-        localStorage.removeItem("pendingPhonePeOrder");
-        navigate("/order-confirmed", {
-          state: { orderId: result.orderId },
-          replace: true,
-        });
-      } 
-      else if (
-        result.phonepeStatus === "FAILED" ||
-        result.paymentStatus === "Failed"
-      ) {
-        setStatus("failed");
-        localStorage.removeItem("pendingPhonePeOrder");
-      } 
-      else {
-        setTimeout(verifyPayment, 2000);
-        return;
+        setMessage("Payment successful! Redirecting to order confirmation...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+        }, 3000);
+      } else if (response.data.paymentStatus === "Processing") {
+        setStatus("pending");
+        setMessage(
+          "Payment is still processing. We'll notify you when complete."
+        );
+        setTimeout(() => checkOrderStatus(mainOrderId), 5000);
+      } else {
+        setStatus("error");
+        setMessage("Payment failed. Redirecting to checkout...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate(`/checkout?retry_order=${mainOrderId}`);
+        }, 3000);
       }
     } catch (error) {
-      console.error("Payment verification error:", error);
-      toast.error("Failed to verify payment status");
+      console.error("Error checking order status:", error);
       setStatus("error");
+      setMessage("Error verifying payment status. Redirecting to home...");
+      clearPendingOrder();
+      setTimeout(() => navigate("/"), 3000);
     } finally {
       setLoading(false);
     }
   };
 
-  verifyPayment();
-}, [location, navigate]);
+  const verifyPayment = async (transactionId) => {
+    try {
+      setStatus("verifying");
+      setMessage("Verifying your payment...");
 
-  const handleRetry = () => {
-    navigate("/checkout");
+      let mainOrderId;
+      if (orderDetails) {
+        mainOrderId = orderDetails.mainOrderId;
+      } else {
+        mainOrderId = transactionId.replace("MT_", "");
+      }
+
+      const response = await axios.get(
+        `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
+      );
+
+      if (response.data.paymentStatus === "Completed") {
+        setStatus("success");
+        setMessage("Payment successful! Redirecting to order confirmation...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+        }, 3000);
+      } else if (response.data.paymentStatus === "Processing") {
+        if (response.data.phonepeStatus) {
+          handlePhonePeStatus(response.data.phonepeStatus, mainOrderId);
+        } else {
+          setStatus("pending");
+          setMessage(
+            "Payment is still processing. We'll notify you when complete."
+          );
+          setTimeout(() => verifyPayment(transactionId), 5000);
+        }
+      } else {
+        setStatus("error");
+        setMessage("Payment failed. Redirecting to checkout...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate(`/checkout?retry_order=${mainOrderId}`);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Payment verification error:", error);
+      setStatus("error");
+      setMessage("Verification failed. Redirecting to home...");
+      clearPendingOrder();
+      setTimeout(() => navigate("/"), 3000);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleBackToCart = () => {
-    navigate("/cart");
+  const handlePhonePeStatus = (phonepeStatus, mainOrderId) => {
+    switch (phonepeStatus) {
+      case "checkout.order.completed":
+        setStatus("success");
+        setMessage("Payment successful! Redirecting to order confirmation...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+        }, 3000);
+        break;
+      case "checkout.order.failed":
+      case "checkout.transaction.attempt.failed":
+        setStatus("error");
+        setMessage("Payment failed. Redirecting to checkout...");
+        clearPendingOrder();
+        setTimeout(() => {
+          navigate(`/checkout?retry_order=${mainOrderId}`);
+        }, 3000);
+        break;
+      default:
+        setStatus("pending");
+        setMessage(
+          "Payment is still processing. We'll notify you when complete."
+        );
+        setTimeout(() => verifyPayment(`MT_${mainOrderId}`), 5000);
+    }
   };
 
-  if (loading) {
+  if (loading || status === "verifying" || status === "pending") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
-          <div className="flex flex-col items-center">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-            <p className="text-lg font-medium text-gray-700">
-              Verifying your payment...
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              This may take a few moments
-            </p>
-          </div>
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+          <p className="text-lg font-medium text-gray-700">{message}</p>
+          <p className="text-sm text-gray-500 mt-2">This may take a few moments</p>
         </div>
       </div>
     );
@@ -97,49 +185,18 @@ function PaymentStatus() {
           <h2 className="text-2xl font-bold text-green-600 mb-2">
             Payment Successful!
           </h2>
-          <p className="text-gray-600 mb-6">
-            Your order has been confirmed. You'll be redirected shortly.
-          </p>
+          <p className="text-gray-600 mb-6">{message}</p>
         </div>
       </div>
     );
   }
 
-  // Failed or error state
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white shadow-lg rounded-2xl p-8 max-w-md w-full text-center">
         <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-red-600 mb-2">
-          {status === "failed" ? "Payment Failed" : "Error Occurred"}
-        </h2>
-
-        {orderDetails?.orderId && (
-          <p className="text-sm text-gray-500 mb-2">
-            Order ID: {orderDetails.orderId}
-          </p>
-        )}
-
-        <p className="text-gray-600 mb-6">
-          {status === "failed"
-            ? "Your payment was not completed. Please try again."
-            : "We encountered an error verifying your payment. Please check your orders."}
-        </p>
-
-        <div className="space-y-3">
-          <button
-            onClick={handleRetry}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors"
-          >
-            Try Again
-          </button>
-          <button
-            onClick={handleBackToCart}
-            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2 rounded-lg font-medium transition-colors"
-          >
-            Back to Cart
-          </button>
-        </div>
+        <h2 className="text-2xl font-bold text-red-600 mb-2">Payment Failed</h2>
+        <p className="text-gray-600 mb-6">{message}</p>
       </div>
     </div>
   );
