@@ -94,7 +94,7 @@ const handlePlaceOrder = async () => {
             })
           );
           // Update redirect URL to use order_id
-          window.location.href = `${response.paymentUrl}&order_id=${response.mainOrderId}`;
+          window.location.href = `${response.paymentUrl}&orderId=${response.mainOrderId}`;
         } else {
           throw new Error("Payment URL not received from server");
         }
