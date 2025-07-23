@@ -57,7 +57,7 @@ function Checkout() {
     fetchAddressesAndCart();
   }, []);
 
-  const handlePlaceOrder = async () => {
+const handlePlaceOrder = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
       toast.error("Please log in to place an order.");
@@ -68,6 +68,7 @@ function Checkout() {
       toast.warn("Please select a delivery address.");
       return;
     }
+
 
     try {
       const orderData = {
@@ -88,20 +89,23 @@ function Checkout() {
           localStorage.setItem(
             "pendingPhonePeOrder",
             JSON.stringify({
-              mainOrderId: response.mainOrderId,
-              transactionId: response.phonepeTransactionId,
+              orderId: response.mainOrderId, // Changed from mainOrderId to orderId
               timestamp: new Date().getTime(),
             })
           );
-          window.location.href = response.paymentUrl;
+          // Update redirect URL to use order_id
+          window.location.href = `${response.paymentUrl}&order_id=${response.mainOrderId}`;
         } else {
           throw new Error("Payment URL not received from server");
         }
       }
     } catch (error) {
-      toast.error("placed",error);
-      
-    }
+      console.error("Order placement error:", error);
+      toast.error(
+        error.response?.data?.message || 
+        "Failed to place order. Please try again."
+      );
+    } 
   };
   
 
