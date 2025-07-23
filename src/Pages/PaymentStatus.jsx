@@ -85,57 +85,59 @@ function PaymentStatus() {
     }
   };
 
-  const verifyPayment = async (transactionId) => {
-    try {
-      setStatus("verifying");
-      setMessage("Verifying your payment...");
-
-      let mainOrderId;
-      if (orderDetails) {
-        mainOrderId = orderDetails.mainOrderId;
-      } else {
-        mainOrderId = transactionId.replace("MT_", "");
-      }
-
-      const response = await axios.get(
-        `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
-      );
-
-      if (response.data.paymentStatus === "Completed") {
-        setStatus("success");
-        setMessage("Payment successful! Redirecting to order confirmation...");
-        clearPendingOrder();
-        setTimeout(() => {
-          navigate("/order-confirmation", { state: { orderId: mainOrderId } });
-        }, 3000);
-      } else if (response.data.paymentStatus === "Processing") {
-        if (response.data.phonepeStatus) {
-          handlePhonePeStatus(response.data.phonepeStatus, mainOrderId);
-        } else {
-          setStatus("pending");
-          setMessage(
-            "Payment is still processing. We'll notify you when complete."
-          );
-          setTimeout(() => verifyPayment(transactionId), 5000);
-        }
-      } else {
-        setStatus("error");
-        setMessage("Payment failed. Redirecting to checkout...");
-        clearPendingOrder();
-        setTimeout(() => {
-          navigate(`/checkout?retry_order=${mainOrderId}`);
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Payment verification error:", error);
-      setStatus("error");
-      setMessage("Verification failed. Redirecting to home...");
-      clearPendingOrder();
-      setTimeout(() => navigate("/"), 3000);
-    } finally {
-      setLoading(false);
+ const verifyPayment = async (transactionId) => {
+  try {
+    setStatus("verifying");
+    setMessage("Verifying your payment...");
+    let mainOrderId;
+    if (orderDetails) {
+      mainOrderId = orderDetails.mainOrderId;
+    } else {
+      mainOrderId = transactionId.replace("MT_", "");
     }
-  };
+    const response = await axios.get(
+      `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
+    );
+    // CHANGED: Check for "Paid" instead of "Completed"
+    if (response.data.paymentStatus === "Paid") {
+      setStatus("success");
+      setMessage("Payment successful! Redirecting to order confirmation...");
+      clearPendingOrder();
+      setTimeout(() => {
+        navigate("/order-confirmation", { state: { orderId: mainOrderId } });
+      }, 3000);
+    } else if (response.data.paymentStatus === "Processing") {
+      if (response.data.phonepeStatus) {
+        handlePhonePeStatus(response.data.phonepeStatus, mainOrderId);
+      } else {
+        setStatus("pending");
+        setMessage(
+          "Payment is still processing. We'll notify you when complete."
+        );
+        setTimeout(() => verifyPayment(transactionId), 5000);
+      }
+    } else {
+      setStatus("error");
+      setMessage("Payment failed. Redirecting to checkout...");
+      clearPendingOrder();
+      setTimeout(() => {
+        navigate(`/checkout?retry_order=${mainOrderId}`);
+      }, 3000);
+    }
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    setStatus("error");
+    setMessage("Verification failed. Redirecting to home...");
+    clearPendingOrder();
+    setTimeout(() => navigate("/"), 3000);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
 
   const handlePhonePeStatus = (phonepeStatus, mainOrderId) => {
     switch (phonepeStatus) {
