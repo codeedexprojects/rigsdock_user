@@ -13,64 +13,68 @@ function PaymentStatus() {
 
   useEffect(() => {
     const verifyPayment = async () => {
-      const params = new URLSearchParams(location.search);
-      const orderId = params.get("orderId"); // Ensure consistent param name
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get("orderId");
 
-      if (!orderId) {
-        toast.error("No order ID found.");
-        setLoading(false);
-        return;
-      }
+  if (!orderId) {
+    toast.error("No order ID found.");
+    setLoading(false);
+    return;
+  }
 
-      try {
-        // Check local storage for pending order
-        const pendingOrder = JSON.parse(
-          localStorage.getItem("pendingPhonePeOrder")
-        );
+  try {
+    const pendingOrder = JSON.parse(
+      localStorage.getItem("pendingPhonePeOrder")
+    );
 
-        if (!pendingOrder) {
-          toast.error("Order session expired. Please check your orders.");
-          setLoading(false);
-          return;
-        }
+    if (!pendingOrder) {
+      toast.error("Order session expired. Please check your orders.");
+      setLoading(false);
+      return;
+    }
 
-        // Verify payment status using orderId
-        const result = await paymentstatusAPI(orderId, "order");
-        console.log("Payment verification result:", result);
+    const response = await paymentstatusAPI(orderId, "order");
+    console.log("Payment verification response:", response);
 
-        setOrderDetails(result);
+    // Handle the response data structure properly
+    const result = response.data || response;
+    setOrderDetails(result);
 
-        // Handle status cases
-        if (
-          result.phonepeStatus === "SUCCESS" ||
-          result.paymentStatus === "Paid" ||
-          result.phonepeStatus === "COMPLETED"
-        ) {
-          // Successful payment
-          setStatus("success");
-          localStorage.removeItem("pendingPhonePeOrder");
+    // Check for success conditions
+    if (
+      (result.phonepeStatus && 
+        ["SUCCESS", "COMPLETED"].includes(result.phonepeStatus)) ||
+      result.paymentStatus === "Paid"
+    ) {
+      setStatus("success");
+      localStorage.removeItem("pendingPhonePeOrder");
 
-          navigate("/order-confirmed", {
-            state: { orderId: result.orderId },
-            replace: true,
-          });
-        } else if (result.phonepeStatus === "FAILED") {
-          // Payment failed
-          setStatus("failed");
-          localStorage.removeItem("pendingPhonePeOrder");
-        } else {
-          // Still processing
-          setTimeout(verifyPayment, 2000);
-          return;
-        }
-      } catch (error) {
-        console.error("Payment verification error:", error);
-        toast.error("Failed to verify payment status");
-        setStatus("error");
-      } finally {
-        setLoading(false);
-      }
-    };
+      navigate("/order-confirmed", {
+        state: { orderId: result.orderId },
+        replace: true,
+      });
+    } 
+    // Check for failure conditions
+    else if (
+      result.phonepeStatus === "FAILED" ||
+      result.paymentStatus === "Failed"
+    ) {
+      setStatus("failed");
+      localStorage.removeItem("pendingPhonePeOrder");
+    } 
+    // Still processing
+    else {
+      setTimeout(verifyPayment, 2000);
+      return;
+    }
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    toast.error("Failed to verify payment status");
+    setStatus("error");
+  } finally {
+    setLoading(false);
+  }
+};
 
     verifyPayment();
   }, [location, navigate]);
