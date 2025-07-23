@@ -13,16 +13,16 @@ function PaymentStatus() {
   useEffect(() => {
     const checkStatus = async () => {
       const params = new URLSearchParams(location.search);
-      const transactionId  = params.get("transaction_id");
+      const orderId  = params.get("orderId");
 
-      if (!transactionId) {
+      if (!orderId) {
         toast.error("No order ID found.");
         setLoading(false);
         return;
       }
 
       try {
-        const result = await paymentstatusAPI(transactionId,"transaction");
+        const result = await paymentstatusAPI(orderId,"transaction");
         console.log("Payment Status:", result);
 
         if (result.phonepeStatus === "COMPLETED") {
