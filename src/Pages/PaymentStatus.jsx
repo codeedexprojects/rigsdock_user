@@ -53,7 +53,7 @@ function PaymentStatus() {
         `${BASE_URL}/api/user/order/payment-status/${mainOrderId}`
       );
 
-      if (response.data.paymentStatus === "Completed") {
+      if (response.data.paymentStatus === "Paid") {
         setStatus("success");
         setMessage("Payment successful! Redirecting to order confirmation...");
         clearPendingOrder();
