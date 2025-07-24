@@ -25,7 +25,7 @@ function About() {
       <ChatBox/>
       <div className="max-w-7xl mx-auto  sm:mt-10 px-2 sm:px-4 mb-6 sm:mb-10">
         {/* Tab Headers - Made horizontal scrollable on mobile */}
-        <div className="flex overflow-x-auto pb-2 sm:pb-0 sm:justify-center mt-56 border-b border-gray-200 hide-scrollbar">
+        <div className="flex overflow-x-auto pb-2 sm:pb-0 sm:justify-center mt-40 border-b border-gray-200 hide-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab.id}

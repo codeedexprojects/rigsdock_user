@@ -140,26 +140,6 @@ function Shop() {
 
   const products = AllProducts;
 
-  const categories = [
-    { name: "Our Store", count: 24 },
-    { name: "Storage Devices", count: 5 },
-    { name: "Input Devices", count: 6 },
-    { name: "Cooling Sysytem", count: 6 },
-    { name: "Laptop Screw", count: 6 },
-    { name: "Output Devices", count: 20 },
-    { name: "Gaming Chairs", count: 7 },
-  ];
-
-  const brands = [
-    "Apple",
-    "Samsung",
-    "Sony",
-    "Google",
-    "Microsoft",
-    "Dell",
-    "HP",
-  ];
-
   const toggleFilter = (filterName) => {
     setExpandedFilters((prev) => ({
       ...prev,
@@ -245,7 +225,7 @@ function Shop() {
       onClick={handleProductClick}
     />
     <button
-      className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
+      className="absolute top-0 right-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
       onClick={(e) => handleAddToWishlist(product.id, e)}
     >
       <Heart className="text-red-500 w-4 h-4 sm:w-5 sm:h-5" />
@@ -276,12 +256,13 @@ function Shop() {
             </li>
           ))}
         </ul> */}
-        <button
-          className="w-full bg-blue-800 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-800 transition-colors text-base mt-auto"
-          onClick={() => handleAddToCart(product.id)}
-        >
-          {product.buttonText}
-        </button>
+       <button
+  className="bg-blue-800 text-white font-medium py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm"
+  onClick={() => handleAddToCart(product.id)}
+>
+  {product.buttonText}
+</button>
+
       </div>
     );
   };
@@ -290,19 +271,19 @@ function Shop() {
     <>
       <Header />
       <ChatBox/>
-      <div className="bg-white shadow-sm mt-56"></div>
+      <div className="bg-white shadow-sm mt-40"></div>
 
-      <div className="lg:hidden flex justify-end ">
+      <div className="lg:hidden flex justify-start ">
         <button
           onClick={() => setShowMobileFilters(true)}
-          className="bg-blue-800 text-white px-5 py-2 me-3 rounded-md text-sm font-medium"
+          className="bg-blue-800 text-white px-5 py-2 ms-4 w-[350px] rounded-md text-sm font-medium"
         >
           Filter
         </button>
       </div>
 
       {showMobileFilters && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-end">
+        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-white/30 flex justify-start">
           <div className="w-4/5 max-w-xs bg-white h-full p-4 overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
@@ -356,7 +337,7 @@ function Shop() {
               </div>
               <button
                 onClick={handlePriceFilter}
-                className="w-full bg-blue-800 text-white py-2 rounded-md text-sm font-medium"
+                className=" bg-blue-800 text-white py-2 w-[140px] rounded-md text-sm font-medium"
               >
                 Apply Price Filter
               </button>
@@ -365,7 +346,7 @@ function Shop() {
             {/* Rating Filter */}
             <div className="mb-6">
               <h3 className="text-md font-semibold mb-2">Rating</h3>
-              {[5, 4, 3, 2, 1].map((rating) => (
+              {[5, 4,].map((rating) => (
                 <label
                   key={rating}
                   className={`flex items-center mb-2 cursor-pointer ${
@@ -539,11 +520,11 @@ function Shop() {
 
             {/* Right Side - Products */}
             <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+              {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
                 <p className="text-gray-600 text-base">
                   Showing 1–{products.length} of {products.length} results
                 </p>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {products.map((product) => (

@@ -13,40 +13,32 @@ function PaymentStatus() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Extract both orderId and mainOrderId from URL if present
   const params = new URLSearchParams(location.search);
   const orderId = params.get("order_id");
-  const mainOrderId = params.get("mainOrderId"); // Get mainOrderId from params (matches backend)
+  const mainOrderId = params.get("mainOrderId"); 
 
   const clearPendingOrder = () => {
     localStorage.removeItem("pendingPhonePeOrder");
   };
 
   useEffect(() => {
-    // Check if we have a pending order in localStorage
     const pendingOrder = localStorage.getItem("pendingPhonePeOrder");
     if (pendingOrder) {
       const orderData = JSON.parse(pendingOrder);
       setOrderDetails(orderData);
 
-      // If we have mainOrderId in URL params, use it; otherwise use from orderData
       const targetMainOrderId = mainOrderId || orderData.mainOrderId;
 
-      // If we have an order_id in URL, verify payment
       if (orderId) {
         verifyPayment(orderId, targetMainOrderId);
       } else {
-        // If no order_id but we have pending order, check status
         checkOrderStatus(targetMainOrderId);
       }
     } else if (orderId && mainOrderId) {
-      // If we have both IDs but no localStorage entry, still try to verify
       verifyPayment(orderId, mainOrderId);
     } else if (mainOrderId) {
-      // If we only have mainOrderId, check its status directly
       checkOrderStatus(mainOrderId);
     } else {
-      // No order information at all
       setStatus("error");
       setMessage("No order information found. Redirecting to home...");
       setTimeout(() => navigate("/"), 3000);
@@ -56,7 +48,7 @@ function PaymentStatus() {
   const checkOrderStatus = async (targetMainOrderId) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/user/order/payment-status/${targetMainOrderId}`
+        `${BASE_URL}/user/order/payment-status/${targetMainOrderId}`
       );
 
       if (response.data.paymentStatus === "Paid") {
@@ -64,7 +56,7 @@ function PaymentStatus() {
         setMessage("Payment successful! Redirecting to order confirmation...");
         clearPendingOrder();
         setTimeout(() => {
-          navigate("/order-confirmation", { state: { orderId: targetMainOrderId } });
+          navigate("/order-confirmed", { state: { orderId: targetMainOrderId } });
         }, 3000);
       } else if (response.data.paymentStatus === "Processing") {
         setStatus("pending");
@@ -96,12 +88,10 @@ function PaymentStatus() {
       setStatus("verifying");
       setMessage("Verifying your payment...");
       
-      // Use the mainOrderId passed as parameter (from URL params or orderDetails)
       const response = await axios.get(
         `${BASE_URL}/api/user/order/payment-status/${targetMainOrderId}`
       );
       
-      // Check for "Paid" status
       if (response.data.paymentStatus === "Paid") {
         setStatus("success");
         setMessage("Payment successful! Redirecting to order confirmation...");

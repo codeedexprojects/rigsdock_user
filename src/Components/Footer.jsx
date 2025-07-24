@@ -9,22 +9,6 @@ function Footer() {
       {/* Newsletter Section */}
       <div className="bg-[rgb(10,95,191)] text-white px-4 py-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <h2 className="text-xl md:text-2xl font-semibold text-center md:text-left">
-            Sign Up For Newsletters
-          </h2>
-          <p className="text-sm md:text-base text-center md:text-left">
-            Join our email list and be the first to hear
-          </p>
-          <div className="flex w-full md:w-auto">
-            <input
-              type="email"
-              placeholder="Email"
-              className="p-2 rounded-l-full w-full md:w-64 outline-none text-black bg-gray-50"
-            />
-            <button className="bg-black text-white px-4 py-2 rounded-r-full hover:bg-gray-800">
-              Subscribe
-            </button>
-          </div>
         </div>
       </div>
 

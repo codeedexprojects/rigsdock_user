@@ -47,9 +47,34 @@ function Home() {
   const navigate = useNavigate();
   const SERVER_URL = "https://rigsdock.com";
   const [dealTimers, setDealTimers] = useState({});
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const offersToShow = homeOffers.slice(0, 2);
+
+  // Auto-slide functionality
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(slideInterval);
+  }, [homeOffers]);
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  const goToPrevious = () => {
+    setCurrentSlide((prev) =>
+      prev === 0 ? homeOffers.slice(0, 3).length - 1 : prev - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
+  };
 
   const calculateTimeLeft = (createdAt) => {
-    const endTime = new Date(createdAt).getTime() + 7 * 24 * 60 * 60 * 1000;
+    const endTime = new Date(createdAt).getTime() + 1 * 24 * 60 * 60 * 1000;
     const now = new Date().getTime();
     const diff = endTime - now;
 
@@ -62,6 +87,7 @@ function Home() {
       seconds: Math.floor((diff / 1000) % 60),
     };
   };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -102,6 +128,7 @@ function Home() {
 
     fetchProducts();
   }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setDealTimers((prevTimers) => {
@@ -178,7 +205,7 @@ function Home() {
       try {
         const result = await getBlogAPI();
         setBlogs(result.data || []);
-      } catch (error) {
+      } catch(error) {
         toast.error(error.data.response.message);
       }
     };
@@ -192,10 +219,12 @@ function Home() {
         setHomeOffers(result.data || []);
       } catch (error) {
         toast.error(error.response.data.message);
+        
       }
     };
     fetchHomeOffer();
   }, []);
+
   useEffect(() => {
     const fetchHomeCategories = async () => {
       try {
@@ -239,15 +268,11 @@ function Home() {
   useEffect(() => {
     const handleResize = () => {
       setItemsPerSlide(getItemsPerSlide());
-      // setCurrentIndex(0);
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // const totalSlides = Math.ceil(products.length / itemsPerSlide);
-  // const maxIndex = totalSlides - 1;
 
   const nextDealSlide = () => {
     setDealCurrentIndex((prev) =>
@@ -328,14 +353,14 @@ function Home() {
 
       setSubCategoryMap((prev) => ({
         ...prev,
-        [catId]: subcategories || [], // ✅ Even if empty
+        [catId]: subcategories || [],
       }));
     } catch (err) {
       if (err?.response?.status === 404) {
         console.warn(`No subcategories found for ${catId}`);
         setSubCategoryMap((prev) => ({
           ...prev,
-          [catId]: [], // ✅ Treat as empty, no error shown
+          [catId]: [],
         }));
       } else {
         console.error("Error fetching subcategories:", err);
@@ -354,6 +379,7 @@ function Home() {
       fetchCategoriesForMain(mainCatId);
     }
   };
+
   const fetchCategoriesForMain = async (mainCatId) => {
     try {
       const res = await viewCategoriesAPI(mainCatId);
@@ -365,6 +391,7 @@ function Home() {
       console.error("Failed to fetch categories for main category", error);
     }
   };
+
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
@@ -401,34 +428,39 @@ function Home() {
   const navigateToProduct = (productId) => {
     navigate(`/product-details/${productId}`);
   };
+
   return (
     <>
       <Header />
       <ChatBox />
-      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl  font-bold text-gray-900 mb-6 text-center mt-40">
+      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 text-center mt-58">
         Welcome to <span className="text-blue-700">RIGSDOCK</span>
       </h2>
 
       <div className="w-full px-4 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
+        {/* Desktop Layout - Same as original */}
+        <div className="hidden lg:flex flex-row gap-6">
           {homeOffers.slice(0, 3).map((offer, index) => {
             const product = offer.productIds?.[0];
-          const bgImage = offer.image
-  ? `${SERVER_URL}/uploads/${offer.image.split('\\').pop().split('/').pop()}`
-  : "https://source.unsplash.com/600x400/?gadget,tech";
-return (
-             <div
-  key={offer._id}
-  className={`${
-    index === 0 ? "flex-[2]" : "flex-1"
-  } rounded-2xl overflow-hidden min-h-[400px] flex flex-col justify-end p-6 lg:p-8 bg-black text-white`}
-  style={{
-    backgroundImage: `url(${bgImage})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  }}
->
-
+            const bgImage = offer.image
+              ? `${SERVER_URL}/uploads/${offer.image
+                  .split("\\")
+                  .pop()
+                  .split("/")
+                  .pop()}`
+              : "https://source.unsplash.com/600x400/?gadget,tech";
+            return (
+              <div
+                key={offer._id}
+                className={`${
+                  index === 0 ? "flex-[2]" : "flex-1"
+                } rounded-2xl overflow-hidden min-h-[400px] flex flex-col justify-end p-6 lg:p-8 bg-black text-white`}
+                style={{
+                  backgroundImage: `url(${bgImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
                 <div className="bg-black/50 p-4 rounded-xl">
                   <h2 className="text-2xl lg:text-3xl font-bold mb-2">
                     {offer.name}
@@ -461,7 +493,127 @@ return (
             );
           })}
         </div>
+
+        {/* Mobile Slider Layout */}
+        <div className="lg:hidden relative">
+          {/* Slider Container */}
+          <div className="overflow-hidden rounded-2xl">
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {homeOffers.slice(0, 3).map((offer, index) => {
+                const product = offer.productIds?.[0];
+                const bgImage = offer.image
+                  ? `${SERVER_URL}/uploads/${offer.image
+                      .split("\\")
+                      .pop()
+                      .split("/")
+                      .pop()}`
+                  : "https://source.unsplash.com/600x400/?gadget,tech";
+                return (
+                  <div
+                    key={offer._id}
+                    className="w-full flex-shrink-0 min-h-[400px] flex flex-col justify-end p-6 bg-black text-white relative"
+                    style={{
+                      backgroundImage: `url(${bgImage})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                    <div className="bg-black/50 p-4 rounded-xl">
+                      <h2 className="text-2xl font-bold mb-2">{offer.name}</h2>
+                      <h3 className="text-sm mb-2">{offer.description}</h3>
+
+                      {product ? (
+                        <div className="mb-2">
+                          {product.price !== product.finalPrice && (
+                            <span className="text-gray-300 text-sm line-through mr-2">
+                              ₹{product.price}
+                            </span>
+                          )}
+                          <span className="text-xl font-bold text-white">
+                            ₹{product.finalPrice}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-sm">No product available</p>
+                      )}
+
+                      <button
+                        onClick={() =>
+                          product && navigateToProduct(product._id)
+                        }
+                        className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full transition-colors mt-4"
+                      >
+                        Shop Now
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={goToPrevious}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
+            aria-label="Previous slide"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={goToNext}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
+            aria-label="Next slide"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          {/* Dot Indicators */}
+          <div className="flex justify-center space-x-2 mt-4">
+            {homeOffers.slice(0, 3).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  currentSlide === index
+                    ? "bg-blue-600"
+                    : "bg-gray-400 hover:bg-gray-300"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
+
       <div
         className={`min-h-screen mt-5 transition-colors duration-300 ${
           isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
@@ -501,9 +653,7 @@ return (
                           <div
                             className="flex transition-transform duration-300 ease-in-out"
                             style={{
-                              transform: `translateX(-${
-                                dealCurrentIndex * 100
-                              }%)`,
+                              transform: `translateX(-${dealCurrentIndex * 100}%)`,
                             }}
                           >
                             {activeDeals.map((deal) => {
@@ -656,7 +806,7 @@ return (
               </div>
             </div>
 
-            {/* Main Products Section */}
+            {/* On Sale Products Section */}
             <div className="px-4 py-4">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">On Sale Products</h2>
@@ -691,9 +841,7 @@ return (
                   >
                     {Array.from(
                       {
-                        length: Math.ceil(
-                          latestProducts.length / itemsPerSlide
-                        ),
+                        length: Math.ceil(latestProducts.length / itemsPerSlide),
                       },
                       (_, slideIndex) => (
                         <div key={slideIndex} className="w-full flex-shrink-0">
@@ -706,13 +854,11 @@ return (
                               .map((product) => (
                                 <div
                                   key={product._id}
-                                  className={`rounded-xl p-4 flex flex-col h-full ${
-                                    isDark ? "bg-gray-800" : "bg-white"
-                                  } shadow-md hover:shadow-lg transition-shadow relative`}
+                                  className={`rounded-xl p-2 sm:p-8 flex flex-col h-full bg-white shadow-md hover:shadow-lg transition-shadow relative w-[260px] sm:w-[220px]`}
                                 >
                                   {/* Sale Badge */}
                                   {product.price !== product.finalPrice && (
-                                    <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
+                                    <span className="absolute top-2 left-2 bg-yellow-400 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">
                                       Sale
                                     </span>
                                   )}
@@ -723,13 +869,13 @@ return (
                                       e.stopPropagation();
                                       handleAddToWishlist(product._id);
                                     }}
-                                    className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                                    className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full hover:bg-white transition-colors"
                                   >
                                     <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
                                   </button>
 
                                   {/* Product Image */}
-                                  <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
+                                  <div className="aspect-square mb-2 overflow-hidden rounded-lg flex items-center justify-center bg-white">
                                     <img
                                       src={
                                         product.images &&
@@ -748,21 +894,21 @@ return (
 
                                   {/* Product Info */}
                                   <div className="flex-grow">
-                                    <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
-                                      {product.name}
+                                    <h3 className="text-xs sm:text-sm font-semibold mb-1">
+                                      {product.name.slice(0, 10)}
                                     </h3>
 
                                     <div className="flex text-yellow-400 text-sm mb-1">
                                       {renderStars(product.averageRating)}
                                     </div>
 
-                                    <div className="text-sm mb-3">
+                                    <div className="text-sm">
                                       {product.price !== product.finalPrice && (
-                                        <span className="text-gray-400 line-through mr-1">
+                                        <span className="text-gray-400 line-through mr-1 text-xs">
                                           ₹{product.price}
                                         </span>
                                       )}
-                                      <span className="text-blue-600 font-bold">
+                                      <span className="text-blue-600 font-bold text-sm">
                                         ₹{product.finalPrice}
                                       </span>
                                     </div>
@@ -770,10 +916,8 @@ return (
 
                                   {/* View Product Button */}
                                   <button
-                                    onClick={() =>
-                                      navigateToProduct(product._id)
-                                    }
-                                    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
+                                    onClick={() => navigateToProduct(product._id)}
+                                    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1.5 rounded-md text-xs font-medium transition-colors mt-2"
                                   >
                                     View Product
                                   </button>
@@ -788,83 +932,234 @@ return (
               )}
 
               {/* Image Cards Section - Now positioned after the products */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {homeOffers.slice(0, 2).map((offer) => {
-                  const product = offer.productIds?.[0];
-                  return (
-                    <div
-                      key={offer._id}
-                      className="relative group h-64 rounded-2xl overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
-                      onClick={() => product && navigateToProduct(product._id)}
-                    >
-                      {/* Background Image */}
-                     <div
-  className="absolute inset-0"
-  style={{
-    backgroundImage: `url(${
-      offer.image
-        ? `${SERVER_URL}/uploads/${offer.image.split('/').pop()}`
-        : "https://source.unsplash.com/600x400/?electronics,tech"
-    })`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  }}
-/>
+              <div className="w-full">
+                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {offersToShow.map((offer) => {
+                    const product = offer.productIds?.[0];
+                    return (
+                      <div
+                        key={offer._id}
+                        className="relative group h-64 rounded-2xl overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
+                        onClick={() => product && navigateToProduct(product._id)}
+                      >
+                        {/* Background Image */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage: `url(${
+                              offer.image
+                                ? `${SERVER_URL}/uploads/${offer.image
+                                    .split("/")
+                                    .pop()}`
+                                : "https://source.unsplash.com/600x400/?electronics,tech"
+                            })`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                          }}
+                        />
 
-                      {/* Overlay */}
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
 
-                      {/* Content */}
-                      <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                        <div>
-                          <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
-                            {offer.discountType === "percentage"
-                              ? `${offer.discountValue}% OFF`
-                              : "SPECIAL"}
-                          </span>
-                          <h3 className="text-white text-2xl font-bold mb-2">
-                            {offer.name}
-                          </h3>
-                          <p className="text-white/90 text-sm line-clamp-2">
-                            {offer.description}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          {product ? (
-                            <div>
-                              {product.price !== product.finalPrice && (
-                                <span className="text-white/80 text-sm line-through">
-                                  ₹{product.price}
-                                </span>
-                              )}
-                              <span className="text-white text-xl font-bold ml-2">
-                                ₹{product.finalPrice}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-white text-sm">
-                              No product
+                        {/* Content */}
+                        <div className="relative z-10 p-8 h-full flex flex-col justify-between">
+                          <div>
+                            <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
+                              {offer.discountType === "percentage"
+                                ? `${offer.discountValue}% OFF`
+                                : "SPECIAL"}
                             </span>
-                          )}
+                            <h3 className="text-white text-2xl font-bold mb-2">
+                              {offer.name}
+                            </h3>
+                            <p className="text-white/90 text-sm line-clamp-2">
+                              {offer.description}
+                            </p>
+                          </div>
 
-                          <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30">
-                            Shop Now
-                          </button>
+                          <div className="flex items-center justify-between">
+                            {product ? (
+                              <div>
+                                {product.price !== product.finalPrice && (
+                                  <span className="text-white/80 text-sm line-through">
+                                    ₹{product.price}
+                                  </span>
+                                )}
+                                <span className="text-white text-xl font-bold ml-2">
+                                  ₹{product.finalPrice}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-white text-sm">
+                                No product
+                              </span>
+                            )}
+
+                            <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30">
+                              Shop Now
+                            </button>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Decorative Elements */}
-                      <div className="absolute top-4 right-4 w-12 h-12 bg-white/10 rounded-full blur-xl" />
-                      <div className="absolute bottom-8 right-8 w-8 h-8 bg-yellow-400/30 rounded-full blur-lg" />
+                        {/* Decorative Elements */}
+                        <div className="absolute top-4 right-4 w-12 h-12 bg-white/10 rounded-full blur-xl" />
+                        <div className="absolute bottom-8 right-8 w-8 h-8 bg-yellow-400/30 rounded-full blur-lg" />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Mobile Slider Layout */}
+                <div className="md:hidden relative">
+                  {/* Slider Container */}
+                  <div className="overflow-hidden rounded-2xl">
+                    <div
+                      className="flex transition-transform duration-500 ease-in-out"
+                      style={{
+                        transform: `translateX(-${currentSlide * 100}%)`,
+                      }}
+                    >
+                      {offersToShow.map((offer) => {
+                        const product = offer.productIds?.[0];
+                        return (
+                          <div
+                            key={offer._id}
+                            className="w-full flex-shrink-0 relative group h-64 cursor-pointer"
+                            onClick={() =>
+                              product && navigateToProduct(product._id)
+                            }
+                          >
+                            {/* Background Image */}
+                            <div
+                              className="absolute inset-0"
+                              style={{
+                                backgroundImage: `url(${
+                                  offer.image
+                                    ? `${SERVER_URL}/uploads/${offer.image
+                                        .split("/")
+                                        .pop()}`
+                                    : "https://source.unsplash.com/600x400/?electronics,tech"
+                                })`,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                              }}
+                            />
+
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
+
+                            {/* Content */}
+                            <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+                              <div>
+                                <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
+                                  {offer.discountType === "percentage"
+                                    ? `${offer.discountValue}% OFF`
+                                    : "SPECIAL"}
+                                </span>
+                                <h3 className="text-white text-xl font-bold mb-2">
+                                  {offer.name}
+                                </h3>
+                                <p className="text-white/90 text-sm line-clamp-2">
+                                  {offer.description}
+                                </p>
+                              </div>
+
+                              <div className="flex items-center justify-between">
+                                {product ? (
+                                  <div>
+                                    {product.price !== product.finalPrice && (
+                                      <span className="text-white/80 text-sm line-through">
+                                        ₹{product.price}
+                                      </span>
+                                    )}
+                                    <span className="text-white text-lg font-bold ml-2">
+                                      ₹{product.finalPrice}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-white text-sm">
+                                    No product
+                                  </span>
+                                )}
+
+                                <button className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm">
+                                  Shop Now
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Decorative Elements */}
+                            <div className="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full blur-xl" />
+                            <div className="absolute bottom-6 right-6 w-6 h-6 bg-yellow-400/30 rounded-full blur-lg" />
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={goToPrevious}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
+                    aria-label="Previous slide"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={goToNext}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
+                    aria-label="Next slide"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Dot Indicators */}
+                  <div className="flex justify-center space-x-2 mt-4">
+                    {offersToShow.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToSlide(index)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          currentSlide === index
+                            ? "bg-yellow-400 scale-125"
+                            : "bg-white/50 hover:bg-white/70"
+                        }`}
+                        aria-label={`Go to slide ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       {/* Top Rated Section */}
       <div className="px-4 py-4">
         <div className="flex justify-between items-center mb-4">
@@ -908,7 +1203,7 @@ return (
                 { length: Math.ceil(topRatedProducts.length / itemsPerSlide) },
                 (_, slideIndex) => (
                   <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                       {topRatedProducts
                         .slice(
                           slideIndex * itemsPerSlide,
@@ -917,9 +1212,9 @@ return (
                         .map((product) => (
                           <div
                             key={product._id}
-                            className={`rounded-xl p-4 flex flex-col h-full ${
+                            className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
                               isDark ? "bg-gray-800" : "bg-white"
-                            } shadow-md hover:shadow-lg transition-shadow relative`}
+                            } shadow-md hover:shadow-lg transition-shadow relative w-full sm:w-auto`}
                           >
                             {/* Sale Badge */}
                             {product.price !== product.finalPrice && (
@@ -948,23 +1243,22 @@ return (
                                     : "https://via.placeholder.com/300"
                                 }
                                 alt={product.name}
-                                className="w-full h-full object-contain p-2"
+                                className="w-full h-full object-contain p-2 sm:p-3"
                                 onError={(e) => {
-                                  e.target.src =
-                                    "https://via.placeholder.com/300";
+                                  e.target.src = "https://via.placeholder.com/300";
                                 }}
                               />
                             </div>
 
                             {/* Product Info */}
                             <div className="flex-grow">
-                              <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                              <h3 className="text-xs sm:text-sm font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
                                 {product.name}
                               </h3>
-                              <div className="flex text-yellow-400 text-sm mb-1">
+                              <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">
                                 {renderStars(product.averageRating)}
                               </div>
-                              <div className="text-sm mb-3">
+                              <div className="text-xs sm:text-sm mb-3">
                                 {product.price !== product.finalPrice && (
                                   <span className="text-gray-400 line-through mr-1">
                                     ₹{product.price}
@@ -979,7 +1273,7 @@ return (
                             {/* View Product Button */}
                             <button
                               onClick={() => navigateToProduct(product._id)}
-                              className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
+                              className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
                             >
                               View Product
                             </button>
@@ -994,7 +1288,7 @@ return (
         )}
       </div>
 
-      {/* deal 3 card product */}
+      {/* Deal 3 Card Product */}
       <div className="w-full px-4 py-12">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -1034,7 +1328,8 @@ return (
                   {/* Floating Action Button */}
                   <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                     <svg
-                      className="w-5 h-5 text-gray-700"
+                      className="w-5 h-5 text-gray-7
+00"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1086,7 +1381,7 @@ return (
         </div>
       </div>
 
-      {/* shop by category section */}
+      {/* Shop by Category Section */}
       <section className="bg-white py-12 px-4 md:px-10">
         <div className="max-w-none">
           <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
@@ -1118,7 +1413,7 @@ return (
                   >
                     <div className="flex flex-col items-center text-center">
                       <img
-                        src={`${SERVER_URL}/uploads/${mainCat.image}`}
+                        src={`${SERVER_URL}/Uploads/${mainCat.image}`}
                         alt={mainCat.name}
                         className="w-16 h-16 object-cover rounded-md mb-2"
                         onError={(e) => {
@@ -1222,8 +1517,8 @@ return (
                     src={
                       homeCategories[0].image
                         ? homeCategories[0].image.replace(
-                            "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\uploads\\",
-                            `${SERVER_URL}/uploads/`
+                            "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\Uploads\\",
+                            `${SERVER_URL}/Uploads/`
                           )
                         : "https://source.unsplash.com/600x400/?electronics,gadgets"
                     }
@@ -1265,6 +1560,7 @@ return (
         </div>
       </section>
 
+      {/* New Arrivals Section */}
       <div className="mt-10 px-4 py-4">
         <div className="px-4 py-4">
           <div className="flex justify-between items-center mb-4">
@@ -1308,7 +1604,7 @@ return (
                   { length: Math.ceil(latestProducts.length / itemsPerSlide) },
                   (_, slideIndex) => (
                     <div key={slideIndex} className="w-full flex-shrink-0">
-                      <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                      <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                         {latestProducts
                           .slice(
                             slideIndex * itemsPerSlide,
@@ -1317,9 +1613,9 @@ return (
                           .map((product) => (
                             <div
                               key={product._id}
-                              className={`rounded-xl p-4 flex flex-col h-full ${
+                              className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
                                 isDark ? "bg-gray-800" : "bg-white"
-                              } shadow-md hover:shadow-lg transition-shadow relative`}
+                              } shadow-md hover:shadow-lg transition-shadow relative w-full sm:w-auto`}
                             >
                               {/* Sale Badge */}
                               {product.price !== product.finalPrice && (
@@ -1348,23 +1644,22 @@ return (
                                       : "https://via.placeholder.com/300"
                                   }
                                   alt={product.name}
-                                  className="w-full h-full object-contain p-2"
+                                  className="w-full h-full object-contain p-2 sm:p-3"
                                   onError={(e) => {
-                                    e.target.src =
-                                      "https://via.placeholder.com/300";
+                                    e.target.src = "https://via.placeholder.com/300";
                                   }}
                                 />
                               </div>
 
                               {/* Product Info */}
                               <div className="flex-grow">
-                                <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                                <h3 className="text-xs sm:text-sm font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
                                   {product.name}
                                 </h3>
-                                <div className="flex text-yellow-400 text-sm mb-1">
+                                <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">
                                   {renderStars(product.averageRating)}
                                 </div>
-                                <div className="text-sm mb-3">
+                                <div className="text-xs sm:text-sm mb-3">
                                   {product.price !== product.finalPrice && (
                                     <span className="text-gray-400 line-through mr-1">
                                       ₹{product.price}
@@ -1379,7 +1674,7 @@ return (
                               {/* View Product Button */}
                               <button
                                 onClick={() => navigateToProduct(product._id)}
-                                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs font-medium transition-colors mt-auto"
+                                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
                               >
                                 View Product
                               </button>
@@ -1393,133 +1688,140 @@ return (
             </div>
           )}
         </div>
-        <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
-          {/* Section Heading */}
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
-            Our Brands
-          </h2>
+      </div>
 
-          {/* Carousel Container */}
-          {brands?.length > 0 ? (
-            <div className="relative overflow-hidden">
-              {/* Gradient Overlays */}
-              <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
+      {/* Our Brands Section */}
+      <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+        {/* Section Heading */}
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
+          Our Brands
+        </h2>
 
-              {/* Sliding Container */}
-              <div className="flex animate-scroll">
-                {duplicatedBrands.map((brand, index) => (
-                  <div
-                    key={`${brand?._id || index}-${index}`}
-                    className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 bg-white hover:shadow-xl transition-all duration-300 hover:scale-105 group w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 lg:w-52 lg:h-32"
-                  >
-                    <div className="flex items-center justify-center h-full p-3 sm:p-4 md:p-6">
-                      <img
-                        src={
-                          brand?.image
-                            ? `${SERVER_URL}/uploads/${brand.image}`
-                            : "https://via.placeholder.com/150"
-                        }
-                        alt={brand?.name || "Brand"}
-                        className="max-h-8 sm:max-h-10 md:max-h-12 lg:max-h-16 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/150";
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              {loading ? "Loading brands..." : "No brands available"}
-            </div>
-          )}
+        {/* Carousel Container */}
+        {brands?.length > 0 ? (
+          <div className="relative overflow-hidden">
+            {/* Gradient Overlays */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
 
-          {/* Custom CSS for animation */}
-          <style>{`
-    @keyframes scroll {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-50%);
-      }
-    }
-    
-    .animate-scroll {
-      animation: scroll 25s linear infinite;
-    }
-    
-    .animate-scroll:hover {
-      animation-play-state: paused;
-    }
-
-    @media (max-width: 640px) {
-      .animate-scroll {
-        animation: scroll 20s linear infinite;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .animate-scroll {
-        animation: scroll 22s linear infinite;
-      }
-    }
-  `}</style>
-        </div>
-
-        <section className="px-4 py-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">From Our Blog</h2>
-            <button
-              onClick={() => navigate("/blog")}
-              className="text-blue-600 font-semibold hover:underline text-sm"
-            >
-              View More
-            </button>
-          </div>
-          {blogs.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {blogs.map((blog) => (
+            {/* Sliding Container */}
+            <div className="flex animate-scroll">
+              {duplicatedBrands.map((brand, index) => (
                 <div
-                  key={blog._id}
-                  className="bg-gray-50 p-4 rounded-md shadow-md transition-transform transform hover:-translate-y-1"
+                  key={`${brand?._id || index}-${index}`}
+                  className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 bg-white hover:shadow-xl transition-all duration-300 hover:scale-105 group w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 lg:w-52 lg:h-32"
                 >
-                  <img
-                    src={blog.image}
-                    alt={blog.title}
-                    className="w-full h-40 object-cover mb-4 rounded"
-                  />
-                  <p className="text-gray-500 text-sm mb-1">
-                    {new Date(blog.createdAt).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <h3 className="text-lg font-semibold mb-2">{blog.title}</h3>
-                  <p className="text-gray-500 mb-4 line-clamp-2">
-                    {blog.description}
-                  </p>
-                  <a
-                    href="/blog"
-                    className="text-blue-600 font-semibold hover:underline"
-                  >
-                    Read more
-                  </a>
+                  <div className="flex items-center justify-center h-full p-3 sm:p-4 md:p-6">
+                    <img
+                      src={
+                        brand?.image
+                          ? `${SERVER_URL}/Uploads/${brand.image}`
+                          : "https://via.placeholder.com/150"
+                      }
+                      alt={brand?.name || "Brand"}
+                      className="max-h-8 sm:max-h-10 md:max-h-12 lg:max-h-16 max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/150";
+                      }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center text-gray-500">
-              No blog posts available
-            </div>
-          )}
-        </section>
-        <ToastContainer position="top-right" autoClose={3000} />
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            {loading ? "Loading brands..." : "No brands available"}
+          </div>
+        )}
+
+        {/* Custom CSS for animation */}
+        <style>{`
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .animate-scroll {
+            animation: scroll 10s linear infinite;
+          }
+          
+          .animate-scroll:hover {
+            animation-play-state: paused;
+          }
+
+          @media (max-width: 640px) {
+            .animate-scroll {
+              animation: scroll 10s linear infinite;
+            }
+          }
+
+          @media (max-width: 768px) {
+            .animate-scroll {
+              animation: scroll 5s linear infinite;
+            }
+          }
+        `}</style>
       </div>
+
+      {/* From Our Blog Section */}
+      <section className="px-4 py-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold">From Our Blog</h2>
+          <button
+            onClick={() => navigate("/blog")}
+            className="text-blue-600 font-semibold hover:underline text-sm"
+          >
+            View More
+          </button>
+        </div>
+
+        {blogs.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {blogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="bg-white p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+              >
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                  className="w-full h-32 sm:h-40 object-cover rounded mb-3"
+                />
+                <p className="text-gray-500 text-xs sm:text-sm mb-1">
+                  {new Date(blog.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+                <h3 className="text-sm sm:text-base font-semibold mb-1 line-clamp-2">
+                  {blog.title}
+                </h3>
+                <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3">
+                  {blog.description}
+                </p>
+                <a
+                  href="/blog"
+                  className="text-blue-600 text-xs sm:text-sm font-medium hover:underline"
+                >
+                  Read more
+                </a>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            No blog posts available
+          </div>
+        )}
+      </section>
+
+      <ToastContainer position="top-right" autoClose={3000} />
       <Footer />
     </>
   );

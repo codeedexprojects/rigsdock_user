@@ -39,7 +39,7 @@ function Blog() {
     <>
       <Header/>
       <ChatBox/>
-      <div className="mt-56"></div>
+      <div className="mt-30"></div>
 
       <div className="min-h-screen bg-gray-50 py-8 px-4">
         <div className="max-w-6xl mx-auto">

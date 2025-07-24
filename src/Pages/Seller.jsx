@@ -8,12 +8,12 @@ import {
   Check,
 } from "lucide-react";
 import Header from "../Components/Header";
-import {
-  vendorRegisterAPI,
-  verifyaccount,
-  verifygst,
-  verifypan,
-} from "../Services/sellerAPI";
+// import {
+//   vendorRegisterAPI,
+//   verifyaccount,
+//   verifygst,
+//   verifypan,
+// } from "../Services/sellerAPI";
 import { ToastContainer, toast } from "react-toastify";
 
 function Seller() {
@@ -40,9 +40,9 @@ const [formData, setFormData] = useState({
   accountNumber: "",
   ifscCode: "",
   agreeToTerms: false,
-    isGstVerified: false,
-  isPanVerified: false,
-  isBankVerified: false,
+  //   isGstVerified: false,
+  // isPanVerified: false,
+  // isBankVerified: false,
 });
 
   const [uploadedFiles, setUploadedFiles] = useState({
@@ -131,10 +131,6 @@ const [formData, setFormData] = useState({
     return;
   }
 
-  if (!formData.isGstVerified || !formData.isPanVerified || !formData.isBankVerified) {
-  toast.error("Please verify GST, PAN, and Bank before submitting.");
-  return;
-}
 
   try {
     const formDataToSend = new FormData();
@@ -595,7 +591,7 @@ const handleIfscVerify = async () => {
                         className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                         required
                       />
-                      <button
+                      {/* <button
                         onClick={() =>
                           handleIfscVerify("IFSC", formData.ifscCode)
                         }
@@ -603,7 +599,7 @@ const handleIfscVerify = async () => {
                         className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
                       >
                         Verify IFSC
-                      </button>
+                      </button> */}
                     </div>
                   </div>
 
@@ -624,13 +620,13 @@ const handleIfscVerify = async () => {
       className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
       required
     />
-    <button
+    {/* <button
       onClick={handlePanVerify}
       type="button"
       className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
     >
       Verify PAN
-    </button>
+    </button> */}
   </div>
 </div>
 
@@ -652,13 +648,13 @@ const handleIfscVerify = async () => {
                         className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                         required
                       />
-                      <button
+                      {/* <button
                         onClick={handleGstVerify}
                         type="button"
                         className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
                       >
                         Verify GST
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

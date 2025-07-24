@@ -11,7 +11,7 @@ function Orderconformation() {
   console.log("Order ID from location:", orderId);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 mt-56">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 mt-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
@@ -34,7 +34,7 @@ function Orderconformation() {
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             to="/shop"
-            className="flex-1 sm:flex-none inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="flex-1  sm:flex-none inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Continue Shopping
           </Link>
