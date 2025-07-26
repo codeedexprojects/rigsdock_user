@@ -11,6 +11,7 @@ export const addToCartAPI = async (userId, productId, quantity = 1) => {
       productId,
       quantity
     });
+    
     return response.data;
   } catch (error) {
     console.error("Failed to add to cart", error);

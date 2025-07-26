@@ -15,6 +15,8 @@ function ChatBox() {
   const [currentFlow, setCurrentFlow] = useState(null);
   const [orderId, setOrderId] = useState(null);
   const [showReturnReason, setShowReturnReason] = useState(false);
+  const isLoggedIn = !!userId;
+
 
   useEffect(() => { 
     if (isOpen && messages.length === 0) {
@@ -163,6 +165,8 @@ useEffect(() => {
     setUserId(storedId);
   }
 }, []);
+if (!isLoggedIn) return null;
+
 
   return (
     <>
