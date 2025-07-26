@@ -487,7 +487,7 @@ function Header() {
         <div className="hidden lg:block">
           {/* Top Header */}
           <div
-            className="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 md:py-7"
+            className="relative z-10 flex items-center justify-between px-4 md:px-8 py-3 "
             style={{ backgroundColor: "rgb(10, 95, 191)" }}
           >
             {/* Logo */}
@@ -496,7 +496,7 @@ function Header() {
                 <img
                   src="https://i.postimg.cc/MKZkQfTh/logo.png"
                   alt="logo"
-                  className="w-32 h-12 md:w-60 md:h-24"
+                  className="w-24 h-15"
                 />
               </Link>
             </div>
@@ -637,7 +637,7 @@ function Header() {
           </div>
 
           {/* Desktop Bottom Navigation */}
-          <div className="flex items-center justify-between px-7 py-4 bg-white text-base text-gray-800">
+          <div className="flex items-center justify-between px-7 py-2 bg-white text-base text-gray-800">
             <div className="flex items-center gap-6">
               <Link to="/">
                 <div className="relative">

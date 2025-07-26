@@ -16,6 +16,8 @@ import {
 import axios from "axios";
 import { BASE_URL } from "../Services/baseUrl";
 import ChatBox from "../Components/ChatBox";
+import { ListFilter } from "lucide-react";
+
 
 function Shop() {
   const navigate = useNavigate();
@@ -276,9 +278,9 @@ function Shop() {
       <div className="lg:hidden flex justify-start ">
         <button
           onClick={() => setShowMobileFilters(true)}
-          className="bg-blue-800 text-white px-5 py-2 ms-4 w-[350px] rounded-md text-sm font-medium"
+          className="bg-blue-800 text-white px-5 py-2 ms-4  rounded-md text-sm font-medium"
         >
-          Filter
+         <ListFilter />
         </button>
       </div>
 
@@ -547,7 +549,7 @@ function Shop() {
                 ))}
               </div>
 
-              <div className="flex justify-center mt-12">
+              {/* <div className="flex justify-center mt-12">
                 <div className="flex items-center gap-2">
                   <button className="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-base">
                     Previous
@@ -565,7 +567,7 @@ function Shop() {
                     Next
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

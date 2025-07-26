@@ -351,7 +351,7 @@ function UserAccount() {
     <>
       <Header />
       <ChatBox />
-      <div className="min-h-screen bg-gray-50 mt-50">
+      <div className="min-h-screen bg-gray-50 mt-30">
         {/* Header */}
         <header className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -669,22 +669,22 @@ function UserAccount() {
                                   </h4>
                                   <div className="space-y-1 text-gray-700">
                                     <p className="font-medium">
-                                      {selectedOrder.shippingAddress?.firstName}{" "}
-                                      {selectedOrder.shippingAddress?.lastName}
+                                      {selectedOrder.shippingAddressSnapshot?.firstName}{" "}
+                                      {selectedOrder.shippingAddressSnapshot?.lastName}
                                     </p>
                                     <p>
                                       {
-                                        selectedOrder.shippingAddress
+                                        selectedOrder.shippingAddressSnapshot
                                           ?.addressLine1
                                       }
-                                      {selectedOrder.shippingAddress
+                                      {selectedOrder.shippingAddressSnapshot
                                         ?.addressLine2 &&
-                                        `, ${selectedOrder.shippingAddress?.addressLine2}`}
+                                        `, ${selectedOrder.shippingAddressSnapshot?.addressLine2}`}
                                     </p>
                                     <p>
-                                      {selectedOrder.shippingAddress?.city},{" "}
-                                      {selectedOrder.shippingAddress?.state} -{" "}
-                                      {selectedOrder.shippingAddress?.zipCode}
+                                      {selectedOrder.shippingAddressSnapshot?.city},{" "}
+                                      {selectedOrder.shippingAddressSnapshot?.state} -{" "}
+                                      {selectedOrder.shippingAddressSnapshot?.zipCode}
                                     </p>
                                   </div>
                                 </div>

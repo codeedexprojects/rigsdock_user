@@ -293,7 +293,7 @@ function Cart() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50 py-4 sm:py-8 mt-50">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8 mt-45">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
               <div className="max-w-sm sm:max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-6 sm:p-8">
@@ -384,11 +384,11 @@ function Cart() {
     <>
       <Header />
       <ChatBox />
-      <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 mt-50">
+      <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 mt-30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full">
             {/* Header */}
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 sm:mb-8">
               Cart Summary
             </h1>
 

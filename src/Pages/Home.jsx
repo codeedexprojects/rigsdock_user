@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Moon, Sun, Heart } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Moon,
+  Sun,
+  Heart,
+  BaselineIcon,
+} from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import axios from "axios";
@@ -49,11 +56,20 @@ function Home() {
   const [dealTimers, setDealTimers] = useState({});
   const [currentSlide, setCurrentSlide] = useState(0);
   const offersToShow = homeOffers.slice(0, 2);
+  const offersToShows = homeOffers.slice(0, 1);
 
   // Auto-slide functionality
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(slideInterval);
+  }, [homeOffers]);
+
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 2).length);
     }, 4000); // Change slide every 4 seconds
 
     return () => clearInterval(slideInterval);
@@ -72,6 +88,31 @@ function Home() {
   const goToNext = () => {
     setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
   };
+
+const goToSlides = (index) => {
+  setCurrentSlide(index);
+};
+
+const gosToPrevious = () => {
+  setCurrentSlide((prev) =>
+    prev === 0 ? offersToShow.length - 1 : prev - 1
+  );
+};
+
+const goToNexts = () => {
+  setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
+};
+
+useEffect(() => {
+  // Only start interval if we have offers
+  if (offersToShow.length > 1) {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(slideInterval);
+  }
+}, [offersToShow]);
 
   const calculateTimeLeft = (createdAt) => {
     const endTime = new Date(createdAt).getTime() + 1 * 24 * 60 * 60 * 1000;
@@ -205,7 +246,7 @@ function Home() {
       try {
         const result = await getBlogAPI();
         setBlogs(result.data || []);
-      } catch(error) {
+      } catch (error) {
         toast.error(error.data.response.message);
       }
     };
@@ -219,7 +260,6 @@ function Home() {
         setHomeOffers(result.data || []);
       } catch (error) {
         toast.error(error.response.data.message);
-        
       }
     };
     fetchHomeOffer();
@@ -433,7 +473,7 @@ function Home() {
     <>
       <Header />
       <ChatBox />
-      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 text-center mt-58">
+      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 text-center mt-40 mb-4">
         Welcome to <span className="text-blue-700">RIGSDOCK</span>
       </h2>
 
@@ -653,7 +693,9 @@ function Home() {
                           <div
                             className="flex transition-transform duration-300 ease-in-out"
                             style={{
-                              transform: `translateX(-${dealCurrentIndex * 100}%)`,
+                              transform: `translateX(-${
+                                dealCurrentIndex * 100
+                              }%)`,
                             }}
                           >
                             {activeDeals.map((deal) => {
@@ -669,7 +711,7 @@ function Home() {
                                 >
                                   <div className="text-center mb-6 relative">
                                     {/* Discount Badge */}
-                                    <div className="absolute top-4 right-4">
+                                    {/* <div className="absolute top-4 right-4">
                                       <span className="bg-yellow-400 text-black px-2 py-1 rounded text-sm font-bold">
                                         {Math.round(
                                           ((deal.product.price -
@@ -679,7 +721,7 @@ function Home() {
                                         )}
                                         %
                                       </span>
-                                    </div>
+                                    </div> */}
 
                                     {/* Product Image */}
                                     <img
@@ -718,15 +760,15 @@ function Home() {
                                     <p className="text-sm font-medium mb-4">
                                       Hurry Up! Limited Time
                                     </p>
-                                    <div className="grid grid-cols-4 gap-2 text-center">
-                                      <div>
+                                    <div className="grid grid-cols-4 gap-2 ms-5 text-center">
+                                      {/* <div>
                                         <div className="text-2xl font-bold text-red-500">
                                           {timeLeft.days}
                                         </div>
                                         <div className="text-xs text-gray-500">
                                           DAYS
                                         </div>
-                                      </div>
+                                      </div> */}
                                       <div>
                                         <div className="text-2xl font-bold text-red-500">
                                           {String(timeLeft.hours).padStart(
@@ -841,7 +883,9 @@ function Home() {
                   >
                     {Array.from(
                       {
-                        length: Math.ceil(latestProducts.length / itemsPerSlide),
+                        length: Math.ceil(
+                          latestProducts.length / itemsPerSlide
+                        ),
                       },
                       (_, slideIndex) => (
                         <div key={slideIndex} className="w-full flex-shrink-0">
@@ -916,7 +960,9 @@ function Home() {
 
                                   {/* View Product Button */}
                                   <button
-                                    onClick={() => navigateToProduct(product._id)}
+                                    onClick={() =>
+                                      navigateToProduct(product._id)
+                                    }
                                     className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1.5 rounded-md text-xs font-medium transition-colors mt-2"
                                   >
                                     View Product
@@ -940,7 +986,9 @@ function Home() {
                       <div
                         key={offer._id}
                         className="relative group h-64 rounded-2xl overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
-                        onClick={() => product && navigateToProduct(product._id)}
+                        onClick={() =>
+                          product && navigateToProduct(product._id)
+                        }
                       >
                         {/* Background Image */}
                         <div
@@ -1010,150 +1058,156 @@ function Home() {
                 </div>
 
                 {/* Mobile Slider Layout */}
-                <div className="md:hidden relative">
-                  {/* Slider Container */}
-                  <div className="overflow-hidden rounded-2xl">
-                    <div
-                      className="flex transition-transform duration-500 ease-in-out"
-                      style={{
-                        transform: `translateX(-${currentSlide * 100}%)`,
-                      }}
-                    >
-                      {offersToShow.map((offer) => {
-                        const product = offer.productIds?.[0];
-                        return (
-                          <div
-                            key={offer._id}
-                            className="w-full flex-shrink-0 relative group h-64 cursor-pointer"
-                            onClick={() =>
-                              product && navigateToProduct(product._id)
-                            }
-                          >
-                            {/* Background Image */}
-                            <div
-                              className="absolute inset-0"
-                              style={{
-                                backgroundImage: `url(${
-                                  offer.image
-                                    ? `${SERVER_URL}/uploads/${offer.image
-                                        .split("/")
-                                        .pop()}`
-                                    : "https://source.unsplash.com/600x400/?electronics,tech"
-                                })`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                              }}
-                            />
+              <div className="md:hidden relative">
+  {/* Slider Container */}
+  <div className="overflow-hidden rounded-2xl">
+    <div
+      className="flex transition-transform duration-500 ease-in-out"
+      style={{
+        transform: `translateX(-${currentSlide * 100}%)`,
+      }}
+    >
+      {offersToShow.map((offer) => {
+        const product = offer.productIds?.[0];
+        return (
+          <div
+            key={offer._id}
+            className="w-full flex-shrink-0 relative group h-64 cursor-pointer"
+            onClick={() =>
+              product && navigateToProduct(product._id)
+            }
+          >
+            {/* Background Image */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${
+                  offer.image
+                    ? `${SERVER_URL}/uploads/${offer.image
+                        .split("/")
+                        .pop()}`
+                    : "https://source.unsplash.com/600x400/?electronics,tech"
+                })`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
 
-                            {/* Overlay */}
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
 
-                            {/* Content */}
-                            <div className="relative z-10 p-6 h-full flex flex-col justify-between">
-                              <div>
-                                <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
-                                  {offer.discountType === "percentage"
-                                    ? `${offer.discountValue}% OFF`
-                                    : "SPECIAL"}
-                                </span>
-                                <h3 className="text-white text-xl font-bold mb-2">
-                                  {offer.name}
-                                </h3>
-                                <p className="text-white/90 text-sm line-clamp-2">
-                                  {offer.description}
-                                </p>
-                              </div>
+            {/* Content */}
+            <div className="relative z-10 p-6 h-full flex flex-col justify-between">
+              <div>
+                <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
+                  {offer.discountType === "percentage"
+                    ? `${offer.discountValue}% OFF`
+                    : "SPECIAL"}
+                </span>
+                <h3 className="text-white text-xl font-bold mb-2">
+                  {offer.name}
+                </h3>
+                <p className="text-white/90 text-sm line-clamp-2">
+                  {offer.description}
+                </p>
+              </div>
 
-                              <div className="flex items-center justify-between">
-                                {product ? (
-                                  <div>
-                                    {product.price !== product.finalPrice && (
-                                      <span className="text-white/80 text-sm line-through">
-                                        ₹{product.price}
-                                      </span>
-                                    )}
-                                    <span className="text-white text-lg font-bold ml-2">
-                                      ₹{product.finalPrice}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <span className="text-white text-sm">
-                                    No product
-                                  </span>
-                                )}
-
-                                <button className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm">
-                                  Shop Now
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Decorative Elements */}
-                            <div className="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full blur-xl" />
-                            <div className="absolute bottom-6 right-6 w-6 h-6 bg-yellow-400/30 rounded-full blur-lg" />
-                          </div>
-                        );
-                      })}
-                    </div>
+              <div className="flex items-center justify-between">
+                {product ? (
+                  <div>
+                    {product.price !== product.finalPrice && (
+                      <span className="text-white/80 text-sm line-through">
+                        ₹{product.price}
+                      </span>
+                    )}
+                    <span className="text-white text-lg font-bold ml-2">
+                      ₹{product.finalPrice}
+                    </span>
                   </div>
+                ) : (
+                  <span className="text-white text-sm">
+                    No product
+                  </span>
+                )}
 
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={goToPrevious}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
-                    aria-label="Previous slide"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </button>
+                <button className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm">
+                  Shop Now
+                </button>
+              </div>
+            </div>
 
-                  <button
-                    onClick={goToNext}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
-                    aria-label="Next slide"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </button>
+            {/* Decorative Elements */}
+            <div className="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full blur-xl" />
+            <div className="absolute bottom-6 right-6 w-6 h-6 bg-yellow-400/30 rounded-full blur-lg" />
+          </div>
+        );
+      })}
+    </div>
+  </div>
 
-                  {/* Dot Indicators */}
-                  <div className="flex justify-center space-x-2 mt-4">
-                    {offersToShow.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => goToSlide(index)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                          currentSlide === index
-                            ? "bg-yellow-400 scale-125"
-                            : "bg-white/50 hover:bg-white/70"
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                </div>
+  {/* Navigation Arrows - Only show if more than 1 slide */}
+  {offersToShow.length > 1 && (
+    <>
+      <button
+        onClick={gosToPrevious}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
+        aria-label="Previous slide"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+
+      <button
+        onClick={goToNexts}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
+        aria-label="Next slide"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+    </>
+  )}
+
+  {/* Dot Indicators - Only show if more than 1 slide */}
+  {offersToShow.length > 1 && (
+    <div className="flex justify-center space-x-2 mt-4">
+      {offersToShow.map((_, index) => (
+        <button
+          key={index}
+          onClick={() => goToSlides(index)}
+          className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+            currentSlide === index
+              ? "bg-yellow-400 scale-125"
+              : "bg-white/50 hover:bg-white/70"
+          }`}
+          aria-label={`Go to slide ${index + 1}`}
+        />
+      ))}
+    </div>
+  )}
+</div>
               </div>
             </div>
           </div>
@@ -1245,7 +1299,8 @@ function Home() {
                                 alt={product.name}
                                 className="w-full h-full object-contain p-2 sm:p-3"
                                 onError={(e) => {
-                                  e.target.src = "https://via.placeholder.com/300";
+                                  e.target.src =
+                                    "https://via.placeholder.com/300";
                                 }}
                               />
                             </div>
@@ -1289,9 +1344,9 @@ function Home() {
       </div>
 
       {/* Deal 3 Card Product */}
-      <div className="w-full px-4 py-12">
+      <div className="w-full px-4 ">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Latest Tech & Gadgets
           </h2>
@@ -1510,16 +1565,13 @@ function Home() {
               {homeCategories.length > 0 ? (
                 <div
                   key={homeCategories[0]._id}
-                  className="relative group h-full min-h-[480px] rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl transition-transform duration-300 transform hover:scale-105"
+                  className="relative group h-full min-h-[380px] rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl transition-transform duration-300 transform hover:scale-105"
                   onClick={() => navigate("/shop")}
                 >
                   <img
                     src={
                       homeCategories[0].image
-                        ? homeCategories[0].image.replace(
-                            "C:\\Users\\Abhijith KK\\Desktop\\Abijith\\Codeedex\\rigsdock_backend\\Uploads\\",
-                            `${SERVER_URL}/Uploads/`
-                          )
+                        ? `${SERVER_URL}/uploads/${homeCategories[0].image}`
                         : "https://source.unsplash.com/600x400/?electronics,gadgets"
                     }
                     alt={homeCategories[0].title}
@@ -1561,9 +1613,9 @@ function Home() {
       </section>
 
       {/* New Arrivals Section */}
-      <div className="mt-10 px-4 py-4">
-        <div className="px-4 py-4">
-          <div className="flex justify-between items-center mb-4">
+      <div className="mt-10 px-4">
+        <div className="px-4 ">
+          <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold" id="newarrival">
               New Arrivals
             </h2>
@@ -1646,7 +1698,8 @@ function Home() {
                                   alt={product.name}
                                   className="w-full h-full object-contain p-2 sm:p-3"
                                   onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/300";
+                                    e.target.src =
+                                      "https://via.placeholder.com/300";
                                   }}
                                 />
                               </div>
@@ -1693,7 +1746,7 @@ function Home() {
       {/* Our Brands Section */}
       <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
         {/* Section Heading */}
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12 text-gray-800">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center md:mb-12 text-gray-800">
           Our Brands
         </h2>
 
@@ -1715,7 +1768,7 @@ function Home() {
                     <img
                       src={
                         brand?.image
-                          ? `${SERVER_URL}/Uploads/${brand.image}`
+                          ? `${SERVER_URL}/uploads/${brand.image}`
                           : "https://via.placeholder.com/150"
                       }
                       alt={brand?.name || "Brand"}
@@ -1762,15 +1815,15 @@ function Home() {
 
           @media (max-width: 768px) {
             .animate-scroll {
-              animation: scroll 5s linear infinite;
+              animation: scroll 20s linear infinite;
             }
           }
         `}</style>
       </div>
 
       {/* From Our Blog Section */}
-      <section className="px-4 py-12">
-        <div className="flex justify-between items-center mb-6">
+      <section className="px-4">
+        <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">From Our Blog</h2>
           <button
             onClick={() => navigate("/blog")}
