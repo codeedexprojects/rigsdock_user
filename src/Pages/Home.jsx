@@ -1469,7 +1469,7 @@ useEffect(() => {
                   >
                     <div className="flex flex-col items-center text-center">
                       <img
-                        src={`${SERVER_URL}/Uploads/${mainCat.image}`}
+                        src={`${SERVER_URL}/uploads/${mainCat.image}`}
                         alt={mainCat.name}
                         className="w-16 h-16 object-cover rounded-md mb-2"
                         onError={(e) => {
