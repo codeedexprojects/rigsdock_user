@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Star, ChevronDown, ChevronUp, Heart } from "lucide-react";
+import { Star, ChevronDown, ChevronUp, Heart,  MoveRight, MoveLeft } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +29,9 @@ function Shop() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 9; 
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -140,7 +143,12 @@ function Shop() {
     ratings: true,
   });
 
-  const products = AllProducts;
+const reversedProducts = [...AllProducts].reverse();
+const totalPages = Math.ceil(reversedProducts.length / itemsPerPage);
+const paginatedProducts = reversedProducts.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
 
   const toggleFilter = (filterName) => {
     setExpandedFilters((prev) => ({
@@ -217,15 +225,15 @@ function Shop() {
     );
 
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow h-full flex flex-col">
+<div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-sm transition-shadow h-full flex flex-col text-sm">
 <div className="h-24 sm:h-48 md:h-64 mb-4 bg-white rounded-lg overflow-hidden">
   <div className="relative group w-full h-full">
     <img
-      src={product.image}
-      alt={product.name}
-      className="w-full h-full object-contain p-2 cursor-pointer"
-      onClick={handleProductClick}
-    />
+  src={product.image}
+  alt={product.name}
+  className="w-full h-full object-cover p-2 rounded-md cursor-pointer transition-transform duration-300 hover:scale-105"
+/>
+
     <button
       className="absolute top-0 right-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
       onClick={(e) => handleAddToWishlist(product.id, e)}
@@ -235,7 +243,7 @@ function Shop() {
   </div>
 </div>
         <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
-          {product.name}
+          {product.name.slice(0,15)}
         </h3>
         <div className="flex items-center mb-2">
           {renderStars(product.rating)}
@@ -529,45 +537,53 @@ function Shop() {
               </div> */}
 
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={{
-                      id: product._id,
-                      name: product.name,
-                      price: product.finalPrice || product.price,
-                      originalPrice:
-                        product.price !== product.finalPrice
-                          ? product.price
-                          : null,
-                      image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
-                      rating: product.averageRating || 0,
-                      features: [`Brand-${product.brand}`],
-                      buttonText: "Add to cart",
-                    }}
-                  />
-                ))}
+             {paginatedProducts.map((product) => (
+  <ProductCard
+    key={product._id}
+    product={{
+      id: product._id,
+      name: product.name,
+      price: product.finalPrice || product.price,
+      originalPrice:
+        product.price !== product.finalPrice ? product.price : null,
+      image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
+      rating: product.averageRating || 0,
+      features: [`Brand-${product.brand}`],
+      buttonText: "Add to cart",
+    }}
+  />
+))}
+
               </div>
 
-              {/* <div className="flex justify-center mt-12">
-                <div className="flex items-center gap-2">
-                  <button className="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-base">
-                    Previous
-                  </button>
-                  <button className="px-4 py-3 bg-blue-800 text-white rounded-md text-base">
-                    1
-                  </button>
-                  <button className="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-base">
-                    2
-                  </button>
-                  <button className="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-base">
-                    3
-                  </button>
-                  <button className="px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-base">
-                    Next
-                  </button>
-                </div>
-              </div> */}
+             <div className="flex justify-center mt-8 space-x-2">
+  <button
+    className="px-4 py-2  hover:bg-gray-100"
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+  >
+    <MoveLeft />
+  </button>
+
+  {[...Array(totalPages)].map((_, i) => (
+    <button
+      key={i}
+      className={`px-4 py-2  ${currentPage === i + 1 ? "bg-blue-800 text-white" : " hover:bg-gray-100"}`}
+      onClick={() => setCurrentPage(i + 1)}
+    >
+      {i + 1}
+    </button>
+  ))}
+
+  <button
+    className="px-4 py-2  hover:bg-gray-100"
+    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={currentPage === totalPages}
+  >
+    <MoveRight />
+  </button>
+</div>
+
             </div>
           </div>
         </div>

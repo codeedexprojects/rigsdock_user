@@ -7,6 +7,7 @@ import { getWishlistAPI, removewishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ChatBox from "../Components/ChatBox";
+import { addToCartAPI } from "../Services/cartAPI";
 
 function Wishlist() {
   const navigate = useNavigate();
@@ -60,9 +61,22 @@ function Wishlist() {
     }
   };
 
-  const addToCart = (item) => {
+const addToCart = async (item) => {
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      toast.error("Please login to add items to cart.");
+      return;
+    }
+
+    // Call the API to add item to cart
+    await addToCartAPI(userId, item._id, 1);
     toast.success(`${item.name} added to cart!`);
-  };
+  } catch (error) {
+    console.error("Failed to add item to cart", error);
+    toast.error("Failed to add item to cart. Please try again.");
+  }
+};
 
   // Loading state
   if (loading) {

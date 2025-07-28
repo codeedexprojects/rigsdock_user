@@ -840,6 +840,7 @@ useEffect(() => {
                       </div>
                     ) : (
                       <div className="text-center py-10 text-gray-500">
+                        <img src="https://cdn.dribbble.com/userupload/22180708/file/original-fb0f3fcb86aa71d393a578acb476b44c.gif" alt="" />
                         No active deals available
                       </div>
                     );
@@ -1688,7 +1689,7 @@ useEffect(() => {
                               </button>
 
                               {/* Product Image */}
-                              <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
+                              <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center ">
                                 <img
                                   src={
                                     product.images && product.images.length > 0
