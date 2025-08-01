@@ -130,15 +130,17 @@ export default function CategoryGrid() {
               {homeCategory?.subtitle || '50% Discount'}
             </p>
           </div>
-          <img
-            src={
-              homeCategory?.image 
-                ? `${SERVER_URL}/uploads/${homeCategory.image}`
-                : "https://source.unsplash.com/150x150/?security-camera"
-            }
-            alt={homeCategory?.title || "Promo"}
-            className="w-70 h-70 rounded-4xl  object-contain"
-          />
+      <a href="/shop" className="block">
+  <img
+    src={
+      homeCategory?.image 
+        ? `${SERVER_URL}/uploads/${homeCategory.image}`
+        : "https://source.unsplash.com/150x150/?security-camera"
+    }
+    alt={homeCategory?.title || "Promo"}
+    className="w-70 h-70 rounded-4xl object-contain cursor-pointer "
+  />
+</a>
         </div>
 
         {/* First Two Main Categories */}
