@@ -15,6 +15,8 @@ import Header from "../Components/Header";
 //   verifypan,
 // } from "../Services/sellerAPI";
 import { ToastContainer, toast } from "react-toastify";
+import { vendorRegisterAPI } from "../Services/sellerAPI";
+
 
 function Seller() {
 const [formData, setFormData] = useState({
@@ -23,7 +25,7 @@ const [formData, setFormData] = useState({
   businessname: "",
   businesslocation: "",
   businesslandmark: "",
-  phone: "", 
+  number: "", 
   address: "",
   city: "",
   state: "",
@@ -49,7 +51,7 @@ const [formData, setFormData] = useState({
     storelogo: null,
     license: null,
     passbookPhoto: null,
-    shopImage: null,
+    images: null,
   });
 
   const workingDayOptions = [
@@ -125,7 +127,7 @@ const [formData, setFormData] = useState({
     !uploadedFiles.storelogo ||
     !uploadedFiles.license ||
     !uploadedFiles.passbookPhoto ||
-    !uploadedFiles.shopImage
+    !uploadedFiles.images
   ) {
     toast.error("Please upload all required documents.");
     return;
@@ -192,7 +194,7 @@ const [formData, setFormData] = useState({
         storelogo: null,
         license: null,
         passbookPhoto: null,
-        shopImage: null,
+        images: null,
       });
     } else {
       toast.error(response?.message || "Registration failed.");
@@ -518,9 +520,9 @@ const handleIfscVerify = async () => {
                     </label>
                     <input
                       type="text"
-                      value={formData.phone}
+                      value={formData.number}
                       onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
+                        setFormData({ ...formData, number: e.target.value })
                       }
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                       required
@@ -723,33 +725,32 @@ const handleIfscVerify = async () => {
               </div>
 
               {/* Working Days Section */}
-              <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
-                <div className="flex items-center mb-4 sm:mb-6">
-                  <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
-                    Working Days
-                  </h2>
-                </div>
+            <div className=" rounded-lg sm:rounded-xl p-4 sm:p-6">
+  <div className="flex items-center mb-4 sm:mb-6">
+    <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
+    <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
+      Working Days
+    </h2>
+  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-3 sm:gap-4">
-                  {workingDayOptions.map((day) => (
-                    <label
-                      key={day}
-                      className="flex items-center space-x-2 sm:space-x-3 p-3 bg-white rounded-lg border hover:bg-blue-50 cursor-pointer transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.workingDays.includes(day)}
-                        onChange={() => handleWorkingDayChange(day)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        {day}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 sm:gap-3">
+    {workingDayOptions.map((day) => (
+      <label
+        key={day}
+        className="flex items-center justify-start space-x-2 p-2 bg-white rounded-md  hover:bg-blue-50 cursor-pointer transition-all w-full"
+      >
+        <input
+          type="checkbox"
+          checked={formData.workingDays.includes(day)}
+          onChange={() => handleWorkingDayChange(day)}
+          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        />
+        <span className="text-sm font-medium text-gray-700">{day}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
 
               {/* File Upload Section */}
               <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
@@ -843,14 +844,14 @@ const handleIfscVerify = async () => {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleFileUpload("shopImage", e)}
+                        onChange={(e) => handleFileUpload("images", e)}
                         className="hidden"
-                        id="shopImage"
+                        id="images"
                       />
-                      <label htmlFor="shopImage" className="cursor-pointer">
+                      <label htmlFor="images" className="cursor-pointer">
                         <span className="text-xs sm:text-sm text-gray-600 break-words">
-                          {uploadedFiles.shopImage
-                            ? uploadedFiles.shopImage.name
+                          {uploadedFiles.images
+                            ? uploadedFiles.images.name
                             : "Click to upload shop image"}
                         </span>
                       </label>

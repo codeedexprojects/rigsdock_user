@@ -17,3 +17,15 @@ export const chatbotAPI = async ({ userId, message, attachments = [] }) => {
     return { reply: " Unable to connect to support. Please try again later." };
   }
 };
+
+export const chatClearSessionAPI = async()=>{
+  try{
+    const response = await axios.post(`${BASE_URL}/user/chatbot/clear-session`,{
+
+    })
+  return response.data
+  }catch(error){
+    console.error("Failed to clear", error);
+    
+  }
+}

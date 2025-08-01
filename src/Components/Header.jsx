@@ -496,7 +496,7 @@ function Header() {
                 <img
                   src="https://i.postimg.cc/MKZkQfTh/logo.png"
                   alt="logo"
-                  className="w-24 h-15"
+                  className="w-30 h-15"
                 />
               </Link>
             </div>

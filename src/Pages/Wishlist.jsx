@@ -110,7 +110,7 @@ const addToCart = async (item) => {
             {/* Page Title with responsive layout */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="text-center sm:text-left">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl  text-gray-900">
                   My Wishlist
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600 mt-1">
@@ -192,7 +192,7 @@ const addToCart = async (item) => {
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <h3 className="text-base font-semibold text-gray-900 line-clamp-2 pr-2">
-                              {item.name}
+                              {item.name.slice(0,50)}
                             </h3>
                           </div>
                           <button
@@ -271,8 +271,8 @@ const addToCart = async (item) => {
 
                         {/* Product Details */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
-                            {item.name}
+                          <h3 className="text-lg truncate w-[560px] lg:text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
+                            {item.name.slice(0,60)}
                           </h3>
 
                           {/* Price */}

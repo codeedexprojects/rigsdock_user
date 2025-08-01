@@ -21,6 +21,7 @@ import AddReview from "./Pages/AddReview";
 import ReturnOrder from "./Pages/ReturnOrder";
 import FAQs from "./Pages/FAQs";
 import CancelOrder from "./Pages/CancelOrder";
+import CompleteRegisteration from "./Pages/CompleteRegisteration";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/return-order" element={<ReturnOrder />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/cancel-order" element={<CancelOrder />} />
+        <Route path="/registeration" element={<CompleteRegisteration />} />
       </Routes>
     </>
   );

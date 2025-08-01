@@ -22,13 +22,18 @@ import { useNavigate } from "react-router-dom";
 import { addToWishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  viewCategoriesAPI,
-  viewMainCategoriesAPI,
-  viewSubCategoriesAPI,
-} from "../Services/categoryAPI";
+// import {
+//   viewCategoriesAPI,
+//   viewMainCategoriesAPI,
+//   viewSubCategoriesAPI,
+// } from "../Services/categoryAPI";
 import { getBlogAPI } from "../Services/orderconfirm";
 import ChatBox from "../Components/ChatBox";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import CategoryGrid from "../Components/Category.jsx/ShopCategory";
+
+
 
 function Home() {
   const [isDark, setIsDark] = useState(false);
@@ -89,30 +94,30 @@ function Home() {
     setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
   };
 
-const goToSlides = (index) => {
-  setCurrentSlide(index);
-};
+  const goToSlides = (index) => {
+    setCurrentSlide(index);
+  };
 
-const gosToPrevious = () => {
-  setCurrentSlide((prev) =>
-    prev === 0 ? offersToShow.length - 1 : prev - 1
-  );
-};
+  const gosToPrevious = () => {
+    setCurrentSlide((prev) =>
+      prev === 0 ? offersToShow.length - 1 : prev - 1
+    );
+  };
 
-const goToNexts = () => {
-  setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
-};
+  const goToNexts = () => {
+    setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
+  };
 
-useEffect(() => {
-  // Only start interval if we have offers
-  if (offersToShow.length > 1) {
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
-    }, 4000); // Change slide every 4 seconds
+  useEffect(() => {
+    // Only start interval if we have offers
+    if (offersToShow.length > 1) {
+      const slideInterval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
+      }, 4000); // Change slide every 4 seconds
 
-    return () => clearInterval(slideInterval);
-  }
-}, [offersToShow]);
+      return () => clearInterval(slideInterval);
+    }
+  }, [offersToShow]);
 
   const calculateTimeLeft = (createdAt) => {
     const endTime = new Date(createdAt).getTime() + 1 * 24 * 60 * 60 * 1000;
@@ -128,6 +133,12 @@ useEffect(() => {
       seconds: Math.floor((diff / 1000) % 60),
     };
   };
+  useEffect(() => {
+  AOS.init({
+    duration: 1000, // animation duration (in ms)
+    once: true,     // whether animation should happen only once
+  });
+}, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -187,47 +198,6 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, [dealProducts]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await viewMainCategoriesAPI();
-        setCategories(res.mainCategories);
-      } catch (error) {
-        console.error("Error fetching main Categories", error);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const fetchMainAndCategories = async () => {
-      try {
-        const mainCategoriesResponse = await viewMainCategoriesAPI();
-        const mainCategories = mainCategoriesResponse?.mainCategories || [];
-
-        setMainCategories(mainCategories);
-        const newCategoryMap = {};
-
-        for (const mainCat of mainCategories) {
-          if (mainCat && mainCat._id) {
-            try {
-              console.log("Fetching categories for:", mainCat._id);
-
-              const categories = await viewCategoriesAPI(mainCat._id);
-              newCategoryMap[mainCat._id] = categories;
-            } catch (err) {
-              console.error("Failed to fetch categories for", mainCat._id, err);
-            }
-          }
-        }
-
-        setCategoryMap(newCategoryMap);
-      } catch (error) {
-        console.error("Failed to fetch main categories", error);
-      }
-    };
-    fetchMainAndCategories();
-  }, []);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -374,70 +344,14 @@ useEffect(() => {
     );
   };
 
-  const handleCategoryClick = async (mainCatId, catId) => {
-    if (subCategoryMap[catId]) {
-      setSubCategoryMap((prev) => {
-        const updated = { ...prev };
-        delete updated[catId];
-        return updated;
-      });
-      return;
-    }
 
-    try {
-      const res = await viewSubCategoriesAPI(mainCatId, catId);
-
-      const subcategories = Array.isArray(res.subcategories)
-        ? res.subcategories
-        : res;
-
-      setSubCategoryMap((prev) => ({
-        ...prev,
-        [catId]: subcategories || [],
-      }));
-    } catch (err) {
-      if (err?.response?.status === 404) {
-        console.warn(`No subcategories found for ${catId}`);
-        setSubCategoryMap((prev) => ({
-          ...prev,
-          [catId]: [],
-        }));
-      } else {
-        console.error("Error fetching subcategories:", err);
-      }
-    }
-  };
-
-  const toggleMainCategory = (mainCatId) => {
-    setExpandedMainCat((prev) => {
-      if (prev === mainCatId) {
-        return null;
-      }
-      return mainCatId;
-    });
-    if (!categoryMap[mainCatId]) {
-      fetchCategoriesForMain(mainCatId);
-    }
-  };
-
-  const fetchCategoriesForMain = async (mainCatId) => {
-    try {
-      const res = await viewCategoriesAPI(mainCatId);
-      setCategoryMap((prev) => ({
-        ...prev,
-        [mainCatId]: res || [],
-      }));
-    } catch (error) {
-      console.error("Failed to fetch categories for main category", error);
-    }
-  };
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
         className={`text-sm ${
-          i < rating ? "text-yellow-400" : "text-gray-300"
+          i < 3 ? "text-yellow-400" : "text-gray-300"
         }`}
       >
         ★
@@ -469,6 +383,8 @@ useEffect(() => {
     navigate(`/product-details/${productId}`);
   };
 
+  
+
   return (
     <>
       <Header />
@@ -477,132 +393,722 @@ useEffect(() => {
         Welcome to <span className="text-blue-700">RIGSDOCK</span>
       </h2>
 
-      <div className="w-full px-4 lg:px-8 py-8">
-        {/* Desktop Layout - Same as original */}
-        <div className="hidden lg:flex flex-row gap-6">
-          {homeOffers.slice(0, 3).map((offer, index) => {
+     <div className="w-full px-4 lg:px-8 py-8">
+  {/* Desktop Layout - Enhanced Design */}
+  <div className="hidden lg:flex flex-row gap-6">
+    {homeOffers.slice(0, 3).map((offer, index) => {
+      const product = offer.productIds?.[0];
+      const bgImage =
+        offer.image && offer.image.includes("/uploads/")
+          ? `${SERVER_URL}/uploads/${offer.image.split("/uploads/")[1]}`
+          : "https://source.unsplash.com/600x400/?gadget,tech";
+
+      return (
+        <div
+          key={offer._id}
+          className={`${
+            index === 0 ? "flex-[2]" : "flex-1"
+          } group relative rounded-2xl overflow-hidden min-h-[400px] flex flex-col justify-end transform hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-2xl cursor-pointer`}
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url(${bgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+          onClick={() => product && navigateToProduct(product._id)}
+        >
+          {/* Gradient Overlay for Better Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          
+          {/* Content */}
+          <div className="relative z-10 p-6 lg:p-8">
+            {/* Offer Badge */}
+            {product && product.price !== product.finalPrice && (
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-red-500 text-white text-xs font-bold mb-4">
+                SALE
+              </div>
+            )}
+            
+            <h2 className="text-2xl lg:text-4xl font-bold text-white drop-shadow-lg leading-tight" data-aos="fade-up">
+              {offer.name}
+            </h2>
+            <p className="text-base lg:text-lg  text-gray-100 drop-shadow-md leading-relaxed">
+              {offer.description}
+            </p>
+
+            {product ? (
+              <div className="mb-6">
+                {product.price !== product.finalPrice && (
+                  <span className="text-gray-300 text-lg line-through mr-3 drop-shadow-sm">
+                    ₹{product.price}
+                  </span>
+                )}
+                <span className="text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">
+                  ₹{product.finalPrice}
+                </span>
+              </div>
+            ) : (
+              <p className="text-base text-gray-200 mb-6">Explore our collection</p>
+            )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                product && navigateToProduct(product._id);
+              }}
+              className="inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-4 py-1 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              Shop Now
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* Mobile Horizontal Scroll Layout */}
+  <div className="lg:hidden">
+    <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4">
+      {homeOffers.slice(0, 3).map((offer, index) => {
+        const product = offer.productIds?.[0];
+        const bgImage = offer.image
+          ? `${SERVER_URL}/uploads/${offer.image
+              .split("\\")
+              .pop()
+              .split("/")
+              .pop()}`
+          : "https://source.unsplash.com/600x400/?gadget,tech";
+        
+        return (
+          <div
+            key={offer._id}
+            className="flex-shrink-0 w-80 h-96 relative rounded-2xl overflow-hidden shadow-lg"
+            style={{
+              backgroundImage: `linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url(${bgImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+            onClick={() => product && navigateToProduct(product._id)}
+          >
+            {/* Enhanced Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+            
+            {/* Content Container */}
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              {/* Offer Badge */}
+              {product && product.price !== product.finalPrice && (
+                <div className="inline-flex items-center px-2 py-1 rounded-full bg-red-500 text-white text-xs font-bold mb-3">
+                  SALE
+                </div>
+              )}
+              
+              <h2 className="text-xl font-bold mb-2 text-white drop-shadow-lg leading-tight">
+                {offer.name}
+              </h2>
+              <p className="text-sm mb-3 text-gray-100 drop-shadow-md line-clamp-2 leading-relaxed">
+                {offer.description}
+              </p>
+
+              {product ? (
+                <div className="mb-4">
+                  {product.price !== product.finalPrice && (
+                    <span className="text-gray-300 text-sm line-through mr-2 drop-shadow-sm">
+                      ₹{product.price}
+                    </span>
+                  )}
+                  <span className="text-xl font-bold text-white drop-shadow-lg">
+                    ₹{product.finalPrice}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-200 mb-4">Explore collection</p>
+              )}
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  product && navigateToProduct(product._id);
+                }}
+                className="inline-flex items-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 text-sm shadow-lg"
+              >
+                Shop Now
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Corner Accent */}
+            <div className="absolute top-4 right-4">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Scroll Indicator */}
+    <div className="flex justify-center mt-4">
+      <div className="flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2">
+        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+        </svg>
+        <span className="text-xs text-gray-600 font-medium">Swipe to explore</span>
+        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? "bg-gray-900 text-white" : "text-gray-900"}`}>
+  <div className="container mx-auto px-0 sm:px-4 py-4">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+      {/* Weekly Deal Offer Card - Slider Version */}
+      <div className="w-full lg:w-80 flex-shrink-0 px-2 sm:px-0">
+        <div
+          className={`rounded-xl sm:rounded-2xl p-4 sm:p-6 border-4 border-yellow-400 ${
+            isDark ? "bg-gray-800" : "bg-white"
+          } relative overflow-hidden`}
+        >
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">
+            Deal of the Day
+          </h2>
+
+          {loading ? (
+            <div className="flex justify-center items-center h-48">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-4 text-red-500 text-sm">
+              Failed to load deals
+            </div>
+          ) : (
+            (() => {
+              const activeDeals = dealProducts.filter((deal) =>
+                calculateTimeLeft(deal.createdAt)
+              );
+
+              return activeDeals.length > 0 ? (
+                <div className="relative">
+                  {/* Deal Products Slider */}
+                  <div className="overflow-hidden">
+                    <div
+                      className="flex transition-transform duration-300 ease-in-out"
+                      style={{
+                        transform: `translateX(-${
+                          dealCurrentIndex * 100
+                        }%)`,
+                      }}
+                    >
+                      {activeDeals.map((deal) => {
+                        const timeLeft = dealTimers[deal._id];
+                        const imageUrl = deal.product.images?.[0]
+                          ? `${SERVER_URL}/uploads/${deal.product.images[0]}`
+                          : "https://via.placeholder.com/300";
+
+                        return (
+                          <div
+                            key={deal._id}
+                            className="w-full flex-shrink-0 px-1 sm:px-2"
+                          >
+                            <div className="text-center mb-4 sm:mb-6 relative">
+                              {/* Product Image */}
+                              <img
+                                src={imageUrl}
+                                alt={deal.product.name}
+                                className="w-32 h-32 sm:w-48 sm:h-48 mx-auto rounded-lg object-cover mb-3 sm:mb-4"
+                                onError={(e) => {
+                                  e.target.src =
+                                    "https://source.unsplash.com/300x300/?technology";
+                                }}
+                              />
+
+                              {/* Product Name */}
+                              <h3 className="font-semibold text-sm sm:text-lg mb-1 sm:mb-2 line-clamp-2">
+                                {deal.product.name}
+                              </h3>
+
+                              {/* Static 5 stars */}
+                              <div className="flex justify-center mb-1 sm:mb-2">
+                                {renderStars(5)}
+                              </div>
+
+                              {/* Price Info */}
+                              <div className="flex justify-center items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+                                <span className="text-gray-400 line-through text-xs sm:text-base">
+                                  ₹{deal.product.price}
+                                </span>
+                                <span className="text-xl sm:text-2xl font-bold text-blue-600">
+                                  ₹{deal.offerPrice}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Countdown Timer */}
+                            <div className="text-center mb-4 sm:mb-6">
+                              <p className="text-xs sm:text-sm font-medium mb-2 sm:mb-4">
+                                Hurry Up! Limited Time
+                              </p>
+                              <div className="grid grid-cols-3 gap-1 sm:gap-2 mx-auto max-w-[200px] text-center">
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
+                                    {String(timeLeft.hours).padStart(
+                                      2,
+                                      "0"
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    HRS
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
+                                    {String(timeLeft.minutes).padStart(
+                                      2,
+                                      "0"
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    MIN
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
+                                    {String(timeLeft.seconds).padStart(
+                                      2,
+                                      "0"
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    SEC
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* CTA Button */}
+                            <button
+                              onClick={() =>
+                                navigateToProduct(deal.product._id)
+                              }
+                              className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                            >
+                              Shop Now
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Navigation Arrows */}
+                  {activeDeals.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevDealSlide}
+                        className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                      <button
+                        onClick={nextDealSlide}
+                        className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-6 sm:py-10 text-gray-500">
+                  <img
+                    src="https://cdn.dribbble.com/userupload/22180708/file/original-fb0f3fcb86aa71d393a578acb476b44c.gif"
+                    alt=""
+                    className="mx-auto max-w-[200px]"
+                  />
+                  No active deals available
+                </div>
+              );
+            })()
+          )}
+        </div>
+      </div>
+
+      {/* On Sale Products Section */}
+     <div className="px-2 sm:px-4 py-2 sm:py-4 flex-1">
+  <div className="flex justify-between items-center mb-3 sm:mb-4">
+    <h2 className="text-xl sm:text-2xl font-bold">
+      On Sale Products
+    </h2>
+  </div>
+
+  {/* Products Slider */}
+  {loading ? (
+    <div className="flex justify-center items-center h-48 sm:h-64">
+      <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2"></div>
+    </div>
+  ) : error ? (
+    <div className="text-center py-8 sm:py-10 text-red-500">
+      {error}
+    </div>
+  ) : (
+    <>
+      {/* Mobile Scrollable Layout */}
+      <div className="block sm:hidden mb-6">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <style jsx>{`
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          {latestProducts.map((product) => (
+            <div
+              key={product._id}
+              className="rounded-lg p-2 flex flex-col h-full bg-white relative flex-shrink-0 w-[140px]"
+            >
+              {/* Sale Badge */}
+              {product.price !== product.finalPrice && (
+                <span className="absolute top-1 left-1 bg-yellow-400 text-black text-[8px] font-bold px-1 py-0.5 rounded">
+                  Sale
+                </span>
+              )}
+
+              {/* Wishlist Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToWishlist(product._id);
+                }}
+                className="absolute top-1 right-1 z-10 p-1 bg-white/80 rounded-full hover:bg-white transition-colors"
+              >
+                <Heart className="w-3 h-3 text-gray-700 hover:text-red-500" />
+              </button>
+
+              {/* Product Image */}
+              <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
+                <img
+                  src={
+                    product.images && product.images.length > 0
+                      ? `${SERVER_URL}/uploads/${product.images[0]}`
+                      : "https://via.placeholder.com/300"
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-contain p-1"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300";
+                  }}
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="flex-grow">
+                <h3 className="text-xs truncate font-medium mb-1">
+                  {product.name.slice(0, 40)}
+                </h3>
+
+                <div className="flex text-yellow-400 text-xs mb-1">
+                  {renderStars(product.averageRating)}
+                </div>
+
+                <div className="text-xs">
+                  {product.price !== product.finalPrice && (
+                    <span className="text-gray-400 line-through mr-1">
+                      ₹{product.price}
+                    </span>
+                  )}
+                  <span className="text-blue-600 font-bold">
+                    ₹{product.finalPrice}
+                  </span>
+                </div>
+              </div>
+
+              {/* View Product Button */}
+              <button
+                onClick={() => navigateToProduct(product._id)}
+                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1 rounded-md text-xs font-medium transition-colors mt-1"
+              >
+                View Product
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Slider Layout */}
+      <div className="hidden sm:block relative overflow-hidden mb-6 sm:mb-10">
+        <button
+          onClick={prevOnSaleSlide}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+        >
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+        <button
+          onClick={nextOnSaleSlide}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+        >
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateX(-${onSaleCurrentIndex * 100}%)`,
+          }}
+        >
+          {Array.from(
+            {
+              length: Math.ceil(latestProducts.length / itemsPerSlide),
+            },
+            (_, slideIndex) => (
+              <div key={slideIndex} className="w-full flex-shrink-0">
+                <div className="flex-wrap justify-center gap-2 sm:gap-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                  {latestProducts
+                    .slice(
+                      slideIndex * itemsPerSlide,
+                      (slideIndex + 1) * itemsPerSlide
+                    )
+                    .map((product) => (
+                      <div
+                        key={product._id}
+                        className={`rounded-lg sm:rounded-xl p-2 sm:p-4 flex flex-col h-full bg-white relative w-full max-w-[180px] sm:w-[160px] md:w-[180px] lg:w-[200px]`}
+                      >
+                        {/* Sale Badge */}
+                        {product.price !== product.finalPrice && (
+                          <span className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-yellow-400 text-black text-[8px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded">
+                            Sale
+                          </span>
+                        )}
+
+                        {/* Wishlist Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToWishlist(product._id);
+                          }}
+                          className="absolute top-1 sm:top-2 right-1 sm:right-2 z-10 p-1 bg-white/80 rounded-full hover:bg-white transition-colors"
+                        >
+                          <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 hover:text-red-500" />
+                        </button>
+
+                        {/* Product Image */}
+                        <div className="aspect-square mb-1 sm:mb-2 overflow-hidden rounded-lg flex items-center justify-center">
+                          <img
+                            src={
+                              product.images && product.images.length > 0
+                                ? `${SERVER_URL}/uploads/${product.images[0]}`
+                                : "https://via.placeholder.com/300"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-contain p-1 sm:p-2"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/300";
+                            }}
+                          />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-grow">
+                          <h3 className="text-xs truncate font-medium mb-1">
+                            {product.name.slice(0, 40)}
+                          </h3>
+
+                          <div className="flex text-yellow-400 text-xs mb-1">
+                            {renderStars(product.averageRating)}
+                          </div>
+
+                          <div className="text-xs sm:text-sm">
+                            {product.price !== product.finalPrice && (
+                              <span className="text-gray-400 line-through mr-1">
+                                ₹{product.price}
+                              </span>
+                            )}
+                            <span className="text-blue-600 font-bold">
+                              ₹{product.finalPrice}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* View Product Button */}
+                        <button
+                          onClick={() => navigateToProduct(product._id)}
+                          className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1 rounded-md text-xs font-medium transition-colors mt-1 sm:mt-2"
+                        >
+                          View Product
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* Image Cards Section */}
+  <div className="w-full">
+    <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      {offersToShow.map((offer) => {
+        const product = offer.productIds?.[0];
+        return (
+          <div
+            key={offer._id}
+            className="relative group h-48 sm:h-64 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg sm:hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.01] sm:hover:scale-[1.02]"
+            onClick={() => product && navigateToProduct(product._id)}
+          >
+            {/* Background Image */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${
+                  offer.image
+                    ? `${SERVER_URL}/uploads/${offer.image.split("/").pop()}`
+                    : "https://source.unsplash.com/600x400/?electronics,tech"
+                })`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
+
+            {/* Content */}
+            <div className="relative z-10 p-4 sm:p-6 h-full flex flex-col justify-between">
+              <div>
+                <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mb-2 sm:mb-4">
+                  {offer.discountType === "percentage"
+                    ? `${offer.discountValue}% OFF`
+                    : "SPECIAL"}
+                </span>
+                <h3 className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">
+                  {offer.name}
+                </h3>
+                <p className="text-white/90 text-xs sm:text-sm line-clamp-2">
+                  {offer.description}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                {product ? (
+                  <div>
+                    {product.price !== product.finalPrice && (
+                      <span className="text-white/80 text-xs sm:text-sm line-through">
+                        ₹{product.price}
+                      </span>
+                    )}
+                    <span className="text-white text-base sm:text-lg md:text-xl font-bold ml-1 sm:ml-2">
+                      ₹{product.finalPrice}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-white text-xs sm:text-sm">
+                    No product
+                  </span>
+                )}
+
+                <button className="bg-white/20 backdrop-blur-sm text-white px-2 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-xs sm:text-sm">
+                  Shop Now
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Mobile Slider Layout */}
+    <div className="md:hidden relative">
+      {/* Slider Container */}
+      <div className="overflow-hidden rounded-xl">
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateX(-${currentSlide * 100}%)`,
+          }}
+        >
+          {offersToShow.map((offer) => {
             const product = offer.productIds?.[0];
-            const bgImage = offer.image
-              ? `${SERVER_URL}/uploads/${offer.image
-                  .split("\\")
-                  .pop()
-                  .split("/")
-                  .pop()}`
-              : "https://source.unsplash.com/600x400/?gadget,tech";
             return (
               <div
                 key={offer._id}
-                className={`${
-                  index === 0 ? "flex-[2]" : "flex-1"
-                } rounded-2xl overflow-hidden min-h-[400px] flex flex-col justify-end p-6 lg:p-8 bg-black text-white`}
-                style={{
-                  backgroundImage: `url(${bgImage})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
+                className="w-full flex-shrink-0 relative group h-48 cursor-pointer"
+                onClick={() => product && navigateToProduct(product._id)}
               >
-                <div className="bg-black/50 p-4 rounded-xl">
-                  <h2 className="text-2xl lg:text-3xl font-bold mb-2">
-                    {offer.name}
-                  </h2>
-                  <h3 className="text-sm mb-2">{offer.description}</h3>
+                {/* Background Image */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `url(${
+                      offer.image
+                        ? `${SERVER_URL}/uploads/${offer.image.split("/").pop()}`
+                        : "https://source.unsplash.com/600x400/?electronics,tech"
+                    })`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
 
-                  {product ? (
-                    <div className="mb-2">
-                      {product.price !== product.finalPrice && (
-                        <span className="text-gray-300 text-sm line-through mr-2">
-                          ₹{product.price}
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
+
+                {/* Content */}
+                <div className="relative z-10 p-4 h-full flex flex-col justify-between">
+                  <div>
+                    <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded-full mb-2">
+                      {offer.discountType === "percentage"
+                        ? `${offer.discountValue}% OFF`
+                        : "SPECIAL"}
+                    </span>
+                    <h3 className="text-white text-base font-bold mb-1">
+                      {offer.name}
+                    </h3>
+                    <p className="text-white/90 text-xs line-clamp-2">
+                      {offer.description}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    {product ? (
+                      <div>
+                        {product.price !== product.finalPrice && (
+                          <span className="text-white/80 text-xs line-through">
+                            ₹{product.price}
+                          </span>
+                        )}
+                        <span className="text-white text-sm font-bold ml-1">
+                          ₹{product.finalPrice}
                         </span>
-                      )}
-                      <span className="text-xl font-bold text-white">
-                        ₹{product.finalPrice}
-                      </span>
-                    </div>
-                  ) : (
-                    <p className="text-sm">No product available</p>
-                  )}
+                      </div>
+                    ) : (
+                      <span className="text-white text-xs">No product</span>
+                    )}
 
-                  <button
-                    onClick={() => product && navigateToProduct(product._id)}
-                    className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full transition-colors mt-4"
-                  >
-                    Shop Now
-                  </button>
+                    <button className="bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-md hover:bg-white/30 transition-all duration-300 border border-white/30 text-xs">
+                      Shop Now
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
+      </div>
 
-        {/* Mobile Slider Layout */}
-        <div className="lg:hidden relative">
-          {/* Slider Container */}
-          <div className="overflow-hidden rounded-2xl">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {homeOffers.slice(0, 3).map((offer, index) => {
-                const product = offer.productIds?.[0];
-                const bgImage = offer.image
-                  ? `${SERVER_URL}/uploads/${offer.image
-                      .split("\\")
-                      .pop()
-                      .split("/")
-                      .pop()}`
-                  : "https://source.unsplash.com/600x400/?gadget,tech";
-                return (
-                  <div
-                    key={offer._id}
-                    className="w-full flex-shrink-0 min-h-[400px] flex flex-col justify-end p-6 bg-black text-white relative"
-                    style={{
-                      backgroundImage: `url(${bgImage})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
-                    <div className="bg-black/50 p-4 rounded-xl">
-                      <h2 className="text-2xl font-bold mb-2">{offer.name}</h2>
-                      <h3 className="text-sm mb-2">{offer.description}</h3>
-
-                      {product ? (
-                        <div className="mb-2">
-                          {product.price !== product.finalPrice && (
-                            <span className="text-gray-300 text-sm line-through mr-2">
-                              ₹{product.price}
-                            </span>
-                          )}
-                          <span className="text-xl font-bold text-white">
-                            ₹{product.finalPrice}
-                          </span>
-                        </div>
-                      ) : (
-                        <p className="text-sm">No product available</p>
-                      )}
-
-                      <button
-                        onClick={() =>
-                          product && navigateToProduct(product._id)
-                        }
-                        className="bg-blue-800 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-full transition-colors mt-4"
-                      >
-                        Shop Now
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Navigation Arrows */}
+      {/* Navigation Arrows - Only show if more than 1 slide */}
+      {offersToShow.length > 1 && (
+        <>
           <button
-            onClick={goToPrevious}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
+            onClick={gosToPrevious}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
             aria-label="Previous slide"
           >
             <svg
-              className="w-6 h-6"
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -617,12 +1123,12 @@ useEffect(() => {
           </button>
 
           <button
-            onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
+            onClick={goToNexts}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
             aria-label="Next slide"
           >
             <svg
-              className="w-6 h-6"
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -635,1117 +1141,646 @@ useEffect(() => {
               />
             </svg>
           </button>
+        </>
+      )}
 
-          {/* Dot Indicators */}
-          <div className="flex justify-center space-x-2 mt-4">
-            {homeOffers.slice(0, 3).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  currentSlide === index
-                    ? "bg-blue-600"
-                    : "bg-gray-400 hover:bg-gray-300"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+      {/* Dot Indicators - Only show if more than 1 slide */}
+      {offersToShow.length > 1 && (
+        <div className="flex justify-center space-x-2 mt-3">
+          {offersToShow.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlides(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                currentSlide === index
+                  ? "bg-yellow-400 scale-125"
+                  : "bg-white/50 hover:bg-white/70"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+
+      {/* Top Rated Section */}
+    <div className="px-4 py-4">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-2xl font-bold" id="top-rated-section">
+      Top Rated Item's
+    </h2>
+  </div>
+
+  {loading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  ) : error ? (
+    <div className="text-center py-10 text-red-500">{error}</div>
+  ) : (
+    <div className="relative mb-8">
+      {/* Desktop Slider - Hidden on mobile */}
+      <div className="hidden md:block">
+        {/* Left Arrow */}
+        <button
+          onClick={prevTopRatedSlide}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+
+        {/* Right Arrow */}
+        <button
+          onClick={nextTopRatedSlide}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+
+        {/* Product Slider for Desktop */}
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateX(-${topRatedCurrentIndex * 100}%)`,
+          }}
+        >
+          {Array.from(
+            { length: Math.ceil(topRatedProducts.length / itemsPerSlide) },
+            (_, slideIndex) => (
+              <div key={slideIndex} className="w-full flex-shrink-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {topRatedProducts
+                    .slice(
+                      slideIndex * itemsPerSlide,
+                      (slideIndex + 1) * itemsPerSlide
+                    )
+                    .map((product) => (
+                      <div
+                        key={product._id}
+                        className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
+                          isDark ? "bg-gray-800" : "bg-white"
+                        }  relative`}
+                      >
+                        {/* Sale Badge */}
+                        {product.price !== product.finalPrice && (
+                          <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
+                            Sale
+                          </span>
+                        )}
+
+                        {/* Wishlist Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToWishlist(product._id);
+                          }}
+                          className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                        >
+                          <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                        </button>
+
+                        {/* Product Image */}
+                        <div className="aspect-square mb-3 overflow-hidden  flex items-center justify-center p-6">
+                          <img
+                            src={
+                              product.images && product.images.length > 0
+                                ? `${SERVER_URL}/uploads/${product.images[0]}`
+                                : "https://via.placeholder.com/300"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-contain p-2 sm:p-3"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/300";
+                            }}
+                          />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-grow">
+                          <h3 className="text-xs truncate sm:text-sm font-semibold line-clamp-2 h-10 sm:h-10">
+                            {product.name.slice(0, 50)}
+                          </h3>
+                          <div className="flex text-yellow-400 text-xs sm:text-sm">
+                            {renderStars(product.averageRating)}
+                          </div>
+                          <div className="text-xs sm:text-sm ">
+                            {product.price !== product.finalPrice && (
+                              <span className="text-gray-400 line-through mr-1">
+                                ₹{product.price}
+                              </span>
+                            )}
+                            <span className="text-blue-600 font-bold">
+                              ₹{product.finalPrice}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* View Product Button */}
+                        <button
+                          onClick={() => navigateToProduct(product._id)}
+                          className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
+                        >
+                          View Product
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )
+          )}
         </div>
       </div>
 
-      <div
-        className={`min-h-screen mt-5 transition-colors duration-300 ${
-          isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-        }`}
-      >
-        <div className="container mx-auto px-2 py-8">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Weekly Deal Offer Card - Slider Version */}
-            <div className="lg:w-80 flex-shrink-0">
-              <div
-                className={`rounded-2xl p-6 border-4 border-yellow-400 ${
-                  isDark ? "bg-gray-800" : "bg-white"
-                } relative overflow-hidden`}
-              >
-                <h2 className="text-xl font-bold mb-4 text-center">
-                  Deal of the Day
-                </h2>
-
-                {loading ? (
-                  <div className="flex justify-center items-center h-48">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
-                ) : error ? (
-                  <div className="text-center py-4 text-red-500 text-sm">
-                    Failed to load deals
-                  </div>
-                ) : (
-                  (() => {
-                    const activeDeals = dealProducts.filter((deal) =>
-                      calculateTimeLeft(deal.createdAt)
-                    );
-
-                    return activeDeals.length > 0 ? (
-                      <div className="relative">
-                        {/* Deal Products Slider */}
-                        <div className="overflow-hidden">
-                          <div
-                            className="flex transition-transform duration-300 ease-in-out"
-                            style={{
-                              transform: `translateX(-${
-                                dealCurrentIndex * 100
-                              }%)`,
-                            }}
-                          >
-                            {activeDeals.map((deal) => {
-                              const timeLeft = dealTimers[deal._id];
-                              const imageUrl = deal.product.images?.[0]
-                                ? `${SERVER_URL}/uploads/${deal.product.images[0]}`
-                                : "https://via.placeholder.com/300";
-
-                              return (
-                                <div
-                                  key={deal._id}
-                                  className="w-full flex-shrink-0 px-2"
-                                >
-                                  <div className="text-center mb-6 relative">
-                                    {/* Discount Badge */}
-                                    {/* <div className="absolute top-4 right-4">
-                                      <span className="bg-yellow-400 text-black px-2 py-1 rounded text-sm font-bold">
-                                        {Math.round(
-                                          ((deal.product.price -
-                                            deal.offerPrice) /
-                                            deal.product.price) *
-                                            100
-                                        )}
-                                        %
-                                      </span>
-                                    </div> */}
-
-                                    {/* Product Image */}
-                                    <img
-                                      src={imageUrl}
-                                      alt={deal.product.name}
-                                      className="w-48 h-48 mx-auto rounded-lg object-cover mb-4"
-                                      onError={(e) => {
-                                        e.target.src =
-                                          "https://source.unsplash.com/300x300/?technology";
-                                      }}
-                                    />
-
-                                    {/* Product Name */}
-                                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                                      {deal.product.name}
-                                    </h3>
-
-                                    {/* Static 5 stars */}
-                                    <div className="flex justify-center mb-2">
-                                      {renderStars(5)}
-                                    </div>
-
-                                    {/* Price Info */}
-                                    <div className="flex justify-center items-center gap-2 mb-4">
-                                      <span className="text-gray-400 line-through">
-                                        ₹{deal.product.price}
-                                      </span>
-                                      <span className="text-2xl font-bold text-blue-600">
-                                        ₹{deal.offerPrice}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {/* Countdown Timer */}
-                                  <div className="text-center mb-6">
-                                    <p className="text-sm font-medium mb-4">
-                                      Hurry Up! Limited Time
-                                    </p>
-                                    <div className="grid grid-cols-4 gap-2 ms-5 text-center">
-                                      {/* <div>
-                                        <div className="text-2xl font-bold text-red-500">
-                                          {timeLeft.days}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                          DAYS
-                                        </div>
-                                      </div> */}
-                                      <div>
-                                        <div className="text-2xl font-bold text-red-500">
-                                          {String(timeLeft.hours).padStart(
-                                            2,
-                                            "0"
-                                          )}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                          HRS
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="text-2xl font-bold text-red-500">
-                                          {String(timeLeft.minutes).padStart(
-                                            2,
-                                            "0"
-                                          )}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                          MIN
-                                        </div>
-                                      </div>
-                                      <div>
-                                        <div className="text-2xl font-bold text-red-500">
-                                          {String(timeLeft.seconds).padStart(
-                                            2,
-                                            "0"
-                                          )}
-                                        </div>
-                                        <div className="text-xs text-gray-500">
-                                          SEC
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {/* CTA Button */}
-                                  <button
-                                    onClick={() =>
-                                      navigateToProduct(deal.product._id)
-                                    }
-                                    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors"
-                                  >
-                                    Shop Now
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Navigation Arrows */}
-                        {activeDeals.length > 1 && (
-                          <>
-                            <button
-                              onClick={prevDealSlide}
-                              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
-                            >
-                              <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <button
-                              onClick={nextDealSlide}
-                              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
-                            >
-                              <ChevronRight className="w-5 h-5" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center py-10 text-gray-500">
-                        <img src="https://cdn.dribbble.com/userupload/22180708/file/original-fb0f3fcb86aa71d393a578acb476b44c.gif" alt="" />
-                        No active deals available
-                      </div>
-                    );
-                  })()
-                )}
-              </div>
-            </div>
-
-            {/* On Sale Products Section */}
-            <div className="px-4 py-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">On Sale Products</h2>
-              </div>
-
-              {/* Products Slider */}
-              {loading ? (
-                <div className="flex justify-center items-center h-64">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-              ) : error ? (
-                <div className="text-center py-10 text-red-500">{error}</div>
-              ) : (
-                <div className="relative overflow-hidden mb-8">
-                  <button
-                    onClick={prevOnSaleSlide}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={nextOnSaleSlide}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                  <div
-                    className="flex transition-transform duration-500 ease-in-out"
-                    style={{
-                      transform: `translateX(-${onSaleCurrentIndex * 100}%)`,
-                    }}
-                  >
-                    {Array.from(
-                      {
-                        length: Math.ceil(
-                          latestProducts.length / itemsPerSlide
-                        ),
-                      },
-                      (_, slideIndex) => (
-                        <div key={slideIndex} className="w-full flex-shrink-0">
-                          <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                            {latestProducts
-                              .slice(
-                                slideIndex * itemsPerSlide,
-                                (slideIndex + 1) * itemsPerSlide
-                              )
-                              .map((product) => (
-                                <div
-                                  key={product._id}
-                                  className={`rounded-xl p-2 sm:p-8 flex flex-col h-full bg-white shadow-md hover:shadow-lg transition-shadow relative w-[260px] sm:w-[220px]`}
-                                >
-                                  {/* Sale Badge */}
-                                  {product.price !== product.finalPrice && (
-                                    <span className="absolute top-2 left-2 bg-yellow-400 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">
-                                      Sale
-                                    </span>
-                                  )}
-
-                                  {/* Wishlist Button */}
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleAddToWishlist(product._id);
-                                    }}
-                                    className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full hover:bg-white transition-colors"
-                                  >
-                                    <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-                                  </button>
-
-                                  {/* Product Image */}
-                                  <div className="aspect-square mb-2 overflow-hidden rounded-lg flex items-center justify-center bg-white">
-                                    <img
-                                      src={
-                                        product.images &&
-                                        product.images.length > 0
-                                          ? `${SERVER_URL}/uploads/${product.images[0]}`
-                                          : "https://via.placeholder.com/300"
-                                      }
-                                      alt={product.name}
-                                      className="w-full h-full object-contain p-2"
-                                      onError={(e) => {
-                                        e.target.src =
-                                          "https://via.placeholder.com/300";
-                                      }}
-                                    />
-                                  </div>
-
-                                  {/* Product Info */}
-                                  <div className="flex-grow">
-                                    <h3 className="text-xs sm:text-sm font-semibold mb-1">
-                                      {product.name.slice(0, 10)}
-                                    </h3>
-
-                                    <div className="flex text-yellow-400 text-sm mb-1">
-                                      {renderStars(product.averageRating)}
-                                    </div>
-
-                                    <div className="text-sm">
-                                      {product.price !== product.finalPrice && (
-                                        <span className="text-gray-400 line-through mr-1 text-xs">
-                                          ₹{product.price}
-                                        </span>
-                                      )}
-                                      <span className="text-blue-600 font-bold text-sm">
-                                        ₹{product.finalPrice}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {/* View Product Button */}
-                                  <button
-                                    onClick={() =>
-                                      navigateToProduct(product._id)
-                                    }
-                                    className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1.5 rounded-md text-xs font-medium transition-colors mt-2"
-                                  >
-                                    View Product
-                                  </button>
-                                </div>
-                              ))}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Image Cards Section - Now positioned after the products */}
-              <div className="w-full">
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {offersToShow.map((offer) => {
-                    const product = offer.productIds?.[0];
-                    return (
-                      <div
-                        key={offer._id}
-                        className="relative group h-64 rounded-2xl overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
-                        onClick={() =>
-                          product && navigateToProduct(product._id)
-                        }
-                      >
-                        {/* Background Image */}
-                        <div
-                          className="absolute inset-0"
-                          style={{
-                            backgroundImage: `url(${
-                              offer.image
-                                ? `${SERVER_URL}/uploads/${offer.image
-                                    .split("/")
-                                    .pop()}`
-                                : "https://source.unsplash.com/600x400/?electronics,tech"
-                            })`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                          }}
-                        />
-
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
-
-                        {/* Content */}
-                        <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                          <div>
-                            <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
-                              {offer.discountType === "percentage"
-                                ? `${offer.discountValue}% OFF`
-                                : "SPECIAL"}
-                            </span>
-                            <h3 className="text-white text-2xl font-bold mb-2">
-                              {offer.name}
-                            </h3>
-                            <p className="text-white/90 text-sm line-clamp-2">
-                              {offer.description}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            {product ? (
-                              <div>
-                                {product.price !== product.finalPrice && (
-                                  <span className="text-white/80 text-sm line-through">
-                                    ₹{product.price}
-                                  </span>
-                                )}
-                                <span className="text-white text-xl font-bold ml-2">
-                                  ₹{product.finalPrice}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-white text-sm">
-                                No product
-                              </span>
-                            )}
-
-                            <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30">
-                              Shop Now
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Decorative Elements */}
-                        <div className="absolute top-4 right-4 w-12 h-12 bg-white/10 rounded-full blur-xl" />
-                        <div className="absolute bottom-8 right-8 w-8 h-8 bg-yellow-400/30 rounded-full blur-lg" />
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Mobile Slider Layout */}
-              <div className="md:hidden relative">
-  {/* Slider Container */}
-  <div className="overflow-hidden rounded-2xl">
-    <div
-      className="flex transition-transform duration-500 ease-in-out"
-      style={{
-        transform: `translateX(-${currentSlide * 100}%)`,
-      }}
-    >
-      {offersToShow.map((offer) => {
-        const product = offer.productIds?.[0];
-        return (
-          <div
-            key={offer._id}
-            className="w-full flex-shrink-0 relative group h-64 cursor-pointer"
-            onClick={() =>
-              product && navigateToProduct(product._id)
-            }
-          >
-            {/* Background Image */}
+      {/* Mobile Horizontal Scroll */}
+      <div className="md:hidden">
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          {topRatedProducts.map((product) => (
             <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url(${
-                  offer.image
-                    ? `${SERVER_URL}/uploads/${offer.image
-                        .split("/")
-                        .pop()}`
-                    : "https://source.unsplash.com/600x400/?electronics,tech"
-                })`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            />
-
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
-
-            {/* Content */}
-            <div className="relative z-10 p-6 h-full flex flex-col justify-between">
-              <div>
-                <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-4">
-                  {offer.discountType === "percentage"
-                    ? `${offer.discountValue}% OFF`
-                    : "SPECIAL"}
-                </span>
-                <h3 className="text-white text-xl font-bold mb-2">
-                  {offer.name}
-                </h3>
-                <p className="text-white/90 text-sm line-clamp-2">
-                  {offer.description}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                {product ? (
-                  <div>
-                    {product.price !== product.finalPrice && (
-                      <span className="text-white/80 text-sm line-through">
-                        ₹{product.price}
-                      </span>
-                    )}
-                    <span className="text-white text-lg font-bold ml-2">
-                      ₹{product.finalPrice}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-white text-sm">
-                    No product
+              key={product._id}
+              className="flex-shrink-0 w-40 sm:w-48 snap-start"
+            >
+              <div
+                className={`rounded-xl p-3 flex flex-col h-full ${
+                  isDark ? "bg-gray-800" : "bg-white"
+                } shadow-md transition-shadow relative`}
+              >
+                {/* Sale Badge */}
+                {product.price !== product.finalPrice && (
+                  <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded z-10">
+                    Sale
                   </span>
                 )}
 
-                <button className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-sm">
-                  Shop Now
+                {/* Wishlist Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToWishlist(product._id);
+                  }}
+                  className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full hover:bg-white transition-colors"
+                >
+                  <Heart className="w-3.5 h-3.5 text-gray-700 hover:text-red-500" />
+                </button>
+
+                {/* Product Image */}
+                <div className="aspect-square mb-2 overflow-hidden rounded-lg flex items-center justify-center">
+                  <img
+                    src={
+                      product.images && product.images.length > 0
+                        ? `${SERVER_URL}/uploads/${product.images[0]}`
+                        : "https://via.placeholder.com/300"
+                    }
+                    alt={product.name}
+                    className="w-full h-full object-contain p-2"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/300";
+                    }}
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="flex-grow">
+                  <h3 className="text-xs font-semibold mb-1 line-clamp-2 h-8">
+                    {product.name.slice(0, 40)}
+                  </h3>
+                  <div className="flex text-yellow-400 text-xs mb-1">
+                    {renderStars(product.averageRating)}
+                  </div>
+                  <div className="text-xs mb-2">
+                    {product.price !== product.finalPrice && (
+                      <span className="text-gray-400 line-through mr-1">
+                        ₹{product.price}
+                      </span>
+                    )}
+                    <span className="text-blue-600 font-bold">
+                      ₹{product.finalPrice}
+                    </span>
+                  </div>
+                </div>
+
+                {/* View Product Button */}
+                <button
+                  onClick={() => navigateToProduct(product._id)}
+                  className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1.5 rounded-md text-xs font-medium transition-colors mt-auto"
+                >
+                  View Product
                 </button>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Decorative Elements */}
-            <div className="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full blur-xl" />
-            <div className="absolute bottom-6 right-6 w-6 h-6 bg-yellow-400/30 rounded-full blur-lg" />
+      {/* Tablet Grid - Shown only on tablet sizes */}
+      <div className="hidden sm:block md:hidden">
+        <div className="grid grid-cols-2 gap-4">
+          {topRatedProducts.slice(0, 6).map((product) => (
+            <div
+              key={product._id}
+              className={`rounded-xl p-3 flex flex-col h-full ${
+                isDark ? "bg-gray-800" : "bg-white"
+              } shadow-md transition-shadow relative`}
+            >
+              {/* Sale Badge */}
+              {product.price !== product.finalPrice && (
+                <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded z-10">
+                  Sale
+                </span>
+              )}
+
+              {/* Wishlist Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToWishlist(product._id);
+                }}
+                className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+              >
+                <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+              </button>
+
+              {/* Product Image */}
+              <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center">
+                <img
+                  src={
+                    product.images && product.images.length > 0
+                      ? `${SERVER_URL}/uploads/${product.images[0]}`
+                      : "https://via.placeholder.com/300"
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-contain p-2"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300";
+                  }}
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="flex-grow">
+                <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                  {product.name.slice(0, 45)}
+                </h3>
+                <div className="flex text-yellow-400 text-sm mb-1">
+                  {renderStars(product.averageRating)}
+                </div>
+                <div className="text-sm mb-3">
+                  {product.price !== product.finalPrice && (
+                    <span className="text-gray-400 line-through mr-1">
+                      ₹{product.price}
+                    </span>
+                  )}
+                  <span className="text-blue-600 font-bold">
+                    ₹{product.finalPrice}
+                  </span>
+                </div>
+              </div>
+
+              {/* View Product Button */}
+              <button
+                onClick={() => navigateToProduct(product._id)}
+                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors mt-auto"
+              >
+                View Product
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<style jsx>{`
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+`}</style>
+
+      {/* Deal 3 Card Product */}
+     <div className="w-full px-4">
+  {/* Section Header */}
+  <div className="text-center mb-5">
+    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      Latest Tech & Gadgets
+    </h2>
+    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+      Explore cutting-edge technology and innovative gadgets that redefine
+      your digital lifestyle
+    </p>
+  </div>
+
+  {/* Mobile: Horizontal scrollable, Desktop: Grid */}
+  <div className="md:flex md:flex-wrap md:justify-center md:gap-8 overflow-x-auto md:overflow-x-visible scrollbar-hide">
+    <div className="flex md:contents gap-4 md:gap-8 pb-4 md:pb-0">
+      {carouselCards.map((card) => {
+        const imageUrl = `https://rigsdock.com/uploads/${card?.image}`;
+        return (
+          <div
+            key={card._id}
+            className="group flex-shrink-0 w-80 md:w-80 flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
+            onClick={() => window.open(card.link, "_blank")}
+          >
+            {/* Image Container with Overlay */}
+            <div className="relative overflow-hidden h-56 flex-shrink-0">
+              <img
+                src={imageUrl}
+                alt={card.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.target.src =
+                    "https://source.unsplash.com/600x400/?gadget";
+                }}
+              />
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              {/* Floating Action Button */}
+              <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <svg
+                  className="w-5 h-5 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            {/* Content Section */}
+            <div className="p-6 flex flex-col flex-grow">
+              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                {card.title}
+              </h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
+                {card.subtitle}
+              </p>
+
+              {/* Action Bar */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  View Product
+                </span>
+                <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
+                  <svg
+                    className="w-4 h-4 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>
         );
       })}
     </div>
   </div>
-
-  {/* Navigation Arrows - Only show if more than 1 slide */}
-  {offersToShow.length > 1 && (
-    <>
-      <button
-        onClick={gosToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
-        aria-label="Previous slide"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-
-      <button
-        onClick={goToNexts}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-20 backdrop-blur-sm border border-white/20"
-        aria-label="Next slide"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-    </>
-  )}
-
-  {/* Dot Indicators - Only show if more than 1 slide */}
-  {offersToShow.length > 1 && (
-    <div className="flex justify-center space-x-2 mt-4">
-      {offersToShow.map((_, index) => (
-        <button
-          key={index}
-          onClick={() => goToSlides(index)}
-          className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-            currentSlide === index
-              ? "bg-yellow-400 scale-125"
-              : "bg-white/50 hover:bg-white/70"
-          }`}
-          aria-label={`Go to slide ${index + 1}`}
-        />
-      ))}
-    </div>
-  )}
 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Top Rated Section */}
-      <div className="px-4 py-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold" id="top-rated-section">
-            Top Rated Item's
-          </h2>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-10 text-red-500">{error}</div>
-        ) : (
-          <div className="relative overflow-hidden mb-8">
-            {/* Left Arrow */}
-            <button
-              onClick={prevTopRatedSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-
-            {/* Right Arrow */}
-            <button
-              onClick={nextTopRatedSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-
-            {/* Product Slider */}
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{
-                transform: `translateX(-${topRatedCurrentIndex * 100}%)`,
-              }}
-            >
-              {Array.from(
-                { length: Math.ceil(topRatedProducts.length / itemsPerSlide) },
-                (_, slideIndex) => (
-                  <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                      {topRatedProducts
-                        .slice(
-                          slideIndex * itemsPerSlide,
-                          (slideIndex + 1) * itemsPerSlide
-                        )
-                        .map((product) => (
-                          <div
-                            key={product._id}
-                            className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
-                              isDark ? "bg-gray-800" : "bg-white"
-                            } shadow-md hover:shadow-lg transition-shadow relative w-full sm:w-auto`}
-                          >
-                            {/* Sale Badge */}
-                            {product.price !== product.finalPrice && (
-                              <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
-                                Sale
-                              </span>
-                            )}
-
-                            {/* Wishlist Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleAddToWishlist(product._id);
-                              }}
-                              className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-                            >
-                              <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-                            </button>
-
-                            {/* Product Image */}
-                            <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center bg-gray-100">
-                              <img
-                                src={
-                                  product.images && product.images.length > 0
-                                    ? `${SERVER_URL}/uploads/${product.images[0]}`
-                                    : "https://via.placeholder.com/300"
-                                }
-                                alt={product.name}
-                                className="w-full h-full object-contain p-2 sm:p-3"
-                                onError={(e) => {
-                                  e.target.src =
-                                    "https://via.placeholder.com/300";
-                                }}
-                              />
-                            </div>
-
-                            {/* Product Info */}
-                            <div className="flex-grow">
-                              <h3 className="text-xs sm:text-sm font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
-                                {product.name}
-                              </h3>
-                              <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">
-                                {renderStars(product.averageRating)}
-                              </div>
-                              <div className="text-xs sm:text-sm mb-3">
-                                {product.price !== product.finalPrice && (
-                                  <span className="text-gray-400 line-through mr-1">
-                                    ₹{product.price}
-                                  </span>
-                                )}
-                                <span className="text-blue-600 font-bold">
-                                  ₹{product.finalPrice}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* View Product Button */}
-                            <button
-                              onClick={() => navigateToProduct(product._id)}
-                              className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
-                            >
-                              View Product
-                            </button>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Deal 3 Card Product */}
-      <div className="w-full px-4 ">
-        {/* Section Header */}
-        <div className="text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Latest Tech & Gadgets
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Explore cutting-edge technology and innovative gadgets that redefine
-            your digital lifestyle
-          </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mt-6 rounded-full"></div>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-8">
-          {carouselCards.map((card) => {
-            const imageUrl = `https://rigsdock.com/uploads/${card?.image}`;
-            return (
-              <div
-                key={card._id}
-                className="group w-80 flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
-                onClick={() => window.open(card.link, "_blank")}
-              >
-                {/* Image Container with Overlay */}
-                <div className="relative overflow-hidden h-56 flex-shrink-0">
-                  <img
-                    src={imageUrl}
-                    alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://source.unsplash.com/600x400/?gadget";
-                    }}
-                  />
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Floating Action Button */}
-                  <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    <svg
-                      className="w-5 h-5 text-gray-7
-00"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Content Section - flex-grow makes this section expand to fill remaining space */}
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                    {card.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
-                    {card.subtitle}
-                  </p>
-
-                  {/* Action Bar */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      View Product
-                    </span>
-                    <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+<style jsx>{`
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+`}</style>
 
       {/* Shop by Category Section */}
-      <section className="bg-white py-12 px-4 md:px-10">
-        <div className="max-w-none">
-          <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Category Cards */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {categories?.map((mainCat) => {
-                const isExpanded = expandedMainCat === mainCat._id;
-                const mainCatCategories = categoryMap[mainCat._id] || [];
-
-                const isDisabled = ["used products", "courses"].includes(
-                  mainCat.name?.trim().toLowerCase()
-                );
-
-                return (
-                  <div
-                    key={mainCat._id}
-                    className={`border rounded-lg p-4 bg-white shadow hover:shadow-md transition-all ${
-                      isExpanded ? "ring-2 ring-blue-500" : ""
-                    } ${
-                      isDisabled
-                        ? "opacity-60 cursor-not-allowed"
-                        : "cursor-pointer"
-                    }`}
-                    onClick={() =>
-                      !isDisabled && toggleMainCategory(mainCat._id)
-                    }
-                  >
-                    <div className="flex flex-col items-center text-center">
-                      <img
-                        src={`${SERVER_URL}/uploads/${mainCat.image}`}
-                        alt={mainCat.name}
-                        className="w-16 h-16 object-cover rounded-md mb-2"
-                        onError={(e) => {
-                          e.target.src = "https://via.placeholder.com/100";
-                        }}
-                      />
-                      <h4 className="font-semibold text-base mb-1">
-                        {mainCat.name}
-                        {isDisabled && (
-                          <span className="ml-1 text-xs text-gray-500">
-                            (Coming Soon)
-                          </span>
-                        )}
-                      </h4>
-                      <p className="text-sm text-gray-500 line-clamp-2">
-                        {mainCat.description}
-                      </p>
-                    </div>
-
-                    {/* Expand categories */}
-                    {isExpanded && !isDisabled && (
-                      <div className="mt-3 border-t pt-3">
-                        {mainCatCategories.length > 0 ? (
-                          <>
-                            <h5 className="text-sm font-medium text-gray-700 mb-2">
-                              Categories under {mainCat.name}:
-                            </h5>
-                            <div className="grid grid-cols-2 gap-3">
-                              {mainCatCategories.map((cat) => {
-                                const subcategories =
-                                  subCategoryMap[cat._id] || [];
-                                return (
-                                  <div key={cat._id} className="space-y-2">
-                                    <div
-                                      className={`px-3 py-2 rounded font-medium ${
-                                        subcategories.length > 0
-                                          ? "bg-gray-100 cursor-pointer"
-                                          : "bg-gray-50"
-                                      } hover:bg-gray-200`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCategoryClick(
-                                          mainCat._id,
-                                          cat._id
-                                        );
-                                      }}
-                                    >
-                                      <div className="flex justify-between items-center">
-                                        <span>{cat.name}</span>
-                                        {subcategories.length > 0 && (
-                                          <span className="text-xs text-gray-500">
-                                            ▲
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {subCategoryMap[cat._id]?.length > 0 && (
-                                      <ul className="mt-1 ml-3 pl-3 border-l border-gray-300 text-sm space-y-1">
-                                        {subcategories.map((sub) => (
-                                          <li
-                                            key={sub._id}
-                                            onClick={() =>
-                                              navigate(
-                                                `/category/${mainCat._id}/${cat._id}/${sub._id}`
-                                              )
-                                            }
-                                            className="bg-white px-3 py-1 rounded shadow-sm border text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                          >
-                                            {sub.name}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="text-center text-gray-500 py-2 text-sm">
-                            No subcategories available
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Right-side Promo Image */}
-            <div className="lg:col-span-5">
-              {homeCategories.length > 0 ? (
-                <div
-                  key={homeCategories[0]._id}
-                  className="relative group h-full min-h-[380px] rounded-2xl overflow-hidden cursor-pointer hover:shadow-xl transition-transform duration-300 transform hover:scale-105"
-                  onClick={() => navigate("/shop")}
-                >
-                  <img
-                    src={
-                      homeCategories[0].image
-                        ? `${SERVER_URL}/uploads/${homeCategories[0].image}`
-                        : "https://source.unsplash.com/600x400/?electronics,gadgets"
-                    }
-                    alt={homeCategories[0].title}
-                    className="absolute inset-0 w-full h-full object-cover z-0"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://source.unsplash.com/600x400/?electronics,gadgets";
-                    }}
-                  />
-
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-black/40 z-10 group-hover:bg-black/50 transition duration-300"></div>
-
-                  {/* Text Content */}
-                  <div className="relative z-20 p-6 h-full flex flex-col justify-end">
-                    <div>
-                      <h3 className="text-white text-2xl font-bold mb-1">
-                        {homeCategories[0].title}
-                      </h3>
-                      <p className="text-white text-sm">
-                        {homeCategories[0].subtitle}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-end mt-4">
-                      <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30">
-                        View More
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-full min-h-[480px] flex items-center justify-center bg-gray-100 text-gray-500 text-sm rounded-lg">
-                  No Promotion Available
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+     <CategoryGrid></CategoryGrid>
 
       {/* New Arrivals Section */}
       <div className="mt-10 px-4">
-        <div className="px-4 ">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold" id="newarrival">
-              New Arrivals
-            </h2>
-          </div>
+       <div className="px-4">
+  <div className="flex justify-between items-center">
+    <h2 className="text-2xl font-bold" id="newarrival">
+      New Arrivals
+    </h2>
+  </div>
 
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-10 text-red-500">{error}</div>
-          ) : (
-            <div className="relative overflow-hidden mb-8">
-              {/* Left Arrow */}
+  {loading ? (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  ) : error ? (
+    <div className="text-center py-10 text-red-500">{error}</div>
+  ) : (
+    <div className="relative overflow-hidden ">
+      {/* Desktop Navigation Arrows - Hidden on mobile */}
+      <button
+        onClick={prevNewArrivalsSlide}
+        className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+
+      <button
+        onClick={nextNewArrivalsSlide}
+        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+
+      {/* Mobile Horizontal Scroll */}
+      <div className="md:hidden">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 px-2 -mx-2">
+          {latestProducts.map((product) => (
+            <div
+              key={product._id}
+              className={`rounded-xl p-3 flex flex-col flex-shrink-0 w-48 ${
+                isDark ? "bg-gray-800" : "bg-white"
+              } relative shadow-sm`}
+            >
+              {/* Sale Badge */}
+              {product.price !== product.finalPrice && (
+                <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded z-20">
+                  Sale
+                </span>
+              )}
+
+              {/* Wishlist Button */}
               <button
-                onClick={prevNewArrivalsSlide}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              {/* Right Arrow */}
-              <button
-                onClick={nextNewArrivalsSlide}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-
-              {/* Product Slider */}
-              <div
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{
-                  transform: `translateX(-${newArrivalsCurrentIndex * 100}%)`,
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToWishlist(product._id);
                 }}
+                className="absolute top-2 right-2 z-20 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
               >
-                {Array.from(
-                  { length: Math.ceil(latestProducts.length / itemsPerSlide) },
-                  (_, slideIndex) => (
-                    <div key={slideIndex} className="w-full flex-shrink-0">
-                      <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                        {latestProducts
-                          .slice(
-                            slideIndex * itemsPerSlide,
-                            (slideIndex + 1) * itemsPerSlide
-                          )
-                          .map((product) => (
-                            <div
-                              key={product._id}
-                              className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
-                                isDark ? "bg-gray-800" : "bg-white"
-                              } shadow-md hover:shadow-lg transition-shadow relative w-full sm:w-auto`}
-                            >
-                              {/* Sale Badge */}
-                              {product.price !== product.finalPrice && (
-                                <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
-                                  Sale
-                                </span>
-                              )}
+                <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+              </button>
 
-                              {/* Wishlist Button */}
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAddToWishlist(product._id);
-                                }}
-                                className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-                              >
-                                <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-                              </button>
-
-                              {/* Product Image */}
-                              <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center ">
-                                <img
-                                  src={
-                                    product.images && product.images.length > 0
-                                      ? `${SERVER_URL}/uploads/${product.images[0]}`
-                                      : "https://via.placeholder.com/300"
-                                  }
-                                  alt={product.name}
-                                  className="w-full h-full object-contain p-2 sm:p-3"
-                                  onError={(e) => {
-                                    e.target.src =
-                                      "https://via.placeholder.com/300";
-                                  }}
-                                />
-                              </div>
-
-                              {/* Product Info */}
-                              <div className="flex-grow">
-                                <h3 className="text-xs sm:text-sm font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
-                                  {product.name}
-                                </h3>
-                                <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">
-                                  {renderStars(product.averageRating)}
-                                </div>
-                                <div className="text-xs sm:text-sm mb-3">
-                                  {product.price !== product.finalPrice && (
-                                    <span className="text-gray-400 line-through mr-1">
-                                      ₹{product.price}
-                                    </span>
-                                  )}
-                                  <span className="text-blue-600 font-bold">
-                                    ₹{product.finalPrice}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* View Product Button */}
-                              <button
-                                onClick={() => navigateToProduct(product._id)}
-                                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
-                              >
-                                View Product
-                              </button>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )
-                )}
+              {/* Product Image */}
+              <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center">
+                <img
+                  src={
+                    product.images && product.images.length > 0
+                      ? `${SERVER_URL}/uploads/${product.images[0]}`
+                      : "https://via.placeholder.com/300"
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300";
+                  }}
+                />
               </div>
+
+              {/* Product Info */}
+              <div className="flex-grow">
+                <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                  {product.name.slice(0, 40)}...
+                </h3>
+                <div className="flex text-yellow-400 text-sm mb-1">
+                  {renderStars(product.averageRating)}
+                </div>
+                <div className="text-sm mb-3">
+                  {product.price !== product.finalPrice && (
+                    <span className="text-gray-400 line-through mr-1">
+                      ₹{product.price}
+                    </span>
+                  )}
+                  <span className="text-blue-600 font-bold">
+                    ₹{product.finalPrice}
+                  </span>
+                </div>
+              </div>
+
+              {/* View Product Button */}
+              <button
+                onClick={() => navigateToProduct(product._id)}
+                className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors mt-auto"
+              >
+                View Product
+              </button>
             </div>
-          )}
+          ))}
         </div>
       </div>
 
+      {/* Desktop Slider - Hidden on mobile */}
+      <div className="hidden md:block">
+        <div
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{
+            transform: `translateX(-${newArrivalsCurrentIndex * 100}%)`,
+          }}
+        >
+          {Array.from(
+            { length: Math.ceil(latestProducts.length / itemsPerSlide) },
+            (_, slideIndex) => (
+              <div key={slideIndex} className="w-full flex-shrink-0">
+                <div className="flex flex-wrap justify-center gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {latestProducts
+                    .slice(
+                      slideIndex * itemsPerSlide,
+                      (slideIndex + 1) * itemsPerSlide
+                    )
+                    .map((product) => (
+                      <div
+                        key={product._id}
+                        className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
+                          isDark ? "bg-gray-800" : "bg-white"
+                        } relative w-full sm:w-auto`}
+                      >
+                        {/* Sale Badge */}
+                        {product.price !== product.finalPrice && (
+                          <span className="absolute top-2 left-2 bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded">
+                            Sale
+                          </span>
+                        )}
+
+                        {/* Wishlist Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToWishlist(product._id);
+                          }}
+                          className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                        >
+                          <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                        </button>
+
+                        {/* Product Image */}
+                        <div className="aspect-square mb-3 overflow-hidden rounded-lg flex items-center justify-center p-6">
+                          <img
+                            src={
+                              product.images && product.images.length > 0
+                                ? `${SERVER_URL}/uploads/${product.images[0]}`
+                                : "https://via.placeholder.com/300"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-contain p-2 sm:p-3"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/300";
+                            }}
+                          />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-grow">
+                          <h3 className="text-xs sm:text-sm truncate font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
+                            {product.name.slice(0, 50)}
+                          </h3>
+                          <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">
+                            {renderStars(product.averageRating)}
+                          </div>
+                          <div className="text-xs sm:text-sm mb-3">
+                            {product.price !== product.finalPrice && (
+                              <span className="text-gray-400 line-through mr-1">
+                                ₹{product.price}
+                              </span>
+                            )}
+                            <span className="text-blue-600 font-bold">
+                              ₹{product.finalPrice}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* View Product Button */}
+                        <button
+                          onClick={() => navigateToProduct(product._id)}
+                          className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-xs sm:text-sm font-medium transition-colors mt-auto"
+                        >
+                          View Product
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+      </div>
+
       {/* Our Brands Section */}
-      <div className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className=" mb-5 px-4 sm:px-6 lg:px-8 bg-white">
         {/* Section Heading */}
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center md:mb-12 text-gray-800">
           Our Brands
@@ -1794,6 +1829,7 @@ useEffect(() => {
           @keyframes scroll {
             0% {
               transform: translateX(0);
+              
             }
             100% {
               transform: translateX(-50%);
@@ -1816,7 +1852,7 @@ useEffect(() => {
 
           @media (max-width: 768px) {
             .animate-scroll {
-              animation: scroll 20s linear infinite;
+              animation: scroll 5s linear infinite;
             }
           }
         `}</style>
@@ -1839,7 +1875,7 @@ useEffect(() => {
             {blogs.map((blog) => (
               <div
                 key={blog._id}
-                className="bg-white p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+                className="bg-white p-3 sm:p-4 rounded-lg transition-all duration-300"
               >
                 <img
                   src={blog.image}

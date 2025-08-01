@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Star, ChevronDown, ChevronUp, Heart,  MoveRight, MoveLeft } from "lucide-react";
+import {
+  Star,
+  ChevronDown,
+  ChevronUp,
+  Heart,
+  MoveRight,
+  MoveLeft,
+} from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +25,6 @@ import { BASE_URL } from "../Services/baseUrl";
 import ChatBox from "../Components/ChatBox";
 import { ListFilter } from "lucide-react";
 
-
 function Shop() {
   const navigate = useNavigate();
   const [AllProducts, setAllProducts] = useState([]);
@@ -30,8 +36,7 @@ function Shop() {
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 9; 
-
+  const itemsPerPage = 15; // Increased to show more products (3 rows × 5 products)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -143,12 +148,12 @@ const itemsPerPage = 9;
     ratings: true,
   });
 
-const reversedProducts = [...AllProducts].reverse();
-const totalPages = Math.ceil(reversedProducts.length / itemsPerPage);
-const paginatedProducts = reversedProducts.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
+  const reversedProducts = [...AllProducts].reverse();
+  const totalPages = Math.ceil(reversedProducts.length / itemsPerPage);
+  const paginatedProducts = reversedProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const toggleFilter = (filterName) => {
     setExpandedFilters((prev) => ({
@@ -161,8 +166,8 @@ const paginatedProducts = reversedProducts.slice(
     return [...Array(5)].map((_, index) => (
       <Star
         key={index}
-        className={`w-4 h-4 ${
-          index < rating ? "text-yellow-400 fill-current" : "text-gray-300"
+        className={`w-3 h-3 ${
+          index < 3 ? "text-yellow-400 fill-current" : "text-gray-300"
         }`}
       />
     ));
@@ -173,11 +178,12 @@ const paginatedProducts = reversedProducts.slice(
       navigate(`/product-details/${product.id}`);
     };
 
-    const handleAddToCart = async (productId) => {
+    const handleAddToCart = async (productId, e) => {
+      e.stopPropagation(); // Prevent navigation when clicking cart button
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) {
-          toast.error("Please login to use wishlist.");
+          toast.error("Please login to use cart.");
           return;
         }
 
@@ -191,7 +197,7 @@ const paginatedProducts = reversedProducts.slice(
     };
 
     const handleAddToWishlist = async (productId, e) => {
-      e.stopPropagation();
+      e.stopPropagation(); // Prevent navigation when clicking wishlist button
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -206,73 +212,58 @@ const paginatedProducts = reversedProducts.slice(
       }
     };
 
-    const ImageWithWishlist = (
-      <div className="relative group h-full ">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-contain cursor-pointer"
-          onClick={handleProductClick}
-        />
-      <button
-  className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
-  onClick={(e) => handleAddToWishlist(product.id, e)}
->
-  <Heart className="text-red-500 w-5 h-5" />
-</button>
-
-      </div>
-    );
+    const discountPercentage = product.originalPrice
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : 0;
 
     return (
-<div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-sm transition-shadow h-full flex flex-col text-sm">
-<div className="h-24 sm:h-48 md:h-64 mb-4 bg-white rounded-lg overflow-hidden">
-  <div className="relative group w-full h-full">
-    <img
-  src={product.image}
-  alt={product.name}
-  className="w-full h-full object-cover p-2 rounded-md cursor-pointer transition-transform duration-300 hover:scale-105"
-/>
+ <div
+        className="bg-white rounded-lg p-2 h-full flex flex-col text-sm cursor-pointer relative" // Reduced padding from p-3 to p-2
+        onClick={handleProductClick}
+      >
+        {/* Discount badge */}
+        {discountPercentage > 0 && (
+          <div className="absolute top-43 left-4 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded z-10">
+            {discountPercentage}% OFF
+          </div>
+        )}
 
-    <button
-      className="absolute top-0 right-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow"
-      onClick={(e) => handleAddToWishlist(product.id, e)}
-    >
-      <Heart className="text-red-500 w-4 h-4 sm:w-5 sm:h-5" />
-    </button>
-  </div>
-</div>
-        <h3 className="font-medium text-gray-900 mb-3 line-clamp-2 text-base">
-          {product.name.slice(0,15)}
-        </h3>
-        <div className="flex items-center mb-2">
-          {renderStars(product.rating)}
+        <div className="h-32 sm:h-40 md:h-48 lg:h-44 xl:h-48 mb-3 bg-white rounded-lg overflow-hidden"> {/* Reduced mb-4 to mb-3 */}
+          <div className="relative group w-full h-full">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover p-2 rounded-md transition-transform duration-300" // Reduced p-3 to p-2
+            />
+            <button
+              className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow-sm"
+              onClick={(e) => handleAddToWishlist(product.id, e)}
+            >
+              <Heart className="text-red-500 w-3 h-3 sm:w-4 sm:h-4" />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xl font-semibold text-blue-800">
+
+        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-xs sm:text-sm leading-tight"> {/* Reduced mb-2 to mb-1 */}
+          {product.name.slice(0, 40)}...
+        </h3>
+
+        <div className="flex items-center mb-1" size={40}> {/* Reduced mb-2 to mb-1 */}
+          <div className="flex gap-0.5">
+            {renderStars(product.rating)}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 mb-2"> {/* Reduced mb-3 to mb-2 */}
+          <span className="text-base sm:text-lg font-semibold text-blue-800">
             ₹{product.price}
           </span>
           {product.originalPrice && (
-            <span className="text-base text-gray-500 line-through">
+            <span className="text-xs sm:text-sm text-gray-500 line-through">
               ₹{product.originalPrice}
             </span>
           )}
         </div>
-        {/* <ul className="text-sm text-gray-600 mb-4 space-y-2">
-          {product.features.map((feature, index) => (
-            <li key={index} className="flex items-center">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></span>
-              {feature}
-            </li>
-          ))}
-        </ul> */}
-       <button
-  className="bg-blue-800 text-white font-medium py-1.5 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm"
-  onClick={() => handleAddToCart(product.id)}
->
-  {product.buttonText}
-</button>
-
       </div>
     );
   };
@@ -280,15 +271,15 @@ const paginatedProducts = reversedProducts.slice(
   return (
     <>
       <Header />
-      <ChatBox/>
-      <div className="bg-white shadow-sm mt-40"></div>
+      <ChatBox />
+      <div className="bg-white shadow-sm mt-38"></div>
 
       <div className="lg:hidden flex justify-start ">
         <button
           onClick={() => setShowMobileFilters(true)}
-          className="bg-blue-800 text-white px-5 py-2 ms-4  rounded-md text-sm font-medium"
+          className="bg-blue-800 text-white px-5 py-2 ms-4 mb-2  rounded-md text-sm font-medium"
         >
-         <ListFilter />
+          <ListFilter />
         </button>
       </div>
 
@@ -356,7 +347,7 @@ const paginatedProducts = reversedProducts.slice(
             {/* Rating Filter */}
             <div className="mb-6">
               <h3 className="text-md font-semibold mb-2">Rating</h3>
-              {[5, 4,].map((rating) => (
+              {[5, 4].map((rating) => (
                 <label
                   key={rating}
                   className={`flex items-center mb-2 cursor-pointer ${
@@ -389,202 +380,200 @@ const paginatedProducts = reversedProducts.slice(
         </div>
       )}
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col-reverse lg:flex-row gap-8">
             {/* Left Sidebar - Filters */}
-<div className="hidden lg:block w-full lg:w-64 space-y-6">
-  {/* Filter by Brand */}
-  <div className="bg-white rounded-lg p-4">
-    <div
-      className="flex items-center justify-between cursor-pointer"
-      onClick={() => toggleFilter("brand")}
-    >
-      <h3 className="text-lg font-semibold text-gray-900">
-        Brand
-      </h3>
-      {expandedFilters.brand ? (
-        <ChevronUp size={18} />
-      ) : (
-        <ChevronDown size={18} />
-      )}
-    </div>
-    {expandedFilters.brand && (
-      <div className="mt-3 space-y-2">
-        {brandsList.map((brand) => (
-          <label
-            key={brand._id}
-            className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
-              selectedBrand === brand._id ? "bg-blue-50" : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              className="mr-2 text-blue-800 w-3.5 h-3.5"
-              checked={selectedBrand === brand._id}
-              onChange={() => handleBrandFilter(brand._id)}
-            />
-            <span className="text-gray-700">
-              {brand.name}
-            </span>
-          </label>
-        ))}
-      </div>
-    )}
-  </div>
+            <div className="hidden lg:block w-full lg:w-64 space-y-6">
+              {/* Filter by Brand */}
+              <div className="bg-white rounded-lg p-4">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFilter("brand")}
+                >
+                  <h3 className="text-lg font-semibold text-gray-900">Brand</h3>
+                  {expandedFilters.brand ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </div>
+                {expandedFilters.brand && (
+                  <div className="mt-3 space-y-2">
+                    {brandsList.map((brand) => (
+                      <label
+                        key={brand._id}
+                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
+                          selectedBrand === brand._id ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2 text-blue-800 w-3.5 h-3.5"
+                          checked={selectedBrand === brand._id}
+                          onChange={() => handleBrandFilter(brand._id)}
+                        />
+                        <span className="text-gray-700">{brand.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-  {/* Filter by Price */}
-  <div className="bg-white rounded-lg p-4">
-    <div
-      className="flex items-center justify-between cursor-pointer"
-      onClick={() => toggleFilter("price")}
-    >
-      <h3 className="text-lg font-semibold text-gray-900">
-        Price
-      </h3>
-      {expandedFilters.price ? (
-        <ChevronUp size={18} />
-      ) : (
-        <ChevronDown size={18} />
-      )}
-    </div>
-    {expandedFilters.price && (
-      <div className="mt-3 space-y-3">
-        <div className="flex gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
-          />
-        </div>
-        <button
-          onClick={handlePriceFilter}
-          className="w-full bg-blue-800 text-white py-2 px-3 rounded-md hover:bg-blue-800 transition-colors text-sm font-medium"
-        >
-          Filter
-        </button>
-      </div>
-    )}
-  </div>
+              {/* Filter by Price */}
+              <div className="bg-white rounded-lg p-4">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFilter("price")}
+                >
+                  <h3 className="text-lg font-semibold text-gray-900">Price</h3>
+                  {expandedFilters.price ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </div>
+                {expandedFilters.price && (
+                  <div className="mt-3 space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-800 text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={handlePriceFilter}
+                      className="w-full bg-blue-800 text-white py-2 px-3 rounded-md hover:bg-blue-800 transition-colors text-sm font-medium"
+                    >
+                      Filter
+                    </button>
+                  </div>
+                )}
+              </div>
 
-  {/* Filter by Ratings */}
-  <div className="bg-white rounded-lg p-4">
-    <div
-      className="flex items-center justify-between cursor-pointer"
-      onClick={() => toggleFilter("ratings")}
-    >
-      <h3 className="text-lg font-semibold text-gray-900">
-        Ratings
-      </h3>
-      {expandedFilters.ratings ? (
-        <ChevronUp size={18} />
-      ) : (
-        <ChevronDown size={18} />
-      )}
-    </div>
-    {expandedFilters.ratings && (
-      <div className="mt-3 space-y-2">
-        {[4, 3].map((rating) => (
-          <label
-            key={rating}
-            className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
-              selectedRating === rating ? "bg-blue-50" : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              className="mr-2 text-blue-800 w-3.5 h-3.5"
-              checked={selectedRating === rating}
-              onChange={() => handleRatingFilter(rating)}
-            />
-            <div className="flex items-center">
-              {[...Array(5)].map((_, index) => (
-                <Star
-                  key={index}
-                  className={`w-3.5 h-3.5 ${
-                    index < rating
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-              <span className="ml-1 text-gray-700">
-                & above
-              </span>
+              {/* Filter by Ratings */}
+              <div className="bg-white rounded-lg p-4">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleFilter("ratings")}
+                >
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Ratings
+                  </h3>
+                  {expandedFilters.ratings ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </div>
+                {expandedFilters.ratings && (
+                  <div className="mt-3 space-y-2">
+                    {[4, 3].map((rating) => (
+                      <label
+                        key={rating}
+                        className={`flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded text-sm ${
+                          selectedRating === rating ? "bg-blue-50" : ""
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2 text-blue-800 w-3.5 h-3.5"
+                          checked={selectedRating === rating}
+                          onChange={() => handleRatingFilter(rating)}
+                        />
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, index) => (
+                            <Star
+                              key={index}
+                              className={`w-3.5 h-3.5 ${
+                                index < rating
+                                  ? "text-yellow-400 fill-current"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="ml-1 text-gray-700">& above</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </label>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
 
             {/* Right Side - Products */}
             <div className="flex-1">
-              {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
-                <p className="text-gray-600 text-base">
-                  Showing 1–{products.length} of {products.length} results
-                </p>
-              </div> */}
+  {/* Adjusted grid to show fewer products per row for better image display */}
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5">
+    {paginatedProducts.map((product) => (
+      <ProductCard
+        key={product._id}
+        product={{
+          id: product._id,
+          name: product.name,
+          price: product.finalPrice || product.price,
+          originalPrice:
+            product.price !== product.finalPrice
+              ? product.price
+              : null,
+          image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
+          rating: product.averageRating || 0,
+          features: [`Brand-${product.brand?.name}`],
+          // buttonText: "Add to cart",
+        }}
+      />
+    ))}
+  </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-             {paginatedProducts.map((product) => (
-  <ProductCard
-    key={product._id}
-    product={{
-      id: product._id,
-      name: product.name,
-      price: product.finalPrice || product.price,
-      originalPrice:
-        product.price !== product.finalPrice ? product.price : null,
-      image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
-      rating: product.averageRating || 0,
-      features: [`Brand-${product.brand}`],
-      buttonText: "Add to cart",
-    }}
-  />
-))}
-
-              </div>
-
-             <div className="flex justify-center mt-8 space-x-2">
-  <button
-    className="px-4 py-2  hover:bg-gray-100"
-    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-    disabled={currentPage === 1}
-  >
-    <MoveLeft />
-  </button>
-
-  {[...Array(totalPages)].map((_, i) => (
+  {/* Improved pagination styling */}
+  <div className="flex justify-center items-center mt-8 space-x-2">
     <button
-      key={i}
-      className={`px-4 py-2  ${currentPage === i + 1 ? "bg-blue-800 text-white" : " hover:bg-gray-100"}`}
-      onClick={() => setCurrentPage(i + 1)}
+      className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      onClick={() =>
+        setCurrentPage((prev) => Math.max(prev - 1, 1))
+      }
+      disabled={currentPage === 1}
     >
-      {i + 1}
+      <MoveLeft className="w-4 h-4" />
     </button>
-  ))}
 
-  <button
-    className="px-4 py-2  hover:bg-gray-100"
-    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-    disabled={currentPage === totalPages}
-  >
-    <MoveRight />
-  </button>
+    <div className="flex space-x-1">
+      {[...Array(totalPages)].map((_, i) => (
+        <button
+          key={i}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            currentPage === i + 1
+              ? "bg-blue-600 text-white"
+              : "border border-gray-300 hover:bg-gray-50"
+          }`}
+          onClick={() => setCurrentPage(i + 1)}
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
+
+    <button
+      className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+      onClick={() =>
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+      }
+      disabled={currentPage === totalPages}
+    >
+      <MoveRight className="w-4 h-4" />
+    </button>
+  </div>
 </div>
-
-            </div>
           </div>
         </div>
         <ToastContainer position="top-right" autoClose={3000} />

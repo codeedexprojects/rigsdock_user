@@ -46,6 +46,8 @@ function UserAccount() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [profile, setProfile] = useState(null);
+  const [zipError, setZipError] = useState("");
+
 
   const navigate = useNavigate();
   const BASE_URL = "https://rigsdock.com";
@@ -114,10 +116,25 @@ function UserAccount() {
     }
   };
 
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    setNewAddress({ ...newAddress, [name]: value });
-  };
+ const handleAddressChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === "zipCode") {
+    const zipRegex = /^[0-9]{0,6}$/;
+
+    if (!zipRegex.test(value)) return; 
+
+    if (value.length < 6) {
+      setZipError("Pincode must be 6 digits");
+    } else if (value.length > 6) {
+      setZipError("Invalid pincode: Too long");
+    } else {
+      setZipError(""); // valid
+    }
+  }
+
+  setNewAddress({ ...newAddress, [name]: value });
+};
 
   const location = useLocation();
 
@@ -170,6 +187,10 @@ function UserAccount() {
       toast.error("User not logged in.");
       return;
     }
+    if (newAddress.zipCode.length !== 6) {
+  setZipError("Pincode must be exactly 6 digits");
+  return;
+}
 
     try {
       const reqBody = {
@@ -892,8 +913,8 @@ function UserAccount() {
                             key={rev._id}
                             className="bg-white p-4 rounded-md shadow border"
                           >
-                            <h3 className="font-semibold text-lg mb-1">
-                              {rev.product?.name}
+                            <h3 className="font-semibold truncate text-lg mb-1">
+                              {rev.product?.name.slice(0,50)}
                             </h3>
                             <p className="text-sm text-gray-500 mb-1">
                               ₹{rev.product?.price}
@@ -1012,14 +1033,8 @@ function UserAccount() {
                           <option value="Tamil Nadu">Tamil Nadu</option>
                           <option value="Karnataka">Karnataka</option>
                         </select>
-                        <input
-                          type="text"
-                          name="zipCode"
-                          placeholder="ZIP Code"
-                          value={newAddress.zipCode}
-                          onChange={handleAddressChange}
-                          className="px-3 py-2 border rounded-md"
-                        />
+                     
+
                         <input
                           type="text"
                           name="country"
@@ -1028,6 +1043,19 @@ function UserAccount() {
                           onChange={handleAddressChange}
                           className="px-3 py-2 border rounded-md"
                         />
+                        <input
+  type="text"
+  name="zipCode"
+  placeholder="ZIP Code"
+  value={newAddress.zipCode}
+  onChange={handleAddressChange}
+  className={`px-3 py-2 border rounded-md ${
+    zipError ? "border-red-500" : ""
+  }`}
+/>
+{zipError && (
+  <p className="text-red-500 text-sm mt-1">{zipError}</p>
+)}
                         <select
                           name="addressType"
                           value={newAddress.addressType}
@@ -1206,7 +1234,7 @@ function UserAccount() {
                                     : "https://via.placeholder.com/300"
                                 }
                                 alt={product.name}
-                                className="w-full h-48 object-cover"
+                                className="w-full h-48 object-cover p-5"
                               />
                               <button
                                 className="absolute top-2 right-2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100"
@@ -1218,8 +1246,8 @@ function UserAccount() {
                               </button>
                             </div>
                             <div className="p-4">
-                              <h3 className="font-medium text-gray-900 mb-1">
-                                {product.name}
+                              <h3 className="font-medium truncate text-gray-900 mb-1">
+                                {product.name.slice(0,50)}
                               </h3>
                               <p className="text-blue-600 font-semibold">
                                 ${product.price}

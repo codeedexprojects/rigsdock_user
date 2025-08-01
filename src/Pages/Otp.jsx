@@ -31,31 +31,45 @@ const handleChange = (value, index) => {
     document.getElementById(`otp-${index + 1}`)?.focus();
   }
 };
+const handleVerifyOTP = async () => {
+  const enteredOtp = otpDigits.join("");
 
-  const handleVerify = async () => {
-    const otp = otpDigits.join("");
-    if (otp.length < 6) {
-      toast.error("Please enter all 6 digits");
-      setOtpError(true);
-      return;
-    }
+  if (enteredOtp.length !== 6) {
+    setOtpError(true);
+    toast.error("Please enter a valid 6-digit OTP");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const res = await verifyOTPAPI({ identifier, otp, identifierType });
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("userId", res.userId);
-      toast.success(res.message || "Login successful");
-      navigate("/"); 
-    } catch (err) {
-      toast.error(err.response?.data?.message || "OTP verification failed");
-      setOtpError(true);
-      setOtpDigits(Array(6).fill("")); 
-  document.getElementById("otp-0")?.focus();
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const response = await verifyOTPAPI({
+      identifier,
+      otp: enteredOtp,
+    });
+
+    const { token, userId, message } = response;
+
+    toast.success(message || "OTP verified successfully");
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", userId);
+
+    navigate("/registeration", {
+      state: {
+        identifier,
+        identifierType,
+        userId,
+      },
+    });
+  } catch (error) {
+    setOtpError(true);
+    toast.error(error.response?.data?.message || "OTP verification failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 ">
@@ -105,7 +119,7 @@ const handleChange = (value, index) => {
 
         <button
           className="w-full bg-blue-800 text-white py-3 rounded-md font-medium hover:opacity-90 transition"
-          onClick={handleVerify}
+          onClick={handleVerifyOTP}
           disabled={loading}
         >
           {loading ? "Verifying..." : "CONTINUE"}

@@ -38,6 +38,8 @@ export const verifyOTPAPI = async ({ identifier, otp, identifierType }) => {
       otp,
       identifierType
     });
+        localStorage.setItem("token",response.token)
+
     return response.data;
   } catch (error) {
     console.error("Error verifying OTP:", error);

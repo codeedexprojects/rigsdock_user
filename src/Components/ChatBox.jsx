@@ -2,10 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
 import { chatbotAPI } from '../Services/chatbotAPI';
 import { BASE_URL } from '../Services/baseUrl';
+import axios from 'axios'; // Add axios import
 
+// Add the clear session API function
+const chatClearSessionAPI = async (userId) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/user/chatbot/clear-session`, {
+      userId: userId // Include userId in the request
+    });
+    console.log("Session cleared successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to clear session", error);
+    throw error;
+  }
+};
 
 function ChatBox() {
- const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -17,9 +31,14 @@ function ChatBox() {
   const [showReturnReason, setShowReturnReason] = useState(false);
   const isLoggedIn = !!userId;
 
-
+  // Clear session when opening chat (additional safety measure)
   useEffect(() => { 
-    if (isOpen && messages.length === 0) {
+    if (isOpen && messages.length === 0 && userId) {
+      // Clear any existing session when opening fresh chat
+      chatClearSessionAPI(userId).catch(error => {
+        console.error("Error clearing session on open:", error);
+      });
+      
       setMessages([
         {
           id: 1,
@@ -29,7 +48,7 @@ function ChatBox() {
         },
       ]);
     }
-  }, [isOpen]);
+  }, [isOpen, userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +56,29 @@ function ChatBox() {
 
   const formatTime = (date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Updated handleClose function with session clearing
+  const handleClose = async () => {
+    try {
+      // Clear the session on the backend with userId
+      if (userId) {
+        await chatClearSessionAPI(userId);
+        console.log("Chat session cleared successfully for user:", userId);
+      }
+    } catch (error) {
+      console.error("Error clearing chat session:", error);
+      // Continue with closing even if session clear fails
+    }
+    
+    // Reset all chat-related state
+    setIsOpen(false);
+    setMessages([]);
+    setInput('');
+    setIsTyping(false);
+    setCurrentFlow(null);
+    setOrderId(null);
+    setShowReturnReason(false);
   };
 
   const handleSend = async () => {
@@ -66,7 +108,7 @@ function ChatBox() {
       setCurrentFlow(null);
       setOrderId(null);
     } catch (err) {
-      setMessages((prev) => [...prev, botReply(" Error conatcting support.")]);
+      setMessages((prev) => [...prev, botReply(" Error contacting support.")]);
     } finally {
       setIsTyping(false);
     }
@@ -96,40 +138,39 @@ function ChatBox() {
     }
   };
 
-const botReply = (text) => {
-  const reasons = [
-    "Defective product",
-    "Wrong item received",
-    "Changed mind",
-    "Other (please specify)"
-  ];
-  
-  // Split the text at "Thank you" or similar phrases
-  const thankYouPhrases = ["Thank you", "🙏 Thank you"];
-  let mainText = text;
-  let thankYouText = null;
-  
-  for (const phrase of thankYouPhrases) {
-    if (text.includes(phrase)) {
-      const splitIndex = text.indexOf(phrase);
-      mainText = text.substring(0, splitIndex).trim();
-      thankYouText = text.substring(splitIndex).trim();
-      break;
+  const botReply = (text) => {
+    const reasons = [
+      "Defective product",
+      "Wrong item received",
+      "Changed mind",
+      "Other (please specify)"
+    ];
+    
+    // Split the text at "Thank you" or similar phrases
+    const thankYouPhrases = ["Thank you", "🙏 Thank you"];
+    let mainText = text;
+    let thankYouText = null;
+    
+    for (const phrase of thankYouPhrases) {
+      if (text.includes(phrase)) {
+        const splitIndex = text.indexOf(phrase);
+        mainText = text.substring(0, splitIndex).trim();
+        thankYouText = text.substring(splitIndex).trim();
+        break;
+      }
     }
-  }
 
-  const hasReturnOptions = mainText.includes("provide the reason for return");
+    const hasReturnOptions = mainText.includes("provide the reason for return");
 
-  return {
-    id: Date.now() + 1,
-    text: mainText,
-    thankYouText: thankYouText,
-    sender: 'bot',
-    timestamp: new Date(),
-    returnOptions: hasReturnOptions ? reasons : null
+    return {
+      id: Date.now() + 1,
+      text: mainText,
+      thankYouText: thankYouText,
+      sender: 'bot',
+      timestamp: new Date(),
+      returnOptions: hasReturnOptions ? reasons : null
+    };
   };
-};
-
 
   const handleQuickAction = async (action) => {
     const userMsg = {
@@ -158,15 +199,15 @@ const botReply = (text) => {
     }
   };
 
-useEffect(() => {
-  const storedId = localStorage.getItem("userId");
-   console.log("Loaded userId from localStorage:", storedId);
-  if (storedId) {
-    setUserId(storedId);
-  }
-}, []);
-if (!isLoggedIn) return null;
+  useEffect(() => {
+    const storedId = localStorage.getItem("userId");
+    console.log("Loaded userId from localStorage:", storedId);
+    if (storedId) {
+      setUserId(storedId);
+    }
+  }, []);
 
+  if (!isLoggedIn) return null;
 
   return (
     <>
@@ -200,11 +241,7 @@ if (!isLoggedIn) return null;
               </div>
             </div>
             <button
-              onClick={() =>{
-                setIsOpen(false)
-                setMessages([])
-              }
-              }
+              onClick={handleClose}
               className="text-white hover:text-blue-200 transition-colors"
             >
               <X size={20} />
@@ -213,53 +250,53 @@ if (!isLoggedIn) return null;
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-gray-50">
-           {messages.map((msg) => (
-  <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-    <div className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-        msg.sender === 'bot' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600'
-      }`}>
-        {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
-      </div>
-      <div className="flex flex-col">
-      <div className={`px-3 py-2 rounded-lg text-sm ${
-  msg.sender === 'bot'
-    ? 'bg-white text-gray-800 shadow-sm rounded-bl-none'
-    : 'bg-blue-600 text-white rounded-br-none'
-}`}>
-  {msg.text}
-  
-  {/* Show thank you text separately if it exists */}
-  {msg.thankYouText && (
-    <div className="mt-2 pt-2 border-t border-gray-100 rounded-2xl text-black">
-      {msg.thankYouText}
-    </div>
-  )}
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs ${msg.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    msg.sender === 'bot' ? 'bg-blue-100 text-blue-600' : 'bg-gray-300 text-gray-600'
+                  }`}>
+                    {msg.sender === 'bot' ? <Bot size={12} /> : <User size={12} />}
+                  </div>
+                  <div className="flex flex-col">
+                    <div className={`px-3 py-2 rounded-lg text-sm ${
+                      msg.sender === 'bot'
+                        ? 'bg-white text-gray-800 shadow-sm rounded-bl-none'
+                        : 'bg-blue-600 text-white rounded-br-none'
+                    }`}>
+                      {msg.text}
+                      
+                      {/* Show thank you text separately if it exists */}
+                      {msg.thankYouText && (
+                        <div className="mt-2 pt-2 border-t border-gray-100 rounded-2xl text-black">
+                          {msg.thankYouText}
+                        </div>
+                      )}
 
-  {/* Show dropdown if returnOptions exist */}
-  {msg.returnOptions && (
-    <select
-      className="mt-2 w-full border border-gray-300 rounded p-1 text-sm"
-      onChange={(e) => handleReturnReasonSubmit(e.target.value)}
-    >
-      <option value="">Select a reason</option>
-      {msg.returnOptions.map((reason) => (
-        <option key={reason} value={reason}>{reason}</option>
-      ))}
-    </select>
-  )}
-</div>
-  <span className={`text-xs text-gray-500 mt-1 ${
-          msg.sender === 'user' ? 'text-right' : 'text-left'
-        }`}>
-          {formatTime(msg.timestamp)}
-        </span>
-      </div>
-    </div>
-  </div>
-))}
+                      {/* Show dropdown if returnOptions exist */}
+                      {msg.returnOptions && (
+                        <select
+                          className="mt-2 w-full border border-gray-300 rounded p-1 text-sm"
+                          onChange={(e) => handleReturnReasonSubmit(e.target.value)}
+                        >
+                          <option value="">Select a reason</option>
+                          {msg.returnOptions.map((reason) => (
+                            <option key={reason} value={reason}>{reason}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                    <span className={`text-xs text-gray-500 mt-1 ${
+                      msg.sender === 'user' ? 'text-right' : 'text-left'
+                    }`}>
+                      {formatTime(msg.timestamp)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
 
-{/* Quick Actions - Show only after initial message */}
+            {/* Quick Actions - Show only after initial message */}
             {messages.length === 1 && !isTyping && (
               <div className="flex justify-start">
                 <div className="flex items-end space-x-2 max-w-[85%] sm:max-w-xs">
@@ -333,8 +370,6 @@ if (!isLoggedIn) return null;
           </div>
         </div>
       )}
-      
-    
     </>
   );
 }

@@ -15,6 +15,7 @@ export const getAllProducts = async () => {
   }
 };
 
+
 export const viewProducts = async (mainCatId, catId, subCatId) => {
   try {
     // Convert "null" string to actual null (if coming from URL)

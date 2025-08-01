@@ -149,6 +149,8 @@ const handleShare = (platform) => {
   setShowShareModal(false);
 };
 
+
+
 const handleBuyNow = async () => {
   const userId = localStorage.getItem("userId");
   const productId = product._id;
@@ -179,119 +181,196 @@ if (!product.stock || product.stock < quantity) {
  return (
     <>
       <Header />
-      <ChatBox/>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 mt-40">
-        {/* Left Section - Images */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <div className="flex sm:flex-col gap-2 sm:gap-3 order-2 sm:order-1">
-            {product.images?.map((img, index) => (
-              <div
-                key={index}
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 border rounded-lg sm:rounded-xl overflow-hidden cursor-pointer"
-              >
-                <img
-                  src={`${SERVER_URL}/uploads/${img}`}
-                  alt={`Preview ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+      <ChatBox />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 mt-40">
+        {/* Main Product Container */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Image Gallery Section */}
+          <div className="w-full lg:w-1/2">
+            {/* Main Image */}
+            <div className="relative aspect-square  rounded-xl overflow-hidden mb-4">
+              <img
+                src={`${SERVER_URL}/uploads/${product?.images?.[0]}`}
+                alt="Main Product"
+                className="w-full  object-contain p-7"
+              />
+            </div>
+            
+            {/* Thumbnail Gallery */}
+            <div className="flex gap-3 overflow-x-auto">
+              {product.images?.map((img, index) => (
+                <div
+                  key={index}
+                  className="flex-shrink-0 w-16 h-16 border rounded-lg overflow-hidden cursor-pointer hover:border-blue-500 transition-colors"
+                >
+                  <img
+                    src={`${SERVER_URL}/uploads/${img}`}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Info Section */}
+          <div className="w-full lg:w-1/2">
+            {/* Brand and Title */}
+            <div className="mb-4">
+              <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">
+                Brand : {product?.brand?.name}
+              </p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                {product.name}
+              </h1>
+              
+              {/* Rating */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex">
+                  {renderStars(averageRating)}
+                </div>
+                <span className="text-sm text-gray-500">
+                  ({product.reviews?.length || 0} reviews)
+                </span>
               </div>
-            ))}
-          </div>
-          <div className="flex-1 max-w-md aspect-square bg-gray-100 rounded-lg sm:rounded-xl overflow-hidden order-1 sm:order-2">
-            <img
-             src={`${SERVER_URL}/uploads/${product?.images?.[0]}`}
-              alt="Main Product"
-              className="w-full h-full object-cover"
-            />
+            </div>
+
+            {/* Price Section */}
+            <div className="mb-6">
+              {product.finalPrice && product.price && product.finalPrice < product.price ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl font-bold text-gray-900">
+                    ₹{product.finalPrice}
+                  </span>
+                  <span className="text-lg text-gray-500 line-through">
+                    ₹{product.price}
+                  </span>
+                  <span className="text-sm bg-red-100 text-red-700 px-2 py-1 rounded">
+                    {Math.round(((product.price - product.finalPrice) / product.price) * 100)}% OFF
+                  </span>
+                </div>
+              ) : (
+                <span className="text-2xl font-bold text-gray-900">
+                  ₹{product.finalPrice || product.price}
+                </span>
+              )}
+            </div>
+
+            {/* Key Features */}
+            {product.features?.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-2">Key Features</h3>
+                <ul className="space-y-2">
+                  {product.features.map((feature, i) => (
+                    <li key={i} className="flex items-start">
+                      <span className="text-green-500 mr-2">✓</span>
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Attributes */}
+            {product.attributes && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-2">Specifications</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {Object.entries(product.attributes).map(([key, value]) => (
+                    <div key={key} className="flex">
+                      <span className="text-gray-500 font-medium w-24">{key}:</span>
+                      <span className="text-gray-700">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Stock Status */}
+            <div className="mb-6">
+              <p className={`text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button 
+                onClick={handleAddtoCart}
+                className="bg-blue-700 hover:bg-blue-800 text-white font-medium py-3 rounded-lg transition-colors"
+                disabled={!product.stock}
+              >
+                Add to Cart
+              </button>
+              <button 
+                onClick={handleBuyNow}
+                className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 rounded-lg transition-colors"
+                disabled={!product.stock}
+              >
+                Buy Now
+              </button>
+            </div>
+
+            {/* Secondary Actions */}
+            <div className="flex gap-3">
+              <button 
+                onClick={handleAddToWishlist}
+                className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                Wishlist
+              </button>
+              <button
+                onClick={() => setShowShareModal(true)}
+                className="flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share
+              </button>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="grid grid-cols-5 gap-2 text-center text-xs text-gray-500">
+                <div className="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>Pay on Delivery</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>Secure Transaction</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>100% Authentic</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Best Price</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  <span>Free Shipping</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Right Section - Info */}
-        <div>
-          <p className="text-gray-600 font-bold text-xs sm:text-sm mb-1">
-            Brand: {product.brand}
-          </p>
-          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2 sm:mb-4">
-            {product.name}
-          </h2>
-
-          <div className="text-lg sm:text-xl font-bold text-red-600 mb-2 flex items-center gap-2">
-  {product.finalPrice && product.price && product.finalPrice < product.price ? (
-    <>
-      <span className="text-gray-400 line-through text-base sm:text-lg">
-        ₹{product.price}
-      </span>
-      <span className="text-red-600 font-semibold">
-        ₹{product.finalPrice}
-      </span>
-    </>
-  ) : product.finalPrice ? (
-    <span className="text-red-600 font-semibold">
-      ₹{product.finalPrice}
-    </span>
-  ) : (
-    <span className="text-red-600 font-semibold">
-      ₹{product.price}
-    </span>
-  )}
-</div>
-
-{product.description && (
-  <ul className="list-disc list-inside text-gray-700 mb-4 sm:mb-6 space-y-1 text-sm sm:text-base">
-    {product.description.split(',').map((line, index) => (
-      <li key={index}>{line.trim()}</li>
-    ))}
-  </ul>
-)}
-<div className="text-gray-600 text-xs sm:text-sm mb-1">
-  {product.attributes &&
-    Object.entries(product.attributes).map(([key, value]) => (
-      <p key={key}>
-        <span className="font-bold">{key}:</span> {value}
-      </p>
-    ))}
-</div>
-
-          <div className="flex items-center gap-1 mb-3 sm:mb-4">
-            {renderStars(averageRating)}
-            {/* <span className="ml-1 sm:ml-2 text-gray-600 text-xs sm:text-sm">
-              ({product.totalReviews} review)
-            </span> */}
-          </div>
-
-          <ul className="list-disc list-inside text-gray-700 mb-4 sm:mb-6 space-y-1 text-sm sm:text-base">
-            {product?.features?.map((feature, i) => (
-              <li key={i}>{feature}</li>
-            ))}
-          </ul>
-
-          <button onClick={handleAddtoCart} className="w-full bg-blue-800 hover:bg-blue-800 text-white font-semibold py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-            Add To Cart
-          </button>
-         <button onClick={handleBuyNow} className="w-full bg-blue-800 hover:bg-blue-800 text-white font-semibold py-2 sm:py-3 rounded-lg mb-3 sm:mb-4 text-sm sm:text-base">
-  Buy Now
-</button>
-
-          <div className="flex gap-2 sm:gap-4 mb-4 sm:mb-6">
-            <button onClick={handleAddToWishlist}  className="flex-1 border border-gray-300 text-gray-700 py-1 sm:py-2 rounded-lg hover:bg-gray-100 text-xs sm:text-sm">
-              Add to Wishlist
-            </button>
-<button
-  onClick={() => setShowShareModal(true)}
-  className="flex-1 border border-gray-300 text-gray-700 py-1 sm:py-2 rounded-lg hover:bg-gray-100 text-xs sm:text-sm"
->
-  Share
-</button>
-
-          </div>
-
-          <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 items-center justify-between">
-            <span className="flex items-center gap-1">🛡️ 100% Original</span>
-            <span className="flex items-center gap-1">🏷️ Lowest Price</span>
-            <span className="flex items-center gap-1">🚚 Free Shipping</span>
-          </div>
         </div>
-      </div>
 
       {/* Tabs Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
@@ -320,22 +399,106 @@ if (!product.stock || product.stock < quantity) {
           </div>
         )}
 
-        {activeTab === "reviews" && (
-          <div className="text-gray-700 text-sm sm:text-base leading-relaxed">
-            <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
-              Customer Reviews
-            </h3>
-            {product.reviews?.map((review) => (
-              <div key={review._id} className="border p-3 sm:p-4 rounded-md">
-                <p className="font-medium">{review?.user?.name}</p>
-                <div className="flex items-center gap-1 mb-1">
+      {activeTab === "reviews" && (
+  <div className="space-y-6">
+    {/* Header Section */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+          Customer Reviews
+        </h3>
+        <p className="text-sm text-gray-600">
+          {product.reviews?.length || 0} review{product.reviews?.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+      
+      {/* Average Rating Display */}
+      {product.reviews?.length > 0 && (
+        <div className="flex items-center gap-3 bg-gray-50 px-4 py-3 rounded-lg">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">
+              {(product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length).toFixed(1)}
+            </div>
+            <div className="flex items-center justify-center gap-1 mt-1">
+              {renderStars(Math.round(product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Reviews List */}
+    <div className="space-y-4">
+      {product.reviews?.length > 0 ? (
+        product.reviews.map((review) => (
+          <div 
+            key={review._id} 
+            className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
+          >
+            {/* Review Header */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                {/* Avatar */}
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  {review?.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                    {review?.user?.name || 'Anonymous User'}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Verified Purchase
+                  </p>
+                </div>
+              </div>
+              
+              {/* Rating */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {renderStars(review?.rating)}
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600">{review?.review}</p>
+                <span className="text-sm font-medium text-gray-700">
+                  {review?.rating}/5
+                </span>
               </div>
-            ))}
+            </div>
+
+            {/* Review Content */}
+            <div className="pl-0 sm:pl-13">
+              <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                {review?.review}
+              </p>
+            </div>
           </div>
-        )}
+        ))
+      ) : (
+        /* Empty State */
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h4 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h4>
+          {/* <p className="text-gray-600 mb-4">Be the first to share your thoughts about this product.</p>
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+            Write a Review
+          </button> */}
+        </div>
+      )}
+    </div>
+
+    {/* Load More Button (if needed) */}
+    {product.reviews?.length > 3 && (
+      <div className="text-center pt-4">
+        <button className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors">
+          View All Reviews ({product.reviews.length})
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
         {activeTab === "Shipping and Refund" && (
           <div className="text-gray-700 text-sm sm:text-base leading-relaxed">

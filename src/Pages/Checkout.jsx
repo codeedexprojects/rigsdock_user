@@ -313,7 +313,7 @@ const handlePlaceOrder = async () => {
                             className="w-16 h-16 mr-4 object-cover rounded-md"
                           />
                           <div className="flex-1">
-                            <p className="font-medium">{item.product.name}</p>
+                            <p className="font-medium truncate w-full max-w-[300px]">{item.product.name.slice(0,40)}</p>
                             <div className="text-blue-600 text-sm">
                               <p>Qty: {item.quantity}</p>
                               <p>Price: ₹{item.price}</p>
@@ -322,9 +322,7 @@ const handlePlaceOrder = async () => {
                               )}
                             </div>
                           </div>
-                          <div className="font-semibold">
-                            ₹{(item.price * item.quantity).toFixed(2)}
-                          </div>
+                         
                         </li>
                       ))}
                     </ul>

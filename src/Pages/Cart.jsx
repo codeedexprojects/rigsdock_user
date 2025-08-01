@@ -338,7 +338,7 @@ function Cart() {
       <>
         <Header />
         <ChatBox />
-        <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-8 mt-30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center min-h-[60vh] sm:min-h-[70vh]">
               <div className="max-w-sm sm:max-w-md mx-auto text-center bg-white rounded-lg shadow-sm p-6 sm:p-8">
