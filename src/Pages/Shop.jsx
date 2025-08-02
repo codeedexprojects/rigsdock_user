@@ -197,7 +197,7 @@ function Shop() {
     };
 
     const handleAddToWishlist = async (productId, e) => {
-      e.stopPropagation(); // Prevent navigation when clicking wishlist button
+      e.stopPropagation();
       try {
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -213,22 +213,29 @@ function Shop() {
     };
 
     const discountPercentage = product.originalPrice
-      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      ? Math.round(
+          ((product.originalPrice - product.price) / product.originalPrice) *
+            100
+        )
       : 0;
 
     return (
- <div
+      <div
         className="bg-white rounded-lg p-2 h-full flex flex-col text-sm cursor-pointer relative" // Reduced padding from p-3 to p-2
         onClick={handleProductClick}
       >
         {/* Discount badge */}
+
         {discountPercentage > 0 && (
-          <div className="absolute top-43 left-4 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded z-10">
-            {discountPercentage}% OFF
+          <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-red-600 text-white text-[9px] xs:text-[10px] sm:text-xs font-bold px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded z-10 shadow-sm leading-tight">
+            <span className="block sm:inline">{discountPercentage}%</span>
+            <span className="hidden xs:inline sm:inline"> OFF</span>
           </div>
         )}
 
-        <div className="h-32 sm:h-40 md:h-48 lg:h-44 xl:h-48 mb-3 bg-white rounded-lg overflow-hidden"> {/* Reduced mb-4 to mb-3 */}
+        <div className="h-32 sm:h-40 md:h-48 lg:h-44 xl:h-48 mb-3 bg-white rounded-lg overflow-hidden">
+          {" "}
+          {/* Reduced mb-4 to mb-3 */}
           <div className="relative group w-full h-full">
             <img
               src={product.image}
@@ -244,17 +251,21 @@ function Shop() {
           </div>
         </div>
 
-        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-xs sm:text-sm leading-tight"> {/* Reduced mb-2 to mb-1 */}
+        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-xs sm:text-sm leading-tight">
+          {" "}
+          {/* Reduced mb-2 to mb-1 */}
           {product.name.slice(0, 40)}...
         </h3>
 
-        <div className="flex items-center mb-1" size={40}> {/* Reduced mb-2 to mb-1 */}
-          <div className="flex gap-0.5">
-            {renderStars(product.rating)}
-          </div>
+        <div className="flex items-center mb-1" size={40}>
+          {" "}
+          {/* Reduced mb-2 to mb-1 */}
+          <div className="flex gap-0.5">{renderStars(product.rating)}</div>
         </div>
 
-        <div className="flex items-center gap-2 mb-2"> {/* Reduced mb-3 to mb-2 */}
+        <div className="flex items-center gap-2 mb-2">
+          {" "}
+          {/* Reduced mb-3 to mb-2 */}
           <span className="text-base sm:text-lg font-semibold text-blue-800">
             ₹{product.price}
           </span>
@@ -272,14 +283,14 @@ function Shop() {
     <>
       <Header />
       <ChatBox />
-      <div className="bg-white shadow-sm mt-38"></div>
+      <div className="bg-white shadow-sm mt-34"></div>
 
       <div className="lg:hidden flex justify-start ">
         <button
           onClick={() => setShowMobileFilters(true)}
-          className="bg-blue-800 text-white px-5 py-2 ms-4 mb-2  rounded-md text-sm font-medium"
+          className=" text-white px-3 ms-3 rounded-md text-sm font-medium"
         >
-          <ListFilter />
+          <ListFilter className="text-gray-500" />
         </button>
       </div>
 
@@ -513,67 +524,66 @@ function Shop() {
 
             {/* Right Side - Products */}
             <div className="flex-1">
-  {/* Adjusted grid to show fewer products per row for better image display */}
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5">
-    {paginatedProducts.map((product) => (
-      <ProductCard
-        key={product._id}
-        product={{
-          id: product._id,
-          name: product.name,
-          price: product.finalPrice || product.price,
-          originalPrice:
-            product.price !== product.finalPrice
-              ? product.price
-              : null,
-          image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
-          rating: product.averageRating || 0,
-          features: [`Brand-${product.brand?.name}`],
-          // buttonText: "Add to cart",
-        }}
-      />
-    ))}
-  </div>
+              {/* Adjusted grid to show fewer products per row for better image display */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5">
+                {paginatedProducts.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    product={{
+                      id: product._id,
+                      name: product.name,
+                      price: product.finalPrice || product.price,
+                      originalPrice:
+                        product.price !== product.finalPrice
+                          ? product.price
+                          : null,
+                      image: `https://rigsdock.com/uploads/${product.images?.[0]}`,
+                      rating: product.averageRating || 0,
+                      features: [`Brand-${product.brand?.name}`],
+                    }}
+                  />
+                ))}
+              </div>
 
-  {/* Improved pagination styling */}
-  <div className="flex justify-center items-center mt-8 space-x-2">
-    <button
-      className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      onClick={() =>
-        setCurrentPage((prev) => Math.max(prev - 1, 1))
-      }
-      disabled={currentPage === 1}
-    >
-      <MoveLeft className="w-4 h-4" />
-    </button>
+              {/* Improved pagination styling */}
+              <div className="flex justify-center items-center mt-8 space-x-2">
+                <button
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  <MoveLeft className="w-4 h-4" />
+                </button>
 
-    <div className="flex space-x-1">
-      {[...Array(totalPages)].map((_, i) => (
-        <button
-          key={i}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            currentPage === i + 1
-              ? "bg-blue-600 text-white"
-              : "border border-gray-300 hover:bg-gray-50"
-          }`}
-          onClick={() => setCurrentPage(i + 1)}
-        >
-          {i + 1}
-        </button>
-      ))}
-    </div>
+                <div className="flex space-x-1">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        currentPage === i + 1
+                          ? "bg-blue-600 text-white"
+                          : "border border-gray-300 hover:bg-gray-50"
+                      }`}
+                      onClick={() => setCurrentPage(i + 1)}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
 
-    <button
-      className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      onClick={() =>
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-      }
-      disabled={currentPage === totalPages}
-    >
-      <MoveRight className="w-4 h-4" />
-    </button>
-  </div>
-</div>
+                <button
+                  className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  <MoveRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <ToastContainer position="top-right" autoClose={3000} />

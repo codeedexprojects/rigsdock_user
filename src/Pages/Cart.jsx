@@ -39,41 +39,44 @@ function Cart() {
     fetchAvailableCoupons();
   }, []);
 
-  const fetchCartItems = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        toast.error("Please login to view cart.");
-        setLoading(false);
-        return;
-      }
-
-      const res = await viewcartAPI(userId);
-      const items = res.cart?.items || [];
-
-      setCartItems(
-        items.map((item) => ({
-          id: item._id,
-          productId: item.product._id,
-          name: item.product.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.product.images?.[0]
-            ? `https://rigsdock.com/uploads/${item.product.images[0]}`
-            : "https://via.placeholder.com/150",
-        }))
-      );
-
-      setTotalPrice(res.totalPrice || 0);
-      setPlatformFee(res.platformFee || 0);
-      setAppliedCoupon(res.cart?.coupon || null);
+const fetchCartItems = async () => {
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      toast.error("Please login to view cart.");
       setLoading(false);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load cart.");
-      setLoading(false);
+      return;
     }
-  };
+
+    const res = await viewcartAPI(userId);
+    const items = res.cart?.items || [];
+
+    setCartItems(
+      items.map((item) => ({
+        id: item._id,
+        productId: item.product._id,
+        name: item.product.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.product.images?.[0]
+          ? `https://rigsdock.com/uploads/${item.product.images[0]}`
+          : "https://via.placeholder.com/150",
+      }))
+    );
+
+    setTotalPrice(res.totalPrice || 0);
+    setPlatformFee(res.platformFee || 0);
+    
+    // Update this line to get appliedCoupon from the response
+    setAppliedCoupon(res.appliedCoupon || res.cart?.coupon || null);
+    
+    setLoading(false);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to load cart.");
+    setLoading(false);
+  }
+};
 
   const removeItem = async (id, productId) => {
     try {
@@ -611,45 +614,63 @@ function Cart() {
               </div>
 
               {/* Cart Totals Section */}
-              <div className="xl:col-span-1">
-                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm sticky top-4 sm:top-8">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                    Cart Summary
-                  </h2>
-                  <p className="text-gray-600 text-sm mb-4 sm:mb-6">
-                    Total items: {cartCountNumber}
-                  </p>
+             <div className="xl:col-span-1">
+  <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm sticky top-4 sm:top-8">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+      Cart Summary
+    </h2>
+    <p className="text-gray-600 text-sm mb-4 sm:mb-6">
+      Total items: {cartCountNumber}
+    </p>
 
-                  <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm sm:text-base">
-                        <span className="text-gray-600">Shipping</span>
-                        <span className="text-green-600 font-medium">Free</span>
-                      </div>
-                      <div className="flex justify-between text-sm sm:text-base">
-                        <span className="text-gray-600">Platform Fee</span>
-                        <span className="text-blue-600 font-medium">
-                          ₹{platformFee}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+    <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm sm:text-base">
+          <span className="text-gray-600">Subtotal</span>
+          <span className="text-blue-600 font-medium">
+            ₹{cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
+          </span>
+        </div>
+        
+        <div className="flex justify-between text-sm sm:text-base">
+          <span className="text-gray-600">Platform Fee</span>
+          <span className="text-blue-600 font-medium">
+            ₹{platformFee}
+          </span>
+        </div>
+        
+        <div className="flex justify-between text-sm sm:text-base">
+          <span className="text-gray-600">Shipping</span>
+          <span className="text-green-600 font-medium">Free</span>
+        </div>
+        
+        {/* Show coupon discount when applied */}
+        {appliedCoupon && (
+          <div className="flex justify-between text-sm sm:text-base">
+            <span className="text-gray-600">Coupon Discount </span>
+            <span className="text-green-600 font-medium">
+              -₹{appliedCoupon.discountAmount}
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
 
-                  <div className="border-t pt-4 mb-6">
-                    <div className="flex justify-between text-lg sm:text-xl font-bold">
-                      <span>Total</span>
-                      <span className="text-blue-600">₹{total}</span>
-                    </div>
-                  </div>
+    <div className="border-t pt-4 mb-6">
+      <div className="flex justify-between text-lg sm:text-xl font-bold">
+        <span>Total</span>
+        <span className="text-blue-600">₹{totalPrice}</span>
+      </div>
+    </div>
 
-                  <button
-                    onClick={handleCheckout}
-                    className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
-                  >
-                    Proceed To Checkout
-                  </button>
-                </div>
-              </div>
+    <button
+      onClick={handleCheckout}
+      className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
+    >
+      Proceed To Checkout
+    </button>
+  </div>
+</div>
             </div>
           </div>
         </div>

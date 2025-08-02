@@ -389,7 +389,7 @@ function Home() {
     <>
       <Header />
       <ChatBox />
-      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 text-center mt-40 mb-4">
+      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 text-center mt-37">
         Welcome to <span className="text-blue-700">RIGSDOCK</span>
       </h2>
 
@@ -541,16 +541,16 @@ function Home() {
             </div>
 
             {/* Corner Accent */}
-            <div className="absolute top-4 right-4">
+            {/* <div className="absolute top-4 right-4">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            </div>
+            </div> */}
           </div>
         );
       })}
     </div>
 
     {/* Scroll Indicator */}
-    <div className="flex justify-center mt-4">
+    {/* <div className="flex justify-center mt-4">
       <div className="flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2">
         <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
@@ -560,7 +560,7 @@ function Home() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
       </div>
-    </div>
+    </div> */}
   </div>
 </div>
 
@@ -568,175 +568,179 @@ function Home() {
   <div className="container mx-auto px-0 sm:px-4 py-4">
     <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
       {/* Weekly Deal Offer Card - Slider Version */}
-      <div className="w-full lg:w-80 flex-shrink-0 px-2 sm:px-0">
-        <div
-          className={`rounded-xl sm:rounded-2xl p-4 sm:p-6 border-4 border-yellow-400 ${
-            isDark ? "bg-gray-800" : "bg-white"
-          } relative overflow-hidden`}
-        >
-          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center">
-            Deal of the Day
-          </h2>
+     <div className="w-4/5 sm:w-full lg:w-80 flex-shrink-0 px-2 sm:px-0 mx-auto sm:mx-0">
+  <div
+    className={`rounded-xl sm:rounded-2xl p-3 sm:p-6 border-4 border-yellow-400 ${
+      isDark ? "bg-gray-800" : "bg-white"
+    } relative overflow-hidden`}
+  >
+    <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-center">
+      Deal of the Day
+    </h2>
 
-          {loading ? (
-            <div className="flex justify-center items-center h-48">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-4 text-red-500 text-sm">
-              Failed to load deals
-            </div>
-          ) : (
-            (() => {
-              const activeDeals = dealProducts.filter((deal) =>
-                calculateTimeLeft(deal.createdAt)
-              );
-
-              return activeDeals.length > 0 ? (
-                <div className="relative">
-                  {/* Deal Products Slider */}
-                  <div className="overflow-hidden">
-                    <div
-                      className="flex transition-transform duration-300 ease-in-out"
-                      style={{
-                        transform: `translateX(-${
-                          dealCurrentIndex * 100
-                        }%)`,
-                      }}
-                    >
-                      {activeDeals.map((deal) => {
-                        const timeLeft = dealTimers[deal._id];
-                        const imageUrl = deal.product.images?.[0]
-                          ? `${SERVER_URL}/uploads/${deal.product.images[0]}`
-                          : "https://via.placeholder.com/300";
-
-                        return (
-                          <div
-                            key={deal._id}
-                            className="w-full flex-shrink-0 px-1 sm:px-2"
-                          >
-                            <div className="text-center mb-4 sm:mb-6 relative">
-                              {/* Product Image */}
-                              <img
-                                src={imageUrl}
-                                alt={deal.product.name}
-                                className="w-32 h-32 sm:w-48 sm:h-48 mx-auto rounded-lg object-cover mb-3 sm:mb-4"
-                                onError={(e) => {
-                                  e.target.src =
-                                    "https://source.unsplash.com/300x300/?technology";
-                                }}
-                              />
-
-                              {/* Product Name */}
-                              <h3 className="font-semibold text-sm sm:text-lg mb-1 sm:mb-2 line-clamp-2">
-                                {deal.product.name}
-                              </h3>
-
-                              {/* Static 5 stars */}
-                              <div className="flex justify-center mb-1 sm:mb-2">
-                                {renderStars(5)}
-                              </div>
-
-                              {/* Price Info */}
-                              <div className="flex justify-center items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
-                                <span className="text-gray-400 line-through text-xs sm:text-base">
-                                  ₹{deal.product.price}
-                                </span>
-                                <span className="text-xl sm:text-2xl font-bold text-blue-600">
-                                  ₹{deal.offerPrice}
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Countdown Timer */}
-                            <div className="text-center mb-4 sm:mb-6">
-                              <p className="text-xs sm:text-sm font-medium mb-2 sm:mb-4">
-                                Hurry Up! Limited Time
-                              </p>
-                              <div className="grid grid-cols-3 gap-1 sm:gap-2 mx-auto max-w-[200px] text-center">
-                                <div>
-                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
-                                    {String(timeLeft.hours).padStart(
-                                      2,
-                                      "0"
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    HRS
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
-                                    {String(timeLeft.minutes).padStart(
-                                      2,
-                                      "0"
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    MIN
-                                  </div>
-                                </div>
-                                <div>
-                                  <div className="text-xl sm:text-2xl font-bold text-red-500">
-                                    {String(timeLeft.seconds).padStart(
-                                      2,
-                                      "0"
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    SEC
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* CTA Button */}
-                            <button
-                              onClick={() =>
-                                navigateToProduct(deal.product._id)
-                              }
-                              className="w-full bg-blue-800 hover:bg-blue-700 text-white py-1 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors"
-                            >
-                              Shop Now
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Navigation Arrows */}
-                  {activeDeals.length > 1 && (
-                    <>
-                      <button
-                        onClick={prevDealSlide}
-                        className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
-                      >
-                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </button>
-                      <button
-                        onClick={nextDealSlide}
-                        className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors"
-                      >
-                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </button>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-6 sm:py-10 text-gray-500">
-                  <img
-                    src="https://cdn.dribbble.com/userupload/22180708/file/original-fb0f3fcb86aa71d393a578acb476b44c.gif"
-                    alt=""
-                    className="mx-auto max-w-[200px]"
-                  />
-                  No active deals available
-                </div>
-              );
-            })()
-          )}
-        </div>
+    {loading ? (
+      <div className="flex justify-center items-center h-48">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
       </div>
+    ) : error ? (
+      <div className="text-center py-4 text-red-500 text-sm">
+        Failed to load deals
+      </div>
+    ) : (
+      (() => {
+        const activeDeals = dealProducts.filter((deal) =>
+          calculateTimeLeft(deal.createdAt)
+        );
+
+        return activeDeals.length > 0 ? (
+          <div className="relative">
+            {/* Deal Products Slider */}
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-300 ease-in-out"
+                style={{
+                  transform: `translateX(-${
+                    dealCurrentIndex * 100
+                  }%)`,
+                }}
+              >
+                {activeDeals.map((deal) => {
+                  const timeLeft = dealTimers[deal._id];
+                  const imageUrl = deal.product.images?.[0]
+                    ? `${SERVER_URL}/uploads/${deal.product.images[0]}`
+                    : "https://via.placeholder.com/300";
+
+                  return (
+                    <div
+                      key={deal._id}
+                      className="w-full flex-shrink-0 px-1 sm:px-2"
+                    >
+                      <div className="text-center mb-3 sm:mb-6 relative">
+                        {/* Product Image */}
+                        <img
+                          src={imageUrl}
+                          alt={deal.product.name}
+                          className="w-24 h-24 sm:w-48 sm:h-48 mx-auto rounded-lg object-cover mb-2 sm:mb-4"
+                          onError={(e) => {
+                            e.target.src =
+                              "https://source.unsplash.com/300x300/?technology";
+                          }}
+                        />
+
+                        {/* Product Name */}
+                        <h3 className="font-semibold text-xs sm:text-lg mb-1 sm:mb-2 line-clamp-2 px-1">
+                          {deal.product.name}
+                        </h3>
+
+                        {/* Static 5 stars */}
+                        <div className="flex justify-center mb-1 sm:mb-2">
+                          <div className="flex scale-75 sm:scale-100">
+                            {renderStars(5)}
+                          </div>
+                        </div>
+
+                        {/* Price Info */}
+                        <div className="flex justify-center items-center gap-1 sm:gap-2 mb-2 sm:mb-4">
+                          <span className="text-gray-400 line-through text-xs sm:text-base">
+                            ₹{deal.product.price}
+                          </span>
+                          <span className="text-base sm:text-2xl font-bold text-blue-600">
+                            ₹{deal.offerPrice}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Countdown Timer */}
+                      <div className="text-center mb-3 sm:mb-6">
+                        <p className="text-xs sm:text-sm font-medium mb-2 sm:mb-4">
+                          Hurry Up! Limited Time
+                        </p>
+                        <div className="grid grid-cols-3 gap-1 sm:gap-2 mx-auto max-w-[140px] sm:max-w-[200px] text-center">
+                          <div>
+                            <div className="text-sm sm:text-2xl font-bold text-red-500">
+                              {String(timeLeft.hours).padStart(
+                                2,
+                                "0"
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              HRS
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm sm:text-2xl font-bold text-red-500">
+                              {String(timeLeft.minutes).padStart(
+                                2,
+                                "0"
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              MIN
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm sm:text-2xl font-bold text-red-500">
+                              {String(timeLeft.seconds).padStart(
+                                2,
+                                "0"
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              SEC
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA Button - Centered and narrower on mobile */}
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() =>
+                            navigateToProduct(deal.product._id)
+                          }
+                          className="w-2/3 sm:w-full bg-blue-800 hover:bg-blue-700 text-white py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                        >
+                          Shop Now
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Navigation Arrows */}
+            {activeDeals.length > 1 && (
+              <>
+                <button
+                  onClick={prevDealSlide}
+                  className="absolute -left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors z-10"
+                >
+                  <ChevronLeft className="w-3 h-3 sm:w-5 sm:h-5" />
+                </button>
+                <button
+                  onClick={nextDealSlide}
+                  className="absolute -right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full shadow-md hover:bg-white transition-colors z-10"
+                >
+                  <ChevronRight className="w-3 h-3 sm:w-5 sm:h-5" />
+                </button>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-4 sm:py-10 text-gray-500">
+            <img
+              src="https://cdn.dribbble.com/userupload/22180708/file/original-fb0f3fcb86aa71d393a578acb476b44c.gif"
+              alt=""
+              className="mx-auto max-w-[120px] sm:max-w-[200px]"
+            />
+            <p className="text-xs sm:text-sm mt-2">No active deals available</p>
+          </div>
+        );
+      })()
+    )}
+  </div>
+</div>
 
       {/* On Sale Products Section */}
      <div className="px-2 sm:px-4 py-2 sm:py-4 flex-1">
@@ -1262,7 +1266,7 @@ function Home() {
 
                         {/* Product Info */}
                         <div className="flex-grow">
-                          <h3 className="text-xs truncate sm:text-sm font-semibold line-clamp-2 h-10 sm:h-10">
+                          <h3 className="text-xs truncate sm:text-sm font-semibold">
                             {product.name.slice(0, 50)}
                           </h3>
                           <div className="flex text-yellow-400 text-xs sm:text-sm">
@@ -1466,7 +1470,7 @@ function Home() {
 `}</style>
 
       {/* Deal 3 Card Product */}
-     <div className="w-full px-4">
+ <div className="w-full px-4">
   {/* Section Header */}
   <div className="text-center mb-5">
     <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -1486,25 +1490,25 @@ function Home() {
         return (
           <div
             key={card._id}
-            className="group flex-shrink-0 w-80 md:w-80 flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden border border-gray-100"
+            className="group flex-shrink-0 w-80 md:w-80 flex flex-col bg-white rounded-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden "
             onClick={() => window.open(card.link, "_blank")}
           >
             {/* Image Container with Overlay */}
-            <div className="relative overflow-hidden h-56 flex-shrink-0">
+            <div className="relative overflow-hidden h-90 flex-shrink-0 m-3">
               <img
                 src={imageUrl}
                 alt={card.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   e.target.src =
                     "https://source.unsplash.com/600x400/?gadget";
                 }}
               />
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
 
               {/* Floating Action Button */}
-              <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              {/* <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                 <svg
                   className="w-5 h-5 text-gray-700"
                   fill="none"
@@ -1518,20 +1522,20 @@ function Home() {
                     d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
                 </svg>
-              </div>
+              </div> */}
             </div>
 
             {/* Content Section */}
             <div className="p-6 flex flex-col flex-grow">
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+              {/* <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
                 {card.title}
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
+              </h3> */}
+              {/* <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
                 {card.subtitle}
-              </p>
+              </p> */}
 
               {/* Action Bar */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              {/* <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                 <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                   View Product
                 </span>
@@ -1550,7 +1554,7 @@ function Home() {
                     />
                   </svg>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         );
@@ -1568,12 +1572,8 @@ function Home() {
     display: none;
   }
 `}</style>
-
-      {/* Shop by Category Section */}
      <CategoryGrid></CategoryGrid>
-
-      {/* New Arrivals Section */}
-      <div className="mt-10 px-4">
+      <div className="mb-4">
        <div className="px-4">
   <div className="flex justify-between items-center">
     <h2 className="text-2xl font-bold" id="newarrival">
@@ -1741,7 +1741,7 @@ function Home() {
 
                         {/* Product Info */}
                         <div className="flex-grow">
-                          <h3 className="text-xs sm:text-sm truncate font-semibold mb-1 line-clamp-2 h-10 sm:h-10">
+                          <h3 className="text-xs sm:text-sm truncate font-semibold mb-1">
                             {product.name.slice(0, 50)}
                           </h3>
                           <div className="flex text-yellow-400 text-xs sm:text-sm mb-1">

@@ -364,6 +364,18 @@ const handlePlaceOrder = async () => {
                 </h3>
 
                 <div className="space-y-3">
+
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="PhonePe"
+                      checked={selectedPayment === "PhonePe"}
+                      onChange={(e) => setSelectedPayment(e.target.value)}
+                      className="mr-3 text-blue-600"
+                    />
+                    <span className="font-medium text-gray-900">UPI</span>
+                  </label>
                   <label className="flex items-center">
                     <input
                       type="radio"
@@ -378,17 +390,7 @@ const handlePlaceOrder = async () => {
                     </span>
                   </label>
 
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="PhonePe"
-                      checked={selectedPayment === "PhonePe"}
-                      onChange={(e) => setSelectedPayment(e.target.value)}
-                      className="mr-3 text-blue-600"
-                    />
-                    <span className="font-medium text-gray-900">UPI</span>
-                  </label>
+                  
                 </div>
                 <div className="ml-6 p-4 bg-gray-50 rounded-md">
                   <p className="text-sm text-gray-600">
