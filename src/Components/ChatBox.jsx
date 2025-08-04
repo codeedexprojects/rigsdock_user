@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
 import { chatbotAPI } from '../Services/chatbotAPI';
 import { BASE_URL } from '../Services/baseUrl';
-import axios from 'axios'; // Add axios import
+import axios from 'axios'; 
+import { IoLogoWechat } from "react-icons/io5";
 
 // Add the clear session API function
 const chatClearSessionAPI = async (userId) => {
@@ -31,10 +32,8 @@ function ChatBox() {
   const [showReturnReason, setShowReturnReason] = useState(false);
   const isLoggedIn = !!userId;
 
-  // Clear session when opening chat (additional safety measure)
   useEffect(() => { 
     if (isOpen && messages.length === 0 && userId) {
-      // Clear any existing session when opening fresh chat
       chatClearSessionAPI(userId).catch(error => {
         console.error("Error clearing session on open:", error);
       });
@@ -221,7 +220,7 @@ function ChatBox() {
             onClick={() => setIsOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
           >
-            💬
+          <IoLogoWechat size={25} />
           </button>
         </div>
       )}

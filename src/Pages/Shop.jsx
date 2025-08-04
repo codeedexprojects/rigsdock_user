@@ -12,7 +12,7 @@ import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import { getAllProducts, getBrandAPI } from "../Services/allAPIs";
 import { addToCartAPI } from "../Services/cartAPI";
-import { addToWishlistAPI } from "../Services/wishlistAPI";
+import { addToWishlistAPI, getWishlistAPI } from "../Services/wishlistAPI";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -25,6 +25,7 @@ import { BASE_URL } from "../Services/baseUrl";
 import ChatBox from "../Components/ChatBox";
 import { ListFilter } from "lucide-react";
 
+
 function Shop() {
   const navigate = useNavigate();
   const [AllProducts, setAllProducts] = useState([]);
@@ -35,6 +36,7 @@ function Shop() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15; // Increased to show more products (3 rows × 5 products)
 
@@ -53,6 +55,24 @@ function Shop() {
     fetchProducts();
   }, []);
 
+useEffect(() => {
+  const fetchWishlist = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    try {
+      const products = await getWishlistAPI(userId);
+      const wishlistProductIds = products.map(item => item._id); // assuming _id is productId
+      setWishlistItems(wishlistProductIds);
+    } catch (err) {
+      console.error("Error fetching wishlist", err);
+    }
+  };
+
+  fetchWishlist();
+}, []);
+
+
   const handlePriceFilter = async () => {
     if (!minPrice || !maxPrice) {
       toast.warn("Please enter both min and max Price.");
@@ -63,7 +83,7 @@ function Shop() {
       console.log("eroorr", result);
 
       setAllProducts(result.products || []);
-      toast.success("Product filtered by Price");
+      // toast.success("Product filtered by Price");
       setShowMobileFilters(false);
     } catch (error) {
       toast.success("price filter error", error);
@@ -81,7 +101,7 @@ function Shop() {
       try {
         const allProducts = await getAllProducts();
         setAllProducts(allProducts);
-        toast.info("Rating filter cleared");
+        // toast.info("Rating filter cleared");
       } catch (error) {
         toast.error("Failed to reset products");
       }
@@ -93,7 +113,7 @@ function Shop() {
     try {
       const response = await filterByyRatingAPI(minRating, maxRate);
       setAllProducts(response.products || []);
-      toast.success(`Filtered products with rating ${rating} & up`);
+      // toast.success(`Filtered products with rating ${rating} & up`);
     } catch (error) {
       toast.error("Failed to filter by rating");
 
@@ -124,7 +144,6 @@ function Shop() {
       try {
         const allProducts = await getAllProducts();
         setAllProducts(allProducts);
-        toast.info("Brand filter cleared");
       } catch (error) {
         toast.error("Failed to reset products");
       }
@@ -134,7 +153,6 @@ function Shop() {
     try {
       const res = await filterByBrandAPI(newBrand);
       setAllProducts(res.products || []);
-      toast.success("Filtered by brand");
     } catch (error) {
       toast.error("Failed to filter by brand");
     }
@@ -178,39 +196,25 @@ function Shop() {
       navigate(`/product-details/${product.id}`);
     };
 
-    const handleAddToCart = async (productId, e) => {
-      e.stopPropagation(); // Prevent navigation when clicking cart button
-      try {
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          toast.error("Please login to use cart.");
-          return;
-        }
+const handleAddToWishlist = async (productId, e) => {
+  e.stopPropagation();
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      toast.error("Please login to use wishlist.");
+      return;
+    }
 
-        const response = await addToCartAPI(userId, productId);
-        console.log("response", response);
+    const response = await addToWishlistAPI(userId, productId);
+    toast.success(response.message);
 
-        toast.success(response.message);
-      } catch (error) {
-        toast.error(error.response.data.message);
-      }
-    };
+    setWishlistItems((prev) => [...new Set([...prev, productId])]);
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Error adding to wishlist");
+  }
+};
 
-    const handleAddToWishlist = async (productId, e) => {
-      e.stopPropagation();
-      try {
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          toast.error("Please login to use wishlist.");
-          return;
-        }
 
-        const response = await addToWishlistAPI(userId, productId);
-        toast.success(response.message);
-      } catch (error) {
-        toast.error(error.response.data.message);
-      }
-    };
 
     const discountPercentage = product.originalPrice
       ? Math.round(
@@ -246,7 +250,11 @@ function Shop() {
               className="absolute top-1 right-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white p-1 rounded-full shadow-sm"
               onClick={(e) => handleAddToWishlist(product.id, e)}
             >
-              <Heart className="text-red-500 w-3 h-3 sm:w-4 sm:h-4" />
+<Heart
+  className={`w-3 h-3 sm:w-4 sm:h-4 ${
+    wishlistItems.includes(product.id) ? "fill-red-500 text-red-500" : "text-red-500"
+  }`}
+/>
             </button>
           </div>
         </div>

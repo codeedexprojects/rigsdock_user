@@ -48,7 +48,6 @@ function UserAccount() {
   const [profile, setProfile] = useState(null);
   const [zipError, setZipError] = useState("");
 
-
   const navigate = useNavigate();
   const BASE_URL = "https://rigsdock.com";
 
@@ -116,25 +115,25 @@ function UserAccount() {
     }
   };
 
- const handleAddressChange = (e) => {
-  const { name, value } = e.target;
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
 
-  if (name === "zipCode") {
-    const zipRegex = /^[0-9]{0,6}$/;
+    if (name === "zipCode") {
+      const zipRegex = /^[0-9]{0,6}$/;
 
-    if (!zipRegex.test(value)) return; 
+      if (!zipRegex.test(value)) return;
 
-    if (value.length < 6) {
-      setZipError("Pincode must be 6 digits");
-    } else if (value.length > 6) {
-      setZipError("Invalid pincode: Too long");
-    } else {
-      setZipError(""); // valid
+      if (value.length < 6) {
+        setZipError("Pincode must be 6 digits");
+      } else if (value.length > 6) {
+        setZipError("Invalid pincode: Too long");
+      } else {
+        setZipError(""); // valid
+      }
     }
-  }
 
-  setNewAddress({ ...newAddress, [name]: value });
-};
+    setNewAddress({ ...newAddress, [name]: value });
+  };
 
   const location = useLocation();
 
@@ -188,9 +187,9 @@ function UserAccount() {
       return;
     }
     if (newAddress.zipCode.length !== 6) {
-  setZipError("Pincode must be exactly 6 digits");
-  return;
-}
+      setZipError("Pincode must be exactly 6 digits");
+      return;
+    }
 
     try {
       const reqBody = {
@@ -238,9 +237,7 @@ function UserAccount() {
     try {
       const res = await userAddressViewAPI(userId);
       setAddressList(res);
-    } catch (error) {
-      toast.error("Failed to load addresses");
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -326,7 +323,7 @@ function UserAccount() {
       setOrders(res?.orders || []);
     } catch (error) {
       console.error("Error fetching orders", error);
-      toast.error("Failed to fetch orders.");
+      // toast.error("Failed to fetch orders.");
     }
   };
 
@@ -690,8 +687,14 @@ function UserAccount() {
                                   </h4>
                                   <div className="space-y-1 text-gray-700">
                                     <p className="font-medium">
-                                      {selectedOrder.shippingAddressSnapshot?.firstName}{" "}
-                                      {selectedOrder.shippingAddressSnapshot?.lastName}
+                                      {
+                                        selectedOrder.shippingAddressSnapshot
+                                          ?.firstName
+                                      }{" "}
+                                      {
+                                        selectedOrder.shippingAddressSnapshot
+                                          ?.lastName
+                                      }
                                     </p>
                                     <p>
                                       {
@@ -703,9 +706,20 @@ function UserAccount() {
                                         `, ${selectedOrder.shippingAddressSnapshot?.addressLine2}`}
                                     </p>
                                     <p>
-                                      {selectedOrder.shippingAddressSnapshot?.city},{" "}
-                                      {selectedOrder.shippingAddressSnapshot?.state} -{" "}
-                                      {selectedOrder.shippingAddressSnapshot?.zipCode}
+                                      {
+                                        selectedOrder.shippingAddressSnapshot
+                                          ?.city
+                                      }
+                                      ,{" "}
+                                      {
+                                        selectedOrder.shippingAddressSnapshot
+                                          ?.state
+                                      }{" "}
+                                      -{" "}
+                                      {
+                                        selectedOrder.shippingAddressSnapshot
+                                          ?.zipCode
+                                      }
                                     </p>
                                   </div>
                                 </div>
@@ -914,7 +928,7 @@ function UserAccount() {
                             className="bg-white p-4 rounded-md shadow border"
                           >
                             <h3 className="font-semibold truncate text-lg mb-1">
-                              {rev.product?.name.slice(0,50)}
+                              {rev.product?.name.slice(0, 50)}
                             </h3>
                             <p className="text-sm text-gray-500 mb-1">
                               ₹{rev.product?.price}
@@ -929,7 +943,7 @@ function UserAccount() {
                               Posted on{" "}
                               {new Date(rev.createdAt).toLocaleDateString()}
                             </p>
-                           
+
                             {rev.images?.length > 0 && (
                               <img
                                 src={`https://rigsdock.com/uploads/${rev.images[0]}`}
@@ -1029,11 +1043,54 @@ function UserAccount() {
                           className="px-3 py-2 border rounded-md"
                         >
                           <option value="">Select State</option>
-                          <option value="Kerala">Kerala</option>
-                          <option value="Tamil Nadu">Tamil Nadu</option>
+                          <option value="Andhra Pradesh">Andhra Pradesh</option>
+                          <option value="Arunachal Pradesh">
+                            Arunachal Pradesh
+                          </option>
+                          <option value="Assam">Assam</option>
+                          <option value="Bihar">Bihar</option>
+                          <option value="Chhattisgarh">Chhattisgarh</option>
+                          <option value="Goa">Goa</option>
+                          <option value="Gujarat">Gujarat</option>
+                          <option value="Haryana">Haryana</option>
+                          <option value="Himachal Pradesh">
+                            Himachal Pradesh
+                          </option>
+                          <option value="Jharkhand">Jharkhand</option>
                           <option value="Karnataka">Karnataka</option>
+                          <option value="Kerala">Kerala</option>
+                          <option value="Madhya Pradesh">Madhya Pradesh</option>
+                          <option value="Maharashtra">Maharashtra</option>
+                          <option value="Manipur">Manipur</option>
+                          <option value="Meghalaya">Meghalaya</option>
+                          <option value="Mizoram">Mizoram</option>
+                          <option value="Nagaland">Nagaland</option>
+                          <option value="Odisha">Odisha</option>
+                          <option value="Punjab">Punjab</option>
+                          <option value="Rajasthan">Rajasthan</option>
+                          <option value="Sikkim">Sikkim</option>
+                          <option value="Tamil Nadu	">Tamil Nadu </option>
+                          <option value="Telangana">Telangana</option>
+                          <option value="Tripura">Tripura</option>
+                          <option value="Uttar Pradesh">Uttar Pradesh</option>
+                          <option value="Uttarakhand">Uttarakhand</option>
+                          <option value="West Bengal	">West Bengal </option>
+                          {/* territories */}
+                          <option value="Andaman and Nicobar Islands">
+                            Andaman and Nicobar Islands
+                          </option>
+                          <option value="Chandigarh">Chandigarh</option>
+                          <option value="Dadra and Nagar Haveli and Daman and Diu">
+                            Dadra and Nagar Haveli and Daman and Diu
+                          </option>
+                          <option value="Delhi">Delhi</option>
+                          <option value="Jammu and Kashmir">
+                            Jammu and Kashmir
+                          </option>
+                          <option value="Ladakh">Ladakh</option>
+                          <option value="Lakshadweep">Lakshadweep</option>
+                          <option value="Puducherry">Puducherry</option>
                         </select>
-                     
 
                         <input
                           type="text"
@@ -1044,18 +1101,20 @@ function UserAccount() {
                           className="px-3 py-2 border rounded-md"
                         />
                         <input
-  type="text"
-  name="zipCode"
-  placeholder="ZIP Code"
-  value={newAddress.zipCode}
-  onChange={handleAddressChange}
-  className={`px-3 py-2 border rounded-md ${
-    zipError ? "border-red-500" : ""
-  }`}
-/>
-{zipError && (
-  <p className="text-red-500 text-sm mt-1">{zipError}</p>
-)}
+                          type="text"
+                          name="zipCode"
+                          placeholder="ZIP Code"
+                          value={newAddress.zipCode}
+                          onChange={handleAddressChange}
+                          className={`px-3 py-2 border rounded-md ${
+                            zipError ? "border-red-500" : ""
+                          }`}
+                        />
+                        {zipError && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {zipError}
+                          </p>
+                        )}
                         <select
                           name="addressType"
                           value={newAddress.addressType}
@@ -1247,10 +1306,10 @@ function UserAccount() {
                             </div>
                             <div className="p-4">
                               <h3 className="font-medium truncate text-gray-900 mb-1">
-                                {product.name.slice(0,50)}
+                                {product.name.slice(0, 50)}
                               </h3>
                               <p className="text-blue-600 font-semibold">
-                                ${product.price}
+                                ₹{product.price}
                               </p>
                               <div className="mt-4 flex justify-between items-center">
                                 <button
@@ -1305,7 +1364,7 @@ function UserAccount() {
           </div>
         </div>
       </div>
-      
+
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Footer />

@@ -70,10 +70,15 @@ export default function CategoryGrid() {
 
   const toggleDropdown = (mainCatId, categoryId) => {
     const dropdownKey = `${mainCatId}_${categoryId}`;
-    setOpenDropdowns(prev => ({
-      ...prev,
-      [dropdownKey]: !prev[dropdownKey]
-    }));
+    
+    setOpenDropdowns(prev => {
+      // If the clicked dropdown is already open, close it
+      if (prev[dropdownKey]) {
+        return {};
+      }
+      // Otherwise, close all dropdowns and open only the clicked one
+      return { [dropdownKey]: true };
+    });
   };
 
   const renderCategoryDropdown = (mainCatId, category) => {

@@ -31,6 +31,7 @@ const handleChange = (value, index) => {
     document.getElementById(`otp-${index + 1}`)?.focus();
   }
 };
+
 const handleVerifyOTP = async () => {
   const enteredOtp = otpDigits.join("");
 
@@ -47,20 +48,29 @@ const handleVerifyOTP = async () => {
       otp: enteredOtp,
     });
 
-    const { token, userId, message } = response;
+    const { token, userId, isRegistered, message } = response;
 
     toast.success(message || "OTP verified successfully");
 
+    // Always save token and userId to localStorage
     localStorage.setItem("token", token);
     localStorage.setItem("userId", userId);
 
-    navigate("/registeration", {
-      state: {
-        identifier,
-        identifierType,
-        userId,
-      },
-    });
+    // Check if isRegistered field exists and is explicitly false
+    if (isRegistered === false) {
+      // 🆕 New user: go to registration page
+      navigate("/registeration", {
+        state: {
+          identifier,
+          identifierType,
+          userId,
+        },
+      });
+    } else {
+      // ✅ User is registered or isRegistered field is not present/true
+      // Redirect to dashboard/home
+      navigate("/"); // or "/home", based on your app
+    }
   } catch (error) {
     setOtpError(true);
     toast.error(error.response?.data?.message || "OTP verification failed");
@@ -69,9 +79,7 @@ const handleVerifyOTP = async () => {
   }
 };
 
-
-
-  return (
+return (
     <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 ">
       <div className="bg-white w-full max-w-sm rounded-xl shadow-xl p-6 relative space-y-6 text-center">
        <button

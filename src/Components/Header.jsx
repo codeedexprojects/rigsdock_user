@@ -18,6 +18,7 @@ import {
 import { cartCountAPI } from "../Services/cartAPI";
 import { Bell } from "lucide-react";
 import { getWishlistAPI } from "../Services/wishlistAPI";
+import { BsHeart } from "react-icons/bs";
 
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -258,10 +259,10 @@ function Header() {
 
           {/* Mobile Search Bar */}
           {mobileSearchOpen && (
-            <div className="px-4 py-3 bg-gray-50 border-b relative">
+            <div className="px-4 py-3 bg-gray-50 relative">
               <form
                 onSubmit={handleSearch}
-                className="flex items-center bg-white rounded-lg shadow-sm border border-gray-200"
+                className="flex items-center bg-white rounded-lg shadow-sm  border-gray-200"
               >
                 <div className="flex-1 flex items-center">
                   <Search size={18} className="text-gray-400 ml-3" />
@@ -293,10 +294,10 @@ function Header() {
 
               {/* Mobile Search Results */}
               {searchQuery && (searchResults.length > 0 || searchError) && (
-                <div className="absolute top-full left-4 right-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full left-4 right-4 mt-2 bg-white  rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                   {isSearching && (
                     <div className="p-4 text-center text-gray-500">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      <div className="animate-spin rounded-full h-6 w-6  mx-auto"></div>
                       <p className="mt-2 text-sm">Searching...</p>
                     </div>
                   )}
@@ -523,7 +524,7 @@ function Header() {
                 )}
                 <button
                   type="submit"
-                  className="px-4 py-2 text-white border border-gray-500  rounded-full font-semibold flex items-center gap-1"
+                  className="px-4 py-2 text-white  rounded-full font-semibold flex items-center gap-1"
                   style={{ backgroundColor: "rgb(10, 95, 191)" }}
                   disabled={isSearching}
                 >
@@ -581,7 +582,7 @@ function Header() {
                         <img
                           src={`https://rigsdock.com/uploads/${product.images?.[0]}`}
                           alt={product.name}
-                          className="w-14 h-14 rounded object-cover mr-4 border"
+                          className="w-14 h-14 rounded object-cover mr-4 "
                         />
                         <div className="flex-1">
                           <p className="text-sm font-semibold text-gray-800 line-clamp-1">
@@ -615,9 +616,9 @@ function Header() {
                 to="/wishlist"
                 className="relative text-gray-700 hover:text-pink-600"
               >
-                <h6 className="text-white">Wishlist</h6>
+                <h6 className="text-white"><BsHeart /></h6>
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-3 bg-white text-black text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
                     {wishlistCount}
                   </span>
                 )}
@@ -627,7 +628,6 @@ function Header() {
               <Link to="/cart">
                 <div className="flex items-center gap-1 relative cursor-pointer">
                   <ShoppingCart size={18} />
-                  <span>My Cart</span>
                   <span className="absolute -top-2 -right-2 bg-white text-neutral-950 text-xs px-1 rounded-full">
                     {cartCount}
                   </span>

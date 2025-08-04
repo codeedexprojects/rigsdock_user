@@ -21,6 +21,8 @@ const ProductDetail = () => {
   const [similarProducts, setSimilarProducts] = useState([]);
   const navigate = useNavigate();
   const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
 
   const handleViewProducts = (productId) => {
     window.location.href = `/product-details/${productId}`;
@@ -95,16 +97,18 @@ const ProductDetail = () => {
     fetchProductDetails();
   }, []);
 
-  const fetchProductDetails = async () => {
-    try {
-      const result = await viewProductsByIdAPI(productId.id);
-      setProductDetails(result.product);
-      const similar = await getSimilarProductsAPI(productId.id);
-      setSimilarProducts(similar);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+ const fetchProductDetails = async () => {
+  try {
+    const result = await viewProductsByIdAPI(productId.id);
+    setProductDetails(result.product);
+    setSelectedImage(result.product.images?.[0]); // Set default main image
+    const similar = await getSimilarProductsAPI(productId.id);
+    setSimilarProducts(similar);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
@@ -189,7 +193,7 @@ const ProductDetail = () => {
             {/* Main Image */}
             <div className="relative aspect-square rounded-xl overflow-hidden mb-2">
               <img
-                src={`${SERVER_URL}/uploads/${product?.images?.[0]}`}
+               src={`${SERVER_URL}/uploads/${selectedImage}`}
                 alt="Main Product"
                 className="w-full object-contain p-4 sm:p-6"
               />
@@ -199,6 +203,7 @@ const ProductDetail = () => {
               {product.images?.map((img, index) => (
                 <div
                   key={index}
+                   onClick={() => setSelectedImage(img)} 
                   className="flex-shrink-0 w-15 h-15 sm:w-16 sm:h-16 border rounded-lg overflow-hidden cursor-pointer hover:border-blue-500 transition-colors"
                 >
                   <img
