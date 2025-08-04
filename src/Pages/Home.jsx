@@ -1470,7 +1470,7 @@ function Home() {
 `}</style>
 
       {/* Deal 3 Card Product */}
- <div className="w-full px-4">
+<div className="w-full px-4">
   {/* Section Header */}
   <div className="text-center mb-5">
     <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -1482,9 +1482,8 @@ function Home() {
     </p>
   </div>
 
-  {/* Mobile: Horizontal scrollable, Desktop: Grid */}
-  <div className="md:flex md:flex-wrap md:justify-center md:gap-8 overflow-x-auto md:overflow-x-visible scrollbar-hide">
-    <div className="flex md:contents gap-4 md:gap-8 pb-4 md:pb-0">
+  <div className="md:flex md:flex-wrap md:justify-center md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide">
+    <div className="flex md:contents gap-2 md:gap-4 pb-4 md:pb-0">
       {carouselCards.map((card) => {
         const imageUrl = `https://rigsdock.com/uploads/${card?.image}`;
         return (
@@ -1504,57 +1503,12 @@ function Home() {
                     "https://source.unsplash.com/600x400/?gadget";
                 }}
               />
-              {/* Gradient Overlay */}
-              {/* <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
-
-              {/* Floating Action Button */}
-              {/* <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <svg
-                  className="w-5 h-5 text-gray-700"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </div> */}
+           
             </div>
 
             {/* Content Section */}
             <div className="p-6 flex flex-col flex-grow">
-              {/* <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                {card.title}
-              </h3> */}
-              {/* <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3 flex-grow">
-                {card.subtitle}
-              </p> */}
-
-              {/* Action Bar */}
-              {/* <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  View Product
-                </span>
-                <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
-                  <svg
-                    className="w-4 h-4 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div> */}
+             
             </div>
           </div>
         );
@@ -1782,9 +1736,9 @@ function Home() {
       {/* Our Brands Section */}
       <div className=" mb-5 px-4 sm:px-6 lg:px-8 bg-white">
         {/* Section Heading */}
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center md:mb-12 text-gray-800">
-          Our Brands
-        </h2>
+        <div className="text-xl sm:text-2xl md:text-3xl font-bold text-center md:mb-12 text-gray-800">
+<div className="w-full h-px bg-black mt-10"></div> 
+       </div>
 
         {/* Carousel Container */}
         {brands?.length > 0 ? (
@@ -1823,6 +1777,8 @@ function Home() {
             {loading ? "Loading brands..." : "No brands available"}
           </div>
         )}
+        <div className="w-full h-px bg-black mt-10"></div> 
+
 
         {/* Custom CSS for animation */}
         <style>{`
