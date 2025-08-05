@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Checkout() {
   const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState("COD");
+  const [selectedPayment, setSelectedPayment] = useState("UPI");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [cartItems, setCartItems] = useState([]);

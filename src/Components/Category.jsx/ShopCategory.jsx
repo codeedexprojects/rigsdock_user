@@ -72,11 +72,9 @@ export default function CategoryGrid() {
     const dropdownKey = `${mainCatId}_${categoryId}`;
     
     setOpenDropdowns(prev => {
-      // If the clicked dropdown is already open, close it
       if (prev[dropdownKey]) {
         return {};
       }
-      // Otherwise, close all dropdowns and open only the clicked one
       return { [dropdownKey]: true };
     });
   };
@@ -121,18 +119,17 @@ export default function CategoryGrid() {
   };
 
   return (
-    <section className="text-white  px-4 py-6">
+    <section className="text-white px-4 py-6">
       <h2 className="text-3xl text-black font-bold mb-10">Shop By Category</h2>
       
-      {/* Desktop Grid - Hidden on mobile */}
-      <div className="hidden md:grid md:grid-cols-4 gap-6">
-        {/* Promo Section - Now fetches from API */}
+      <div className="hidden lg:grid lg:grid-cols-4 gap-6">
+        {/* Promo Section - Desktop */}
         <div className="bg-orange-500 rounded-xl p-6 flex flex-col justify-between items-center text-center min-h-[400px]">
           <div>
             <h3 className="text-2xl font-bold mb-4 leading-tight">
               {homeCategory?.title || 'Best Category Components Block'}
             </h3>
-             <p className="text-white text-sm font-semibold mb-1">
+            <p className="text-white text-sm font-semibold mb-1">
               {homeCategory?.subtitle || '50% Discount'}
             </p>
           </div>
@@ -144,12 +141,12 @@ export default function CategoryGrid() {
                   : "https://source.unsplash.com/150x150/?security-camera"
               }
               alt={homeCategory?.title || "Promo"}
-              className="w-70 h-70 rounded-4xl object-contain cursor-pointer "
+              className="w-70 h-70 rounded-4xl object-contain cursor-pointer"
             />
           </a>
         </div>
 
-        {/* First Two Main Categories */}
+        {/* First Two Main Categories - Desktop */}
         {mainCategories.slice(0, 2).map((cat) => (
           <div
             key={cat._id}
@@ -164,16 +161,12 @@ export default function CategoryGrid() {
               </div>
             </div>
             <div className="flex justify-center mt-4">
-              {/* <img
-                src={`${SERVER_URL}/uploads/${cat.image}`}
-                alt={cat.name}
-                className="w-20 h-20 object-contain"
-              /> */}
+             
             </div>
           </div>
         ))}
 
-        {/* Combined Card: Courses (top 50%) and Used Products (bottom 50%) */}
+        {/* Combined Card: Courses (top 50%) and Used Products (bottom 50%) - Desktop */}
         <div className="bg-[#1C1C1C] rounded-xl flex flex-col min-h-[400px]">
           {/* Courses Section - Top 50% */}
           {mainCategories.length > 2 && (
@@ -183,11 +176,6 @@ export default function CategoryGrid() {
                 <p className="text-sm text-gray-400 mb-2">Coming Soon</p>
               </div>
               <div className="flex justify-center mt-2">
-                {/* <img
-                  src={`${SERVER_URL}/uploads/${mainCategories[2].image}`}
-                  alt={mainCategories[2].name}
-                  className="w-16 h-16 object-contain opacity-50"
-                /> */}
               </div>
             </div>
           )}
@@ -207,16 +195,26 @@ export default function CategoryGrid() {
         </div>
       </div>
 
-      {/* Mobile Horizontal Scrollable Layout */}
-      <div className="md:hidden">
+      {/* Mobile & Tablet Horizontal Scrollable Layout */}
+      <div className="lg:hidden">
         <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-          {/* Promo Section - Mobile */}
-          <div className="bg-orange-500 rounded-xl p-4 flex flex-col justify-between items-center text-center min-w-[280px] min-h-[350px] flex-shrink-0 snap-start">
+          <style jsx>{`
+            .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          
+          {/* Promo Section - Mobile & Tablet */}
+          <div className="bg-orange-500 rounded-xl p-4 md:p-6 flex flex-col justify-between items-center text-center min-w-[280px] md:min-w-[320px] min-h-[350px] md:min-h-[380px] flex-shrink-0 snap-start">
             <div>
-              <h3 className="text-xl font-bold mb-3 leading-tight">
+              <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 leading-tight">
                 {homeCategory?.title || 'Best Category Components Block'}
               </h3>
-               <p className="text-white text-sm font-semibold mb-1">
+              <p className="text-white text-sm font-semibold mb-1">
                 {homeCategory?.subtitle || '50% Discount'}
               </p>
             </div>
@@ -228,59 +226,47 @@ export default function CategoryGrid() {
                     : "https://source.unsplash.com/150x150/?security-camera"
                 }
                 alt={homeCategory?.title || "Promo"}
-                className="w-32 h-32 rounded-2xl object-contain cursor-pointer"
+                className="w-32 h-32 md:w-40 md:h-40 rounded-2xl object-contain cursor-pointer"
               />
             </a>
           </div>
 
-          {/* First Two Main Categories - Mobile */}
+          {/* First Two Main Categories - Mobile & Tablet */}
           {mainCategories.slice(0, 2).map((cat) => (
             <div
               key={cat._id}
-              className="bg-[#1C1C1C] p-4 rounded-xl flex flex-col justify-between min-w-[280px] min-h-[350px] flex-shrink-0 snap-start"
+              className="bg-[#1C1C1C] p-4 md:p-6 rounded-xl flex flex-col justify-between min-w-[280px] md:min-w-[320px] min-h-[350px] md:min-h-[380px] flex-shrink-0 snap-start"
             >
               <div className="flex-1">
-                <h4 className="font-semibold text-lg mb-3">{cat.name}</h4>
-                <div className="space-y-1 max-h-48 overflow-y-auto">
+                <h4 className="font-semibold text-lg md:text-xl mb-3">{cat.name}</h4>
+                <div className="space-y-1 max-h-48 md:max-h-56 overflow-y-auto">
                   {categoryMap[cat._id]?.map((category) => 
                     renderCategoryDropdown(cat._id, category)
                   )}
                 </div>
               </div>
               <div className="flex justify-center mt-4">
-                {/* <img
-                  src={`${SERVER_URL}/uploads/${cat.image}`}
-                  alt={cat.name}
-                  className="w-16 h-16 object-contain"
-                /> */}
               </div>
             </div>
           ))}
 
-          {/* Combined Card - Mobile */}
-          <div className="bg-[#1C1C1C] rounded-xl flex flex-col min-w-[280px] min-h-[350px] flex-shrink-0 snap-start">
+          {/* Combined Card - Mobile & Tablet */}
+          <div className="bg-[#1C1C1C] rounded-xl flex flex-col min-w-[280px] md:min-w-[320px] min-h-[350px] md:min-h-[380px] flex-shrink-0 snap-start">
             {/* Courses Section - Top 50% */}
             {mainCategories.length > 2 && (
-              <div className="p-4 border-b border-gray-600 flex-1 flex flex-col justify-between">
+              <div className="p-4 md:p-6 border-b border-gray-600 flex-1 flex flex-col justify-between">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-lg mb-3 text-gray-500">{mainCategories[2].name}</h4>
+                  <h4 className="font-semibold text-lg md:text-xl mb-3 text-gray-500">{mainCategories[2].name}</h4>
                   <p className="text-sm text-gray-400 mb-2">Coming Soon</p>
                 </div>
                 <div className="flex justify-center mt-2">
-                  {/* <img
-                    src={`${SERVER_URL}/uploads/${mainCategories[2].image}`}
-                    alt={mainCategories[2].name}
-                    className="w-12 h-12 object-contain opacity-50"
-                  /> */}
                 </div>
               </div>
             )}
-            
-            {/* Used Products Section - Bottom 50% */}
-            {mainCategories.length > 3 && (
-              <div className="p-4 flex-1 flex flex-col justify-between">
+                        {mainCategories.length > 3 && (
+              <div className="p-4 md:p-6 flex-1 flex flex-col justify-between">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-lg mb-3 text-gray-500">{mainCategories[3].name}</h4>
+                  <h4 className="font-semibold text-lg md:text-xl mb-3 text-gray-500">{mainCategories[3].name}</h4>
                   <p className="text-sm text-gray-400 mb-2">Coming Soon</p>
                 </div>
                 <div className="flex justify-center mt-2">

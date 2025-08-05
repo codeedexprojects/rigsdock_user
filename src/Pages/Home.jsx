@@ -282,34 +282,34 @@ function Home() {
   }, []);
 
   const nextDealSlide = () => {
-  const activeDeals = dealProducts.filter((deal) =>
-    calculateTimeLeft(deal.createdAt)
-  );
-  
-  setDealCurrentIndex((prev) =>
-    prev >= activeDeals.length - 1 ? 0 : prev + 1
-  );
-};
+    const activeDeals = dealProducts.filter((deal) =>
+      calculateTimeLeft(deal.createdAt)
+    );
 
-const prevDealSlide = () => {
-  const activeDeals = dealProducts.filter((deal) =>
-    calculateTimeLeft(deal.createdAt)
-  );
-  
-  setDealCurrentIndex((prev) =>
-    prev <= 0 ? activeDeals.length - 1 : prev - 1
-  );
-};
-useEffect(() => {
-  const activeDeals = dealProducts.filter((deal) =>
-    calculateTimeLeft(deal.createdAt)
-  );
-  
-  // Reset to 0 if current index is beyond active deals
-  if (dealCurrentIndex >= activeDeals.length && activeDeals.length > 0) {
-    setDealCurrentIndex(0);
-  }
-}, [dealProducts, dealCurrentIndex]);
+    setDealCurrentIndex((prev) =>
+      prev >= activeDeals.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevDealSlide = () => {
+    const activeDeals = dealProducts.filter((deal) =>
+      calculateTimeLeft(deal.createdAt)
+    );
+
+    setDealCurrentIndex((prev) =>
+      prev <= 0 ? activeDeals.length - 1 : prev - 1
+    );
+  };
+  useEffect(() => {
+    const activeDeals = dealProducts.filter((deal) =>
+      calculateTimeLeft(deal.createdAt)
+    );
+
+    // Reset to 0 if current index is beyond active deals
+    if (dealCurrentIndex >= activeDeals.length && activeDeals.length > 0) {
+      setDealCurrentIndex(0);
+    }
+  }, [dealProducts, dealCurrentIndex]);
 
   const nextOnSaleSlide = () => {
     setOnSaleCurrentIndex((prev) =>
@@ -889,11 +889,12 @@ useEffect(() => {
                                 <span className="text-blue-600 font-bold">
                                   ₹{product.finalPrice}
                                 </span>
-                                 {discountPercentage > 0 && (
-                              <div className="text-xs text-green-600 font-medium">
-                                You save ₹{product.price - product.finalPrice}
-                              </div>
-                            )}
+                                {discountPercentage > 0 && (
+                                  <div className="text-xs text-green-600 font-medium">
+                                    You save ₹
+                                    {product.price - product.finalPrice}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1016,11 +1017,13 @@ useEffect(() => {
                                           <span className="text-blue-600 font-bold">
                                             ₹{product.finalPrice}
                                           </span>
-                                           {discountPercentage > 0 && (
-                              <div className="text-xs text-green-600 font-medium">
-                                You save ₹{product.price - product.finalPrice}
-                              </div>
-                            )}
+                                          {discountPercentage > 0 && (
+                                            <div className="text-xs text-green-600 font-medium">
+                                              You save ₹
+                                              {product.price -
+                                                product.finalPrice}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
@@ -1265,145 +1268,160 @@ useEffect(() => {
       </div>
 
       {/* Top Rated Section */}
-    <div className="px-4">
-  <div className="flex justify-between items-center mb-4">
-    <h2 className="text-2xl font-bold" id="top-rated-section">
-      Top Rated Item's
-    </h2>
-  </div>
+      <div className="px-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold" id="top-rated-section">
+            Top Rated Items
+          </h2>
+        </div>
 
-  {loading ? (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-    </div>
-  ) : error ? (
-    <div className="text-center py-10 text-red-500">{error}</div>
-  ) : (
-    <div className="relative mb-8">
-      {/* Desktop Slider - Hidden on mobile */}
-      <div className="hidden md:block">
-        {/* Left Arrow */}
-        <button
-          onClick={prevTopRatedSlide}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-10 text-red-500">{error}</div>
+        ) : (
+          <div className="relative mb-8">
+            {/* Desktop Slider - Hidden on mobile */}
+            <div className="hidden md:block">
+              {/* Left Arrow */}
+              <button
+                onClick={prevTopRatedSlide}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
 
-        {/* Right Arrow */}
-        <button
-          onClick={nextTopRatedSlide}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+              {/* Right Arrow */}
+              <button
+                onClick={nextTopRatedSlide}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
 
-        {/* Product Slider for Desktop */}
-        <div
-          className="flex transition-transform duration-500 ease-in-out"
-          style={{
-            transform: `translateX(-${topRatedCurrentIndex * 100}%)`,
-          }}
-        >
-          {Array.from(
-            { length: Math.ceil(topRatedProducts.length / itemsPerSlide) },
-            (_, slideIndex) => (
-              <div key={slideIndex} className="w-full flex-shrink-0">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                  {topRatedProducts
-                    .slice(
-                      slideIndex * itemsPerSlide,
-                      (slideIndex + 1) * itemsPerSlide
-                    )
-                    .map((product) => {
-                      const discountPercentage = product.price !== product.finalPrice 
-                        ? Math.round(((product.price - product.finalPrice) / product.price) * 100)
-                        : 0;
-                      
-                      return (
-                        <div
-                          key={product._id}
-                          onClick={() => navigateToProduct(product._id)}
-                          className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
-                            isDark ? "bg-gray-800" : "bg-white"
-                          } relative cursor-pointer `}
-                        >
-                          {/* Discount Badge */}
-                          {discountPercentage > 0 && (
-                            <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-                              {discountPercentage}% OFF
-                            </span>
-                          )}
+              {/* Product Slider for Desktop */}
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{
+                  transform: `translateX(-${topRatedCurrentIndex * 100}%)`,
+                }}
+              >
+                {Array.from(
+                  {
+                    length: Math.ceil(topRatedProducts.length / itemsPerSlide),
+                  },
+                  (_, slideIndex) => (
+                    <div key={slideIndex} className="w-full flex-shrink-0">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                        {topRatedProducts
+                          .slice(
+                            slideIndex * itemsPerSlide,
+                            (slideIndex + 1) * itemsPerSlide
+                          )
+                          .map((product) => {
+                            const discountPercentage =
+                              product.price !== product.finalPrice
+                                ? Math.round(
+                                    ((product.price - product.finalPrice) /
+                                      product.price) *
+                                      100
+                                  )
+                                : 0;
 
-                          {/* Wishlist Button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAddToWishlist(product._id);
-                            }}
-                            className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-                          >
-                            <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-                          </button>
+                            return (
+                              <div
+                                key={product._id}
+                                onClick={() => navigateToProduct(product._id)}
+                                className={`rounded-xl p-3 sm:p-4 flex flex-col h-full ${
+                                  isDark ? "bg-gray-800" : "bg-white"
+                                } relative cursor-pointer `}
+                              >
+                                {/* Discount Badge */}
+                                {discountPercentage > 0 && (
+                                  <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">
+                                    {discountPercentage}% OFF
+                                  </span>
+                                )}
 
-                          {/* Product Image */}
-                          <div className="aspect-square -mb-8 overflow-hidden flex items-center justify-center p-6">
-                            <img
-                              src={
-                                product.images && product.images.length > 0
-                                  ? `${SERVER_URL}/uploads/${product.images[0]}`
-                                  : "https://via.placeholder.com/300"
-                              }
-                              alt={product.name}
-                              className="w-full h-full object-contain p-2 sm:p-3"
-                              onError={(e) => {
-                                e.target.src = "https://via.placeholder.com/300";
-                              }}
-                            />
-                          </div>
+                                {/* Wishlist Button */}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAddToWishlist(product._id);
+                                  }}
+                                  className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                                >
+                                  <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                                </button>
 
-                          {/* Product Info */}
-                          <div className="flex-grow">
-                            <h3 className="text-xs truncate sm:text-sm font-medium">
-                              {product.name.slice(0, 50)}
-                            </h3>
-                            <div className="flex text-yellow-400 text-xs sm:text-sm">
-                              {renderStars(product.averageRating)}
-                            </div>
-                            <div className="text-xs sm:text-sm">
-                              {product.price !== product.finalPrice && (
-                                <span className="text-gray-400 line-through mr-1">
-                                  ₹{product.price}
-                                </span>
-                              )}
-                              <span className="text-blue-600 font-bold">
-                                ₹{product.finalPrice}
-                              </span>
-                               {discountPercentage > 0 && (
-                              <div className="text-xs text-green-600 font-medium">
-                                You save ₹{product.price - product.finalPrice}
-                              </div>
-                            )}
-                            </div>
-                          </div>
+                                {/* Product Image */}
+                                <div className="aspect-square -mb-8 overflow-hidden flex items-center justify-center p-6">
+                                  <img
+                                    src={
+                                      product.images &&
+                                      product.images.length > 0
+                                        ? `${SERVER_URL}/uploads/${product.images[0]}`
+                                        : "https://via.placeholder.com/300"
+                                    }
+                                    alt={product.name}
+                                    className="w-full h-full object-contain p-2 sm:p-3"
+                                    onError={(e) => {
+                                      e.target.src =
+                                        "https://via.placeholder.com/300";
+                                    }}
+                                  />
+                                </div>
+
+                                {/* Product Info */}
+                                <div className="flex-grow">
+                                  <h3 className="text-xs truncate sm:text-sm font-medium">
+                                    {product.name.slice(0, 50)}
+                                  </h3>
+                                  <div className="flex text-yellow-400 text-xs sm:text-sm">
+                                    {renderStars(product.averageRating)}
+                                  </div>
+                                  <div className="text-xs sm:text-sm">
+                                    {product.price !== product.finalPrice && (
+                                      <span className="text-gray-400 line-through mr-1">
+                                        ₹{product.price}
+                                      </span>
+                                    )}
+                                    <span className="text-blue-600 font-bold">
+                                      ₹{product.finalPrice}
+                                    </span>
+                                    {discountPercentage > 0 && (
+                                      <div className="text-xs text-green-600 font-medium">
+                                        You save ₹
+                                        {product.price - product.finalPrice}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             );
                           })}
-                </div>
+                      </div>
+                    </div>
+                  )
+                )}
               </div>
-            )
-          )}
-        </div>
-      </div>
+            </div>
 
-      {/* Mobile Horizontal Scroll */}
-      <div className="md:hidden">
-        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-                          {topRatedProducts.map((product) => {
-                  const discountPercentage = product.price !== product.finalPrice 
-                    ? Math.round(((product.price - product.finalPrice) / product.price) * 100)
-                    : 0;
-                  
+            {/* Mobile Horizontal Scroll */}
+            <div className="md:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+                {topRatedProducts.map((product) => {
+                  const discountPercentage =
+                    product.price !== product.finalPrice
+                      ? Math.round(
+                          ((product.price - product.finalPrice) /
+                            product.price) *
+                            100
+                        )
+                      : 0;
+
                   return (
                     <div
                       key={product._id}
@@ -1422,72 +1440,77 @@ useEffect(() => {
                           </span>
                         )}
 
-                  {/* Wishlist Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToWishlist(product._id);
-                    }}
-                    className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full hover:bg-white transition-colors"
-                  >
-                    <Heart className="w-3.5 h-3.5 text-gray-700 hover:text-red-500" />
-                  </button>
+                        {/* Wishlist Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToWishlist(product._id);
+                          }}
+                          className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full hover:bg-white transition-colors"
+                        >
+                          <Heart className="w-3.5 h-3.5 text-gray-700 hover:text-red-500" />
+                        </button>
 
-                  {/* Product Image */}
-                  <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
-                    <img
-                      src={
-                        product.images && product.images.length > 0
-                          ? `${SERVER_URL}/uploads/${product.images[0]}`
-                          : "https://via.placeholder.com/300"
-                      }
-                      alt={product.name}
-                      className="w-full h-full object-contain p-2"
-                      onError={(e) => {
-                        e.target.src = "https://via.placeholder.com/300";
-                      }}
-                    />
-                  </div>
+                        {/* Product Image */}
+                        <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
+                          <img
+                            src={
+                              product.images && product.images.length > 0
+                                ? `${SERVER_URL}/uploads/${product.images[0]}`
+                                : "https://via.placeholder.com/300"
+                            }
+                            alt={product.name}
+                            className="w-full h-full object-contain p-2"
+                            onError={(e) => {
+                              e.target.src = "https://via.placeholder.com/300";
+                            }}
+                          />
+                        </div>
 
-                  {/* Product Info */}
-                  <div className="flex-grow">
-                    <h3 className="text-xs font-semibold mb-1 line-clamp-2 h-8">
-                      {product.name.slice(0, 40)}
-                    </h3>
-                    <div className="flex text-yellow-400 text-xs mb-1">
-                      {renderStars(product.averageRating)}
-                    </div>
-                    <div className="text-xs mb-2">
-                      {product.price !== product.finalPrice && (
-                        <span className="text-gray-400 line-through mr-1">
-                          ₹{product.price}
-                        </span>
-                      )}
-                      <span className="text-blue-600 font-bold">
-                        ₹{product.finalPrice}
-                      </span>
-                       {discountPercentage > 0 && (
+                        {/* Product Info */}
+                        <div className="flex-grow">
+                          <h3 className="text-xs font-semibold mb-1 line-clamp-2 h-8">
+                            {product.name.slice(0, 40)}
+                          </h3>
+                          <div className="flex text-yellow-400 text-xs mb-1">
+                            {renderStars(product.averageRating)}
+                          </div>
+                          <div className="text-xs mb-2">
+                            {product.price !== product.finalPrice && (
+                              <span className="text-gray-400 line-through mr-1">
+                                ₹{product.price}
+                              </span>
+                            )}
+                            <span className="text-blue-600 font-bold">
+                              ₹{product.finalPrice}
+                            </span>
+                            {discountPercentage > 0 && (
                               <div className="text-xs text-green-600 font-medium">
                                 You save ₹{product.price - product.finalPrice}
                               </div>
                             )}
-                    </div>
-                  </div>               
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
-        </div>
-      </div>
+              </div>
+            </div>
 
-      {/* Tablet Grid - Shown only on tablet sizes */}
-      <div className="hidden sm:block md:hidden">
-        <div className="grid grid-cols-2 gap-2">
-                          {topRatedProducts.slice(0, 6).map((product) => {
-                  const discountPercentage = product.price !== product.finalPrice 
-                    ? Math.round(((product.price - product.finalPrice) / product.price) * 100)
-                    : 0;
-                  
+            {/* Tablet Grid - Shown only on tablet sizes */}
+            <div className="hidden sm:block md:hidden">
+              <div className="grid grid-cols-2 gap-2">
+                {topRatedProducts.slice(0, 6).map((product) => {
+                  const discountPercentage =
+                    product.price !== product.finalPrice
+                      ? Math.round(
+                          ((product.price - product.finalPrice) /
+                            product.price) *
+                            100
+                        )
+                      : 0;
+
                   return (
                     <div
                       key={product._id}
@@ -1502,68 +1525,68 @@ useEffect(() => {
                         </span>
                       )}
 
-                {/* Wishlist Button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddToWishlist(product._id);
-                  }}
-                  className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
-                >
-                  <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
-                </button>
+                      {/* Wishlist Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToWishlist(product._id);
+                        }}
+                        className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+                      >
+                        <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
+                      </button>
 
-                {/* Product Image */}
-                <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
-                  <img
-                    src={
-                      product.images && product.images.length > 0
-                        ? `${SERVER_URL}/uploads/${product.images[0]}`
-                        : "https://via.placeholder.com/300"
-                    }
-                    alt={product.name}
-                    className="w-full h-full object-contain p-2"
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/300";
-                    }}
-                  />
-                </div>
+                      {/* Product Image */}
+                      <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
+                        <img
+                          src={
+                            product.images && product.images.length > 0
+                              ? `${SERVER_URL}/uploads/${product.images[0]}`
+                              : "https://via.placeholder.com/300"
+                          }
+                          alt={product.name}
+                          className="w-full h-full object-contain p-2"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/300";
+                          }}
+                        />
+                      </div>
 
-                {/* Product Info */}
-                <div className="flex-grow">
-                  <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
-                    {product.name.slice(0, 45)}
-                  </h3>
-                  <div className="flex text-yellow-400 text-sm mb-1">
-                    {renderStars(product.averageRating)}
-                  </div>
-                  <div className="text-sm mb-3">
-                    {product.price !== product.finalPrice && (
-                      <span className="text-gray-400 line-through mr-1">
-                        ₹{product.price}
-                      </span>
-                    )}
-                    <span className="text-blue-600 font-bold">
-                      ₹{product.finalPrice}
-                    </span>
-                  </div>
-                </div>
+                      {/* Product Info */}
+                      <div className="flex-grow">
+                        <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
+                          {product.name.slice(0, 45)}
+                        </h3>
+                        <div className="flex text-yellow-400 text-sm mb-1">
+                          {renderStars(product.averageRating)}
+                        </div>
+                        <div className="text-sm mb-3">
+                          {product.price !== product.finalPrice && (
+                            <span className="text-gray-400 line-through mr-1">
+                              ₹{product.price}
+                            </span>
+                          )}
+                          <span className="text-blue-600 font-bold">
+                            ₹{product.finalPrice}
+                          </span>
+                        </div>
+                      </div>
 
-                {/* View Product Button */}
-                <button
-                  onClick={() => navigateToProduct(product._id)}
-                  className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors mt-auto"
-                >
-                  View Product
-                </button>
+                      {/* View Product Button */}
+                      <button
+                        onClick={() => navigateToProduct(product._id)}
+                        className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors mt-auto"
+                      >
+                        View Product
+                      </button>
                     </div>
                   );
                 })}
-        </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  )}
-</div>
 
       <style jsx>{`
         .scrollbar-hide {
@@ -1579,12 +1602,14 @@ useEffect(() => {
       <div className="w-full">
         {/* Section Header */}
         <div className="text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-4">
-            ✨ Latest Collection
-          </div>
           <h2 className="text-5xl font-extrabold  mb-6 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent">
             Tech & Gadgets
           </h2>
+          <p className="text-sm text-gray-600 mb-2">
+            Discover the latest and most loved tech gadgets chosen by our users.
+            From smart devices to must-have accessories, explore top-rated picks
+            that blend performance, innovation, and value.
+          </p>
         </div>
 
         {/* Cards Container */}

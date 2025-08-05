@@ -186,11 +186,8 @@ const ProductDetail = () => {
       <Header />
       <ChatBox />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 mt-40">
-        {/* Main Product Container */}
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Image Gallery Section */}
-          <div className="w-full lg:w-1/2">
-            {/* Main Image */}
+                  <div className="w-full lg:w-1/2">
             <div className="relative aspect-square rounded-xl overflow-hidden mb-2">
               <img
                src={`${SERVER_URL}/uploads/${selectedImage}`}
@@ -204,7 +201,7 @@ const ProductDetail = () => {
                 <div
                   key={index}
                    onClick={() => setSelectedImage(img)} 
-                  className="flex-shrink-0 w-15 h-15 sm:w-16 sm:h-16 border rounded-lg overflow-hidden cursor-pointer hover:border-blue-500 transition-colors"
+                  className="flex-shrink-0 w-15 h-15 sm:w-20 sm:h-16  rounded-lg overflow-hidden cursor-pointer hover:border-blue-500 transition-colors"
                 >
                   <img
                     src={`${SERVER_URL}/uploads/${img}`}
@@ -378,107 +375,111 @@ const ProductDetail = () => {
             </div>
 
             {/* Trust Badges */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-center">
-                <div className="flex flex-col items-center p-2 rounded-lg">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-green-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                    Pay on Delivery
-                  </span>
-                </div>
+           <div className="mt-6 pt-6 border-t border-gray-200">
+  <div className="overflow-x-auto pb-2">
+    <div className="flex gap-4 min-w-max lg:grid lg:grid-cols-5 lg:gap-3 lg:min-w-0 text-center">
+      <div className="flex flex-col items-center p-3 rounded-lg min-w-[100px] lg:min-w-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-green-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">
+          Pay on <br /> Delivery
+        </span>
+      </div>
 
-                {/* Secure Transaction - Lock/Security icon */}
-                <div className="flex flex-col items-center p-2 rounded-lg">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-blue-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                    Secure Transaction
-                  </span>
-                </div>
-                <div className="flex flex-col items-center p-2 rounded-lg ">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-purple-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                    100% Authentic
-                  </span>
-                </div>
-                <div className="flex flex-col items-center p-2 rounded-lg ">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-yellow-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                    Best Price
-                  </span>
-                </div>
-                <div className="flex flex-col items-center p-2 rounded-lg  col-span-1 sm:col-span-1 lg:col-span-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-red-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                    />
-                  </svg>
-                  <span className="text-xs sm:text-sm text-gray-700 font-medium">
-                    Free Shipping
-                  </span>
-                </div>
-              </div>
-            </div>
+      <div className="flex flex-col items-center p-3 rounded-lg min-w-[100px] lg:min-w-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-blue-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">
+          Secure <br /> Transaction
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center p-3 rounded-lg min-w-[100px] lg:min-w-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-purple-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">
+          100% Authentic
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center p-3 rounded-lg min-w-[100px] lg:min-w-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-yellow-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">
+          Best Price
+        </span>
+      </div>
+
+      <div className="flex flex-col items-center p-3 rounded-lg min-w-[100px] lg:min-w-0">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 sm:h-6 sm:w-6 mb-1 text-red-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm text-gray-700 font-medium whitespace-nowrap">
+          Free Shipping
+        </span>
+      </div>
+    </div>
+    </div>
+    </div>
           </div>
         </div>
       </div>
