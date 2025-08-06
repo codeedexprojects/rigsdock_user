@@ -27,13 +27,13 @@ import {
   userOrdersAPI,
 } from "../Services/profileAPI";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { addToCartAPI } from "../Services/cartAPI";
 import { getWishlistAPI, removewishlistAPI } from "../Services/wishlistAPI";
 import { useLocation } from "react-router-dom";
 import { getUserReviews } from "../Services/getUserReviewAPI";
 import ChatBox from "../Components/ChatBox";
+import { Toaster, toast } from "react-hot-toast";
+
 
 function UserAccount() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -128,11 +128,10 @@ function UserAccount() {
       } else if (value.length > 6) {
         setZipError("Invalid pincode: Too long");
       } else {
-        setZipError(""); // valid
+        setZipError(""); 
       }
     }
-
-    setNewAddress({ ...newAddress, [name]: value });
+setNewAddress({ ...newAddress, [name]: value });
   };
 
   const location = useLocation();
@@ -287,7 +286,6 @@ function UserAccount() {
         "Error fetching wishlist:",
         error.response?.data || error.message
       );
-      toast.error("Failed to load wishlist");
     }
   };
 
@@ -323,7 +321,6 @@ function UserAccount() {
       setOrders(res?.orders || []);
     } catch (error) {
       console.error("Error fetching orders", error);
-      // toast.error("Failed to fetch orders.");
     }
   };
 
@@ -362,9 +359,6 @@ function UserAccount() {
         .catch(() => toast.error("Failed to load reviews"));
     }
   }, [activeSection]);
-
-  // console.log("orders:", orders);
-
   return (
     <>
       <Header />
@@ -396,10 +390,8 @@ function UserAccount() {
             </div>
           </div>
         </header>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar */}
             <div
               className={`md:w-64 ${
                 isMobileMenuOpen ? "block" : "hidden md:block"
@@ -427,8 +419,6 @@ function UserAccount() {
                 </nav>
               </div>
             </div>
-
-            {/* Main Content */}
             <div className="flex-1">
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 {activeSection === "Dashboard" && (
@@ -529,8 +519,6 @@ function UserAccount() {
                                 </div>
                               </div>
                             </div>
-
-                            {/* Products Section */}
                             <div className="mb-8">
                               <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-xl font-bold text-gray-900">
@@ -551,7 +539,6 @@ function UserAccount() {
                                     className="bg-white border-2 border-gray-100 rounded-xl p-6 hover:border-blue-200 hover:shadow-md transition-all duration-200"
                                   >
                                     <div className="flex flex-col md:flex-row gap-6">
-                                      {/* Product Image */}
                                       <div className="flex-shrink-0">
                                         <div className="w-full md:w-32 h-32 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                                           <img
@@ -561,8 +548,6 @@ function UserAccount() {
                                           />
                                         </div>
                                       </div>
-
-                                      {/* Product Details */}
                                       <div className="flex-1 space-y-3">
                                         <div>
                                           <h4 className="text-lg font-semibold text-gray-900 mb-1">
@@ -575,7 +560,6 @@ function UserAccount() {
                                             </span>
                                           </p>
                                         </div>
-
                                         <div className="flex flex-wrap items-center gap-6">
                                           <div className="flex items-center gap-2">
                                             <span className="text-sm text-gray-600">
@@ -585,17 +569,7 @@ function UserAccount() {
                                               {item.quantity}
                                             </span>
                                           </div>
-                                          {/* <div className="flex items-center gap-2">
-                                            <span className="text-sm text-gray-600">
-                                              Price:
-                                            </span>
-                                            <span className="text-lg font-bold text-gray-900">
-                                              ₹{item.price}
-                                            </span>
-                                          </div> */}
                                         </div>
-
-                                        {/* Action Buttons for Delivered Orders */}
                                         {selectedOrder.orderStatus ===
                                           "Delivered" && (
                                           <div className="flex flex-wrap gap-3 pt-4">
@@ -652,8 +626,6 @@ function UserAccount() {
                                 ))}
                               </div>
                             </div>
-
-                            {/* Shipping Information */}
                             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
                               <div className="flex items-center gap-3 mb-4">
                                 <svg
@@ -752,7 +724,6 @@ function UserAccount() {
                           </div>
                         </div>
                       ) : orders.length === 0 ? (
-                        /* Empty State */
                         <div className="bg-white rounded-xl shadow-lg">
                           <div className="text-center py-16 px-4">
                             <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
@@ -821,7 +792,6 @@ function UserAccount() {
                               </div>
 
                               <div className="p-6">
-                                {/* Order Items Preview */}
                                 <div className="mb-6">
                                   <h4 className="font-semibold text-gray-900 mb-4">
                                     Items ({order.items?.length})
@@ -1364,9 +1334,7 @@ function UserAccount() {
           </div>
         </div>
       </div>
-
-      <ToastContainer position="top-right" autoClose={3000} />
-
+    <Toaster position="top-center" reverseOrder={false} />
       <Footer />
     </>
   );

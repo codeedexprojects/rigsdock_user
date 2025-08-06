@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { addReviews, getUserReviews } from '../Services/getUserReviewAPI';
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Header from '../Components/Header';
+import { Toaster, toast } from 'react-hot-toast';
+
 function AddReview() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -168,8 +168,7 @@ function AddReview() {
       >
         {loading ? "Submitting..." : alreadyReviewed ? "Already Reviewed" : "Submit Review"}
       </button>
-            <ToastContainer position="top-right" autoClose={3000} />
-      
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
     </>
   );

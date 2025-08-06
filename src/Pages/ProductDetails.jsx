@@ -8,11 +8,11 @@ import {
   viewProductsByIdAPI,
 } from "../Services/allAPIs";
 import { addToWishlistAPI } from "../Services/wishlistAPI";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { addToCartAPI } from "../Services/cartAPI";
 import { buyNowAPI } from "../Services/buynowAPI";
 import ChatBox from "../Components/ChatBox";
+import { Toaster, toast } from "react-hot-toast";
+
 
 const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState("description");
@@ -52,7 +52,7 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error("Add to wishlist failed", error);
-      toast.error("Something went wrong while adding to wishlist");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -116,7 +116,7 @@ const ProductDetail = () => {
         key={i}
         size={16}
         className={`${
-          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
+          i < 3 ? "text-yellow-400 fill-current" : "text-gray-300"
         }`}
       />
     ));
@@ -227,9 +227,7 @@ const ProductDetail = () => {
               {/* Rating */}
               <div className="flex items-center gap-2 mb-3">
                 <div className="flex">{renderStars(averageRating)}</div>
-                <span className="text-sm text-gray-500">
-                  ({product.reviews?.length || 0} reviews)
-                </span>
+             
               </div>
             </div>
 
@@ -759,7 +757,7 @@ const ProductDetail = () => {
           )}
         </div>
 
-        <ToastContainer position="top-right" autoClose={3000} />
+      <Toaster position="top-center" reverseOrder={false} />
       </div>
 
       <Footer />

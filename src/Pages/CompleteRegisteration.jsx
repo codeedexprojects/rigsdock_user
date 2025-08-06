@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { completeRegistrationAPI } from '../Services/authAPI';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 function CompleteRegisteration() {
   const { state } = useLocation();
@@ -100,6 +101,7 @@ function CompleteRegisteration() {
           </div>
         </form>
       </div>
+     <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 }

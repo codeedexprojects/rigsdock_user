@@ -57,7 +57,7 @@ function Checkout() {
     fetchAddressesAndCart();
   }, []);
 
-const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async () => {
     const userId = localStorage.getItem("userId");
     if (!userId) {
       toast.error("Please log in to place an order.");
@@ -68,7 +68,6 @@ const handlePlaceOrder = async () => {
       toast.warn("Please select a delivery address.");
       return;
     }
-
 
     try {
       const orderData = {
@@ -89,11 +88,10 @@ const handlePlaceOrder = async () => {
           localStorage.setItem(
             "pendingPhonePeOrder",
             JSON.stringify({
-              orderId: response.mainOrderId, // Changed from mainOrderId to orderId
+              orderId: response.mainOrderId,
               timestamp: new Date().getTime(),
             })
           );
-          // Update redirect URL to use order_id
           window.location.href = `${response.paymentUrl}&orderId=${response.mainOrderId}`;
         } else {
           throw new Error("Payment URL not received from server");
@@ -102,12 +100,11 @@ const handlePlaceOrder = async () => {
     } catch (error) {
       console.error("Order placement error:", error);
       toast.error(
-        error.response?.data?.message || 
-        "Failed to place order. Please try again."
+        error.response?.data?.message ||
+          "Failed to place order. Please try again."
       );
-    } 
+    }
   };
-  
 
   const location = useLocation();
 
@@ -122,302 +119,336 @@ const handlePlaceOrder = async () => {
       <Header />
       <div className="bg-white shadow-sm mt-30"></div>
 
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Side - Billing Details */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Billing details
-                </h2>
+      <div className="min-h-screen bg-gray-50">
+        <div className="w-full px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col lg:grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+                    Billing details
+                  </h2>
 
-                {addresses.length > 0 ? (
-                  <ul className="space-y-4">
-                    {addresses.map((address) => (
-                      <li
-                        key={address._id}
-                        className="p-4 border rounded-md flex items-center"
-                      >
-                        {/* Radio button to select this address */}
-                        <input
-                          type="radio"
-                          name="selectedAddress"
-                          value={address._id}
-                          checked={selectedAddress === address._id}
-                          onChange={() => setSelectedAddress(address._id)}
-                          className="mr-4 text-blue-600"
-                        />
-
-                        {/* Display address details */}
-                        <div>
-                          <p>
-                            {address?.firstName} {address?.lastName}
-                          </p>
-                          <p>
-                            {address?.addressLine1}, {address?.addressLine2}
-                          </p>
-                          <p>
-                            {address?.city}, {address?.state},{" "}
-                            {address?.zipCode}
-                          </p>
-                          <p>Phone: {address?.phone}</p>
-                          <p>Address Type: {address?.addressType}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No Addresses</p>
-                )}
-              </div>
-
-              {/* Ship to Different Address */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    id="different-address"
-                    onChange={handleNavigate}
-                    className="mr-3 h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
-                  />
-                  <label
-                    htmlFor="different-address"
-                    className="text-sm font-medium text-gray-700 cursor-pointer"
-                  >
-                    Ship to a different address?
-                  </label>
-                </div>
-                {shipToDifferentAddress && (
-                  <div className="space-y-4 border-t pt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          First Name *
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="John"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Last Name *
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Doe"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Street Address 1 *
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2"
-                        placeholder="House number and street name"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Town / City *
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="City"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          State *
-                        </label>
-                        <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                          <option value="">Select State</option>
-                          <option value="kerala">Kerala</option>
-                          <option value="tamil-nadu">Tamil Nadu</option>
-                          <option value="karnataka">Karnataka</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          PIN Code *
-                        </label>
-                        <input
-                          type="text"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="682024"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Address Type
-                      </label>
-                      <div className="flex space-x-4">
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="shippingAddressType"
-                            value="home"
-                            className="mr-2 text-blue-600"
-                            defaultChecked
-                          />
-                          <span className="text-sm text-gray-700">Home</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="radio"
-                            name="shippingAddressType"
-                            value="office"
-                            className="mr-2 text-blue-600"
-                          />
-                          <span className="text-sm text-gray-700">Office</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Right Side - Order Summary & Payment */}
-            <div className="space-y-6">
-              {/* Order Summary */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Your Order
-                </h2>
-
-                {/* Product List */}
-                {checkoutData.items.length > 0 ? (
-                  <>
-                    <ul className="space-y-4 mb-6">
-                      {checkoutData.items.map((item) => (
-                        <li
-                          key={item._id}
-                          className="p-4 border rounded-md flex items-center"
+                  {addresses.length > 0 ? (
+                    <div className="space-y-3 sm:space-y-4">
+                      {addresses.map((address) => (
+                        <div
+                          key={address._id}
+                          className="p-3 sm:p-4 border rounded-md"
                         >
-                          <img
-                            src={`https://rigsdock.com/uploads/${item.product.images[0]}`}
-                            alt={item.product.name}
-                            className="w-16 h-16 mr-4 object-cover rounded-md"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium truncate w-full max-w-[300px]">{item.product.name.slice(0,40)}</p>
-                            <div className="text-blue-600 text-sm">
-                              <p>Qty: {item.quantity}</p>
-                              <p>Price: ₹{item.price}</p>
-                              {item.product.brand && (
-                                <p>Brand: {item.product.brand}</p>
-                              )}
+                          <div className="flex items-start space-x-3">
+                            <input
+                              type="radio"
+                              name="selectedAddress"
+                              value={address._id}
+                              checked={selectedAddress === address._id}
+                              onChange={() => setSelectedAddress(address._id)}
+                              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900 text-sm sm:text-base">
+                                {address?.firstName} {address?.lastName}
+                              </p>
+                              <p className="text-gray-600 text-sm break-words mt-1">
+                                {address?.addressLine1}, {address?.addressLine2}
+                              </p>
+                              <p className="text-gray-600 text-sm mt-1">
+                                {address?.city}, {address?.state},{" "}
+                                {address?.zipCode}
+                              </p>
+                              <p className="text-gray-600 text-sm mt-1">
+                                Phone: {address?.phone}
+                              </p>
+                              <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                {address?.addressType}
+                              </span>
                             </div>
                           </div>
-                         
-                        </li>
+                        </div>
                       ))}
-                    </ul>
-
-                    {/* Order Totals */}
-                    {/* Subtotal (before discount) */}
-
-                    {/* Discount from coupon */}
-                    {checkoutData.appliedCoupon?.couponCode &&
-                    checkoutData.appliedCoupon.discountAmount > 0 ? (
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-600">
-                          Coupon ({checkoutData.appliedCoupon.couponCode})
-                        </span>
-                        <span className="text-green-600 font-medium">
-                          -₹
-                          {checkoutData.appliedCoupon.discountAmount.toFixed(2)}
-                        </span>
-                      </div>
-                    ) : null}
-
-                    {/* Final total */}
-                    <div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
-                      <span>Total</span>
-                      <span className="text-blue-600">
-                        ₹{checkoutData.totalPrice.toFixed(2)}
-                      </span>
                     </div>
-                  </>
-                ) : (
-                  <p>Your order is empty</p>
-                )}
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 mb-4">
+                        No Addresses Available
+                      </p>
+                      <button
+                        onClick={handleNavigate}
+                        className="text-blue-600 underline text-sm"
+                      >
+                        Add New Address
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center mb-4">
+                    <input
+                      type="checkbox"
+                      id="different-address"
+                      onChange={handleNavigate}
+                      className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 flex-shrink-0"
+                    />
+                    <label
+                      htmlFor="different-address"
+                      className="ml-3 text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      Ship to a different address?
+                    </label>
+                  </div>
+
+                  {shipToDifferentAddress && (
+                    <div className="space-y-4 border-t pt-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            First Name *
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="John"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Last Name *
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Doe"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Street Address 1 *
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="House number and street name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Town / City *
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="City"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            State *
+                          </label>
+                          <select className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select State</option>
+                            <option value="kerala">Kerala</option>
+                            <option value="tamil-nadu">Tamil Nadu</option>
+                            <option value="karnataka">Karnataka</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            PIN Code *
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="682024"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Address Type
+                        </label>
+                        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="shippingAddressType"
+                              value="home"
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                              defaultChecked
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              Home
+                            </span>
+                          </label>
+                          <label className="flex items-center">
+                            <input
+                              type="radio"
+                              name="shippingAddressType"
+                              value="office"
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              Office
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+              <div className="space-y-4 sm:space-y-6">
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+                    Your Order
+                  </h2>
 
-              {/* Payment Methods */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Payment Method
-                </h3>
+                  {checkoutData.items.length > 0 ? (
+                    <>
+                      <div className="space-y-3 sm:space-y-4 mb-6">
+                        {checkoutData.items.map((item) => (
+                          <div
+                            key={item._id}
+                            className="p-3 sm:p-4 border rounded-md"
+                          >
+                            <div className="flex items-start space-x-3 sm:space-x-4">
+                              <img
+                                src={`https://rigsdock.com/uploads/${item.product.images[0]}`}
+                                alt={item.product.name}
+                                className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                  e.target.nextSibling.style.display = "flex";
+                                }}
+                              />
+                              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-200 rounded-md flex-shrink-0 items-center justify-center hidden">
+                                <span className="text-xs text-gray-500">
+                                  Image
+                                </span>
+                              </div>
 
-                <div className="space-y-3">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 text-sm sm:text-base leading-tight">
+                                  {item.product.name.length > 50
+                                    ? `${item.product.name.slice(0, 50)}...`
+                                    : item.product.name}
+                                </p>
+                                <div className="mt-2 text-blue-600 text-sm space-y-1">
+                                  <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                    <span>Qty: {item.quantity}</span>
+                                    <span>₹{item.price}</span>
+                                    {item.product.brand && (
+                                      <span className="text-gray-500">
+                                        Brand: {item.product.brand}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t pt-4 space-y-2">
+                        {checkoutData.appliedCoupon?.couponCode &&
+                          checkoutData.appliedCoupon.discountAmount > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 text-sm">
+                                Coupon ({checkoutData.appliedCoupon.couponCode})
+                              </span>
+                              <span className="text-green-600 font-medium text-sm">
+                                -₹
+                                {checkoutData.appliedCoupon.discountAmount.toFixed(
+                                  2
+                                )}
+                              </span>
+                            </div>
+                          )}
 
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="PhonePe"
-                      checked={selectedPayment === "PhonePe"}
-                      onChange={(e) => setSelectedPayment(e.target.value)}
-                      className="mr-3 text-blue-600"
-                    />
-                    <span className="font-medium text-gray-900">UPI</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="COD"
-                      checked={selectedPayment === "COD"}
-                      onChange={(e) => setSelectedPayment(e.target.value)}
-                      className="mr-3 text-blue-600"
-                    />
-                    <span className="font-medium text-gray-900">
-                      Cash on delivery
-                    </span>
-                  </label>
-
-                  
+                        <div className="flex justify-between items-center text-lg font-bold pt-2 ">
+                          <span>Total</span>
+                          <span className="text-blue-600">
+                            ₹{checkoutData.totalPrice.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Your order is empty</p>
+                    </div>
+                  )}
                 </div>
-                <div className="ml-6 p-4 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-600">
-                    Your personal data will be used to process your order,
-                    support your experience throughout this website, and for
-                    other purposes described in our{" "}
-                    <Link to="/about">
-                      <span className="text-blue-700 underline">
-                        privacy policy.
+                <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Payment Method
+                  </h3>
+
+                  <div className="space-y-3 mb-4">
+                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="PhonePe"
+                        checked={selectedPayment === "PhonePe"}
+                        onChange={(e) => setSelectedPayment(e.target.value)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-3 font-medium text-gray-900">
+                        UPI
                       </span>
-                    </Link>{" "}
-                  </p>
-                </div>
+                    </label>
 
-                <div className="mt-6">
-                  <button
-                    onClick={handlePlaceOrder}
-                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                  >
-                    Place Order
-                  </button>
+                    <label className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="COD"
+                        checked={selectedPayment === "COD"}
+                        onChange={(e) => setSelectedPayment(e.target.value)}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="ml-3 font-medium text-gray-900">
+                        Cash on delivery
+                      </span>
+                    </label>
+                  </div>
+                  {/* Privacy Policy Notice */}
+                  <div className="p-3 sm:p-4 bg-gray-50 rounded-md mb-6">
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      Your personal data will be used to process your order,
+                      support your experience throughout this website, and for
+                      other purposes described in our{" "}
+                      <Link to="/about">
+                        <span className="text-blue-700 underline">
+                          privacy policy.
+                        </span>
+                      </Link>
+                    </p>
+                  </div>
+                  <div className="sticky bottom-0 sm:static bg-white pt-4 sm:pt-0">
+                    <button
+                      onClick={handlePlaceOrder}
+                      className="w-full bg-blue-600 text-white py-3 sm:py-4 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-base sm:text-lg transition-colors duration-200 shadow-lg sm:shadow-none"
+                    >
+                      Place Order
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          className="mt-16 sm:mt-0"
+        />
       </div>
       <Footer />
     </>

@@ -11,19 +11,15 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router-dom";
 import { getAllProducts, getBrandAPI } from "../Services/allAPIs";
-import { addToCartAPI } from "../Services/cartAPI";
 import { addToWishlistAPI, getWishlistAPI } from "../Services/wishlistAPI";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   filterByBrandAPI,
   filterByPriceAPI,
   filterByyRatingAPI,
 } from "../Services/filterAPI";
-import axios from "axios";
-import { BASE_URL } from "../Services/baseUrl";
 import ChatBox from "../Components/ChatBox";
 import { ListFilter } from "lucide-react";
+import { Toaster, toast } from "react-hot-toast";
 
 
 function Shop() {
@@ -38,7 +34,7 @@ function Shop() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15; // Increased to show more products (3 rows × 5 products)
+  const itemsPerPage = 15; 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -62,7 +58,7 @@ useEffect(() => {
 
     try {
       const products = await getWishlistAPI(userId);
-      const wishlistProductIds = products.map(item => item._id); // assuming _id is productId
+      const wishlistProductIds = products.map(item => item._id); 
       setWishlistItems(wishlistProductIds);
     } catch (err) {
       console.error("Error fetching wishlist", err);
@@ -83,7 +79,6 @@ useEffect(() => {
       console.log("eroorr", result);
 
       setAllProducts(result.products || []);
-      // toast.success("Product filtered by Price");
       setShowMobileFilters(false);
     } catch (error) {
       toast.success("price filter error", error);
@@ -101,7 +96,6 @@ useEffect(() => {
       try {
         const allProducts = await getAllProducts();
         setAllProducts(allProducts);
-        // toast.info("Rating filter cleared");
       } catch (error) {
         toast.error("Failed to reset products");
       }
@@ -113,7 +107,6 @@ useEffect(() => {
     try {
       const response = await filterByyRatingAPI(minRating, maxRate);
       setAllProducts(response.products || []);
-      // toast.success(`Filtered products with rating ${rating} & up`);
     } catch (error) {
       toast.error("Failed to filter by rating");
 
@@ -402,9 +395,7 @@ const handleAddToWishlist = async (productId, e) => {
       <div className="min-h-screen">
         <div className="max-w-full px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col-reverse lg:flex-row gap-8">
-            {/* Left Sidebar - Filters */}
             <div className="hidden lg:block w-full lg:w-64 space-y-6">
-              {/* Filter by Brand */}
               <div className="bg-white rounded-lg p-4">
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -438,8 +429,6 @@ const handleAddToWishlist = async (productId, e) => {
                   </div>
                 )}
               </div>
-
-              {/* Filter by Price */}
               <div className="bg-white rounded-lg p-4">
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -479,8 +468,6 @@ const handleAddToWishlist = async (productId, e) => {
                   </div>
                 )}
               </div>
-
-              {/* Filter by Ratings */}
               <div className="bg-white rounded-lg p-4">
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -529,10 +516,7 @@ const handleAddToWishlist = async (productId, e) => {
                 )}
               </div>
             </div>
-
-            {/* Right Side - Products */}
             <div className="flex-1">
-              {/* Adjusted grid to show fewer products per row for better image display */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5">
                 {paginatedProducts.map((product) => (
                   <ProductCard
@@ -552,8 +536,6 @@ const handleAddToWishlist = async (productId, e) => {
                   />
                 ))}
               </div>
-
-              {/* Improved pagination styling */}
               <div className="flex justify-center items-center mt-8 space-x-2">
                 <button
                   className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -580,7 +562,6 @@ const handleAddToWishlist = async (productId, e) => {
                     </button>
                   ))}
                 </div>
-
                 <button
                   className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() =>
@@ -594,7 +575,7 @@ const handleAddToWishlist = async (productId, e) => {
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} />
+         <Toaster position="top-center" reverseOrder={false} />
       </div>
       <Footer />
     </>

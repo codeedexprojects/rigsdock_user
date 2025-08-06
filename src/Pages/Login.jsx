@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { sendOTPAPI } from '../Services/authAPI';
-import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Smartphone } from 'lucide-react';
+import { Toaster, toast } from 'react-hot-toast';
+
 
 function Login() {
 
@@ -19,7 +20,7 @@ function Login() {
   
  const handleSendOTP = async () => {
   if (!identifier) {
-    toast.warning("Please enter your email or phone number.");
+    toast.error("Please enter your email or phone number.");
     return;
   }
 
@@ -85,7 +86,7 @@ function Login() {
                 id="contact"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="example@mail.com or 9876543210"
+                placeholder="Enter your Phone or Mail"
                 className="w-full pl-12 pr-4 py-4 border-2 border-blue-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/50 text-blue-900 placeholder-blue-400"
               />
             </div>
@@ -118,18 +119,13 @@ function Login() {
           </div>
         </div>
 
-        {/* Decorative Background Elements */}
         <div className="absolute top-10 left-10 w-20 h-20 bg-blue-200/30 rounded-full blur-xl"></div>
         <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-300/20 rounded-full blur-2xl"></div>
         <div className="absolute top-1/2 left-0 w-16 h-16 bg-blue-400/20 rounded-full blur-lg"></div>
       </div>
       
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000}
-        className="mt-16"
-        toastClassName="bg-white border border-blue-200 text-blue-800"
-      />
+             <Toaster position="top-center" reverseOrder={false} />
+    
     </div>
    
   )

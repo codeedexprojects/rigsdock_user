@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
 import Header from "../Components/Header";
 import { cancelOrderAPI } from "../Services/orderconfirm";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster, toast } from "react-hot-toast";
 
 
 function CancelOrder() {
@@ -14,7 +13,7 @@ function CancelOrder() {
 
 const handleCancel = async () => {
   if (!reason.trim()) {
-    toast.warning("Please enter a reason");
+    toast.error("Please enter a reason");
     return;
   }
 
@@ -58,8 +57,7 @@ return (
         </div>
       </div>
     </div>
-    <ToastContainer position="top-right" autoClose={3000} />
-
+   <Toaster position="top-right" reverseOrder={false} />
     </>
   )
 }

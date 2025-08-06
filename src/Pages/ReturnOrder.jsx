@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { returnOrderAPI } from '../Services/orderconfirm';
 import Header from '../Components/Header';
+import { Toaster, toast } from 'react-hot-toast';
 const BASE_URL = "https://rigsdock.com";
+
 function ReturnOrder() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -127,7 +127,7 @@ setTimeout(() => {
           Submit Complaint
         </button>
       </form>
-      <ToastContainer position="top-right" autoClose={3000} />
+     <Toaster position="top-center" reverseOrder={false} />
     </div>
     </>
   );

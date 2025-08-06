@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { X, Lock } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyOTPAPI } from "../Services/authAPI";
+import { Toaster, toast } from "react-hot-toast";
 
 function Otp() {
   const location = useLocation();
   const { identifier } = location.state || {};
-  const identifierType = identifier?.includes('@') ? 'email' : 'phone';
-  
+  const identifierType = identifier?.includes("@") ? "email" : "phone";
+
   const [otpDigits, setOtpDigits] = useState(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
   const [otpError, setOtpError] = useState(false);
@@ -27,43 +27,38 @@ function Otp() {
     setOtpDigits(updated);
     setOtpError(false);
 
-    // Move to next input if value is entered and not the last input
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === 'Backspace') {
+    if (e.key === "Backspace") {
       e.preventDefault();
-      
+
       const updated = [...otpDigits];
-      
+
       if (updated[index]) {
         updated[index] = "";
         setOtpDigits(updated);
         setOtpError(false);
-      } 
-      else if (index > 0) {
+      } else if (index > 0) {
         updated[index - 1] = "";
         setOtpDigits(updated);
         setOtpError(false);
         document.getElementById(`otp-${index - 1}`)?.focus();
       }
-    }
-    else if (e.key === 'ArrowLeft' && index > 0) {
+    } else if (e.key === "ArrowLeft" && index > 0) {
       document.getElementById(`otp-${index - 1}`)?.focus();
-    }
-    else if (e.key === 'ArrowRight' && index < 5) {
+    } else if (e.key === "ArrowRight" && index < 5) {
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text').slice(0, 6);
-    
-    // Check if pasted data contains only numbers
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
+
     if (!/^\d+$/.test(pastedData)) {
       toast.error("Only numbers are allowed in OTP");
       return;
@@ -76,7 +71,6 @@ function Otp() {
     setOtpDigits(updated);
     setOtpError(false);
 
-    // Focus on the next empty field or the last field
     const nextIndex = Math.min(pastedData.length, 5);
     document.getElementById(`otp-${nextIndex}`)?.focus();
   };
@@ -113,8 +107,7 @@ function Otp() {
           },
         });
       } else {
-     
-        navigate("/"); 
+        navigate("/");
       }
     } catch (error) {
       setOtpError(true);
@@ -125,7 +118,7 @@ function Otp() {
   };
 
   return (
-   <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 ">
+    <div className="min-h-screen bg-blue-100 backdrop-blur-md flex items-center justify-center p-4 ">
       <div className="bg-white w-full max-w-sm rounded-xl shadow-xl p-6 relative space-y-6 text-center">
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-black"
@@ -142,7 +135,9 @@ function Otp() {
 
         <h3 className="text-xl font-semibold text-gray-800">Enter OTP</h3>
         {identifier && (
-          <p className="text-sm text-gray-500">Sent to <strong>{identifier}</strong></p>
+          <p className="text-sm text-gray-500">
+            Sent to <strong>{identifier}</strong>
+          </p>
         )}
 
         <div className="flex justify-center gap-3">
@@ -157,10 +152,10 @@ function Otp() {
               onKeyDown={(e) => handleKeyDown(e, i)}
               onPaste={handlePaste}
               className={`w-12 h-14 text-center text-xl font-semibold border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 ${
-                otpError 
-                  ? "border-red-500 focus:ring-red-500 bg-red-50" 
-                  : digit 
-                  ? " bg-blue-800 text-white  shadow-md" 
+                otpError
+                  ? "border-red-500 focus:ring-red-500 bg-red-50"
+                  : digit
+                  ? " bg-blue-800 text-white  shadow-md"
                   : "border-gray-300 bg-gray-50 focus:ring-cyan-500 hover:border-gray-400"
               }`}
             />
@@ -168,7 +163,9 @@ function Otp() {
         </div>
 
         {otpError && (
-          <p className="text-red-500 text-sm mt-2">Invalid OTP. Please try again.</p>
+          <p className="text-red-500 text-sm mt-2">
+            Invalid OTP. Please try again.
+          </p>
         )}
 
         <button
@@ -179,7 +176,7 @@ function Otp() {
           {loading ? "Verifying..." : "CONTINUE"}
         </button>
       </div>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }

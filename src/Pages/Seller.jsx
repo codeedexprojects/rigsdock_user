@@ -14,8 +14,9 @@ import Header from "../Components/Header";
 //   verifygst,
 //   verifypan,
 // } from "../Services/sellerAPI";
-import { ToastContainer, toast } from "react-toastify";
 import { vendorRegisterAPI } from "../Services/sellerAPI";
+import { Toaster, toast } from "react-hot-toast";
+
 
 
 function Seller() {
@@ -132,28 +133,22 @@ const [formData, setFormData] = useState({
     toast.error("Please upload all required documents.");
     return;
   }
-
-
-  try {
+ try {
     const formDataToSend = new FormData();
-
-    // Append fields
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "workingDays" && Array.isArray(value)) {
         value.forEach((day) => {
-          formDataToSend.append("workingDays", day); // ✅ correct array format
+          formDataToSend.append("workingDays", day); 
         });
       } else {
         formDataToSend.append(key, value);
       }
     });
 
-    // Append files
     Object.entries(uploadedFiles).forEach(([key, file]) => {
       if (file) formDataToSend.append(key, file);
     });
 
-    // Optional: debug what you're sending
     for (let pair of formDataToSend.entries()) {
       console.log(pair[0] + ":", pair[1]);
     }
@@ -295,7 +290,6 @@ const handleIfscVerify = async () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-4 sm:py-8 px-3 mt-30 sm:px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg sm:rounded-2xl shadow-xl overflow-hidden">
-            {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-8 py-4 sm:py-6">
               <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                 Become a Seller
@@ -306,7 +300,6 @@ const handleIfscVerify = async () => {
             </div>
 
             <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
-              {/* User Details Section */}
               <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
                 <div className="flex items-center mb-4 sm:mb-6">
                   <User className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
@@ -422,7 +415,6 @@ const handleIfscVerify = async () => {
                 </div>
               </div>
 
-              {/* Business Details Section */}
               <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
                 <div className="flex items-center mb-4 sm:mb-6">
                   <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
@@ -490,7 +482,7 @@ const handleIfscVerify = async () => {
                     </label>
                     <input
                       type="text"
-                      value={formData.storetype || ""} // Add to initial state if needed
+                      value={formData.storetype || ""} 
                       onChange={(e) =>
                         setFormData({ ...formData, storetype: e.target.value })
                       }
@@ -547,8 +539,6 @@ const handleIfscVerify = async () => {
                   </div>
                 </div>
               </div>
-
-              {/* Bank Details Section */}
               <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
                 <div className="flex items-center mb-4 sm:mb-6">
                   <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
@@ -593,15 +583,6 @@ const handleIfscVerify = async () => {
                         className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                         required
                       />
-                      {/* <button
-                        onClick={() =>
-                          handleIfscVerify("IFSC", formData.ifscCode)
-                        }
-                        type="button"
-                        className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
-                      >
-                        Verify IFSC
-                      </button> */}
                     </div>
                   </div>
 
@@ -622,17 +603,8 @@ const handleIfscVerify = async () => {
       className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
       required
     />
-    {/* <button
-      onClick={handlePanVerify}
-      type="button"
-      className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
-    >
-      Verify PAN
-    </button> */}
   </div>
 </div>
-
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       GST Number*
@@ -650,19 +622,10 @@ const handleIfscVerify = async () => {
                         className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base"
                         required
                       />
-                      {/* <button
-                        onClick={handleGstVerify}
-                        type="button"
-                        className="px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 text-gray-50 font-semibold rounded-r-lg hover:bg-blue-600 transition-all"
-                      >
-                        Verify GST
-                      </button> */}
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* opening - closing  */}
               <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
                 <div className="flex items-center mb-4 sm:mb-6">
                   <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
@@ -670,9 +633,7 @@ const handleIfscVerify = async () => {
                     Opening & Closing Time
                   </h2>
                 </div>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {/* Opening Time */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Opening Time
@@ -900,7 +861,7 @@ const handleIfscVerify = async () => {
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} />
+       <Toaster position="top-center" reverseOrder={false} />
       </div>
     </>
   );

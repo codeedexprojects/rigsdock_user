@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { X, Plus, Minus, Heart, RefreshCw, Gift } from "lucide-react";
+import { X, Plus, Minus } from "lucide-react";
 import { Star } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -14,24 +14,21 @@ import {
   updateCartQuantityAPI,
   viewcartAPI,
 } from "../Services/cartAPI";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import ChatBox from "../Components/ChatBox";
+import { Toaster, toast } from "react-hot-toast";
+
 
 function Cart() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
   const [platformFee, setPlatformFee] = useState(0);
-
   const [cartCountNumber, setCartCountNumber] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const navigate = useNavigate();
-  const [selectedShipping, setSelectedShipping] = useState("free");
 
   useEffect(() => {
     fetchCartItems();
@@ -39,44 +36,44 @@ function Cart() {
     fetchAvailableCoupons();
   }, []);
 
-const fetchCartItems = async () => {
-  try {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      toast.error("Please login to view cart.");
+  const fetchCartItems = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        toast.error("Please login to view cart.");
+        setLoading(false);
+        return;
+      }
+
+      const res = await viewcartAPI(userId);
+      const items = res.cart?.items || [];
+
+      setCartItems(
+        items.map((item) => ({
+          id: item._id,
+          productId: item.product._id,
+          name: item.product.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.product.images?.[0]
+            ? `https://rigsdock.com/uploads/${item.product.images[0]}`
+            : "https://via.placeholder.com/150",
+        }))
+      );
+
+      setTotalPrice(res.totalPrice || 0);
+      setPlatformFee(res.platformFee || 0);
+
+      // Update this line to get appliedCoupon from the response
+      setAppliedCoupon(res.appliedCoupon || res.cart?.coupon || null);
+
       setLoading(false);
-      return;
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load cart.");
+      setLoading(false);
     }
-
-    const res = await viewcartAPI(userId);
-    const items = res.cart?.items || [];
-
-    setCartItems(
-      items.map((item) => ({
-        id: item._id,
-        productId: item.product._id,
-        name: item.product.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.product.images?.[0]
-          ? `https://rigsdock.com/uploads/${item.product.images[0]}`
-          : "https://via.placeholder.com/150",
-      }))
-    );
-
-    setTotalPrice(res.totalPrice || 0);
-    setPlatformFee(res.platformFee || 0);
-    
-    // Update this line to get appliedCoupon from the response
-    setAppliedCoupon(res.appliedCoupon || res.cart?.coupon || null);
-    
-    setLoading(false);
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to load cart.");
-    setLoading(false);
-  }
-};
+  };
 
   const removeItem = async (id, productId) => {
     try {
@@ -288,7 +285,7 @@ const fetchCartItems = async () => {
       />
     ));
   };
-  
+
   const total = totalPrice;
   const userId = localStorage.getItem("userId");
 
@@ -390,12 +387,9 @@ const fetchCartItems = async () => {
       <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-8 mt-30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full">
-            {/* Header */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 sm:mb-8">
               Cart Summary
             </h1>
-
-            {/* Coupon Banner */}
             {availableCoupons.length > 0 &&
               availableCoupons
                 .filter((c) => c.status === "active")
@@ -425,23 +419,18 @@ const fetchCartItems = async () => {
                 ))}
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
-              {/* Cart Items Section */}
               <div className="xl:col-span-2 space-y-4 sm:space-y-6">
-                {/* Product Table Header - Hidden on mobile and tablet */}
                 <div className="hidden lg:grid grid-cols-12 gap-4 bg-white p-4 rounded-lg shadow-sm font-semibold text-gray-700 text-sm xl:text-base">
                   <div className="col-span-5">Product</div>
                   <div className="col-span-2 text-center">Price</div>
                   <div className="col-span-3 text-center">Quantity</div>
                   <div className="col-span-2 text-center">Subtotal</div>
                 </div>
-
-                {/* Cart Items */}
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
                     className="bg-white p-3 sm:p-4 rounded-lg shadow-sm"
                   >
-                    {/* Mobile & Tablet Layout */}
                     <div className="lg:hidden">
                       <div className="flex items-start gap-3 sm:gap-4 mb-4">
                         <button
@@ -453,7 +442,7 @@ const fetchCartItems = async () => {
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
+                          className="w-20 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-gray-800 mb-2 text-sm sm:text-base line-clamp-2">
@@ -469,7 +458,6 @@ const fetchCartItems = async () => {
                           )}
                         </div>
                       </div>
-
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <button
@@ -505,8 +493,6 @@ const fetchCartItems = async () => {
                         </p>
                       </div>
                     </div>
-
-                    {/* Desktop Layout */}
                     <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
                       <div className="col-span-5 flex items-center gap-4">
                         <button
@@ -524,13 +510,11 @@ const fetchCartItems = async () => {
                           {item.name}
                         </h3>
                       </div>
-
                       <div className="col-span-2 text-center">
                         <span className="text-blue-600 font-semibold text-base xl:text-lg">
                           ₹{item.price}
                         </span>
                       </div>
-
                       <div className="col-span-3 flex items-center justify-center gap-3">
                         <button
                           onClick={() =>
@@ -552,7 +536,6 @@ const fetchCartItems = async () => {
                           <Plus size={16} />
                         </button>
                       </div>
-
                       <div className="col-span-2 text-center">
                         <span className="text-blue-600 font-semibold text-base xl:text-lg">
                           ₹{item.price * item.quantity}
@@ -561,11 +544,8 @@ const fetchCartItems = async () => {
                     </div>
                   </div>
                 ))}
-
-                {/* Coupon Section */}
                 <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
                   <div className="flex flex-col gap-3 sm:gap-4">
-                    {/* Coupon Input Row */}
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                       <input
                         type="text"
@@ -575,7 +555,6 @@ const fetchCartItems = async () => {
                         disabled={!!appliedCoupon}
                         className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base disabled:bg-gray-100"
                       />
-
                       {!appliedCoupon ? (
                         <button
                           onClick={applyCoupon}
@@ -592,8 +571,6 @@ const fetchCartItems = async () => {
                         </button>
                       )}
                     </div>
-
-                    {/* Shop More Button */}
                     <div className="flex justify-center sm:justify-start">
                       <Link
                         to="/shop"
@@ -612,76 +589,72 @@ const fetchCartItems = async () => {
                   </div>
                 </div>
               </div>
+              <div className="xl:col-span-1">
+                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm sticky top-4 sm:top-8">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                    Cart Summary
+                  </h2>
+                  <p className="text-gray-600 text-sm mb-4 sm:mb-6">
+                    Total items: {cartCountNumber}
+                  </p>
 
-              {/* Cart Totals Section */}
-             <div className="xl:col-span-1">
-  <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm sticky top-4 sm:top-8">
-    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-      Cart Summary
-    </h2>
-    <p className="text-gray-600 text-sm mb-4 sm:mb-6">
-      Total items: {cartCountNumber}
-    </p>
+                  <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm sm:text-base">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="text-blue-600 font-medium">
+                          ₹
+                          {cartItems.reduce(
+                            (sum, item) => sum + item.price * item.quantity,
+                            0
+                          )}
+                        </span>
+                      </div>
 
-    <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm sm:text-base">
-          <span className="text-gray-600">Subtotal</span>
-          <span className="text-blue-600 font-medium">
-            ₹{cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)}
-          </span>
-        </div>
-        
-        <div className="flex justify-between text-sm sm:text-base">
-          <span className="text-gray-600">Platform Fee</span>
-          <span className="text-blue-600 font-medium">
-            ₹{platformFee}
-          </span>
-        </div>
-        
-        <div className="flex justify-between text-sm sm:text-base">
-          <span className="text-gray-600">Shipping</span>
-          <span className="text-green-600 font-medium">Free</span>
-        </div>
-        
-        {/* Show coupon discount when applied */}
-        {appliedCoupon && (
-          <div className="flex justify-between text-sm sm:text-base">
-            <span className="text-gray-600">Coupon Discount </span>
-            <span className="text-green-600 font-medium">
-              -₹{appliedCoupon.discountAmount}
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
+                      <div className="flex justify-between text-sm sm:text-base">
+                        <span className="text-gray-600">Platform Fee</span>
+                        <span className="text-blue-600 font-medium">
+                          ₹{platformFee}
+                        </span>
+                      </div>
 
-    <div className="border-t pt-4 mb-6">
-      <div className="flex justify-between text-lg sm:text-xl font-bold">
-        <span>Total</span>
-        <span className="text-blue-600">₹{totalPrice}</span>
-      </div>
-    </div>
+                      <div className="flex justify-between text-sm sm:text-base">
+                        <span className="text-gray-600">Shipping</span>
+                        <span className="text-green-600 font-medium">Free</span>
+                      </div>
+                      {appliedCoupon && (
+                        <div className="flex justify-between text-sm sm:text-base">
+                          <span className="text-gray-600">
+                            Coupon Discount{" "}
+                          </span>
+                          <span className="text-green-600 font-medium">
+                            -₹{appliedCoupon.discountAmount}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-    <button
-      onClick={handleCheckout}
-      className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
-    >
-      Proceed To Checkout
-    </button>
-  </div>
-</div>
+                  <div className="border-t pt-4 mb-6">
+                    <div className="flex justify-between text-lg sm:text-xl font-bold">
+                      <span>Total</span>
+                      <span className="text-blue-600">₹{totalPrice}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
+                  >
+                    Proceed To Checkout
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000}
-        className="mt-16 sm:mt-20"
-      />
-
+      <Toaster position="top-right" reverseOrder={false} />
       <Footer />
     </>
   );

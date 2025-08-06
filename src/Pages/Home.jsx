@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  Moon,
-  Sun,
   Heart,
-  BaselineIcon,
 } from "lucide-react";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -20,18 +17,13 @@ import {
 } from "../Services/allAPIs";
 import { useNavigate } from "react-router-dom";
 import { addToWishlistAPI } from "../Services/wishlistAPI";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-// import {
-//   viewCategoriesAPI,
-//   viewMainCategoriesAPI,
-//   viewSubCategoriesAPI,
-// } from "../Services/categoryAPI";
 import { getBlogAPI } from "../Services/orderconfirm";
 import ChatBox from "../Components/ChatBox";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import CategoryGrid from "../Components/Category.jsx/ShopCategory";
+import { Toaster, toast } from "react-hot-toast";
+
 
 function Home() {
   const [isDark, setIsDark] = useState(false);
@@ -40,18 +32,13 @@ function Home() {
   const [topRatedCurrentIndex, setTopRatedCurrentIndex] = useState(0);
   const [newArrivalsCurrentIndex, setNewArrivalsCurrentIndex] = useState(0);
   const [dealProducts, setDealProducts] = useState([]);
-  const [expandedMainCat, setExpandedMainCat] = useState(null);
-  const [subCategoryMap, setSubCategoryMap] = useState({});
   const [topRatedProducts, setTopRatedProducts] = useState([]);
-  const [categoryMap, setCategoryMap] = useState({});
-  const [categories, setCategories] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState(null);
   const [homeOffers, setHomeOffers] = useState([]);
-  const [mainCategories, setMainCategories] = useState([]);
   const [carouselCards, setCarouselCards] = useState([]);
   const [homeCategories, setHomeCategories] = useState([]);
   const navigate = useNavigate();
@@ -60,8 +47,6 @@ function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const offersToShow = homeOffers.slice(0, 2);
   const offersToShows = homeOffers.slice(0, 1);
-
-  // Auto-slide functionality
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % homeOffers.slice(0, 3).length);
@@ -107,12 +92,10 @@ function Home() {
   };
 
   useEffect(() => {
-    // Only start interval if we have offers
     if (offersToShow.length > 1) {
       const slideInterval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % offersToShow.length);
-      }, 4000); // Change slide every 4 seconds
-
+      }, 4000); 
       return () => clearInterval(slideInterval);
     }
   }, [offersToShow]);
@@ -133,8 +116,8 @@ function Home() {
   };
   useEffect(() => {
     AOS.init({
-      duration: 1000, // animation duration (in ms)
-      once: true, // whether animation should happen only once
+      duration: 1000, 
+      once: true, 
     });
   }, []);
 
@@ -731,8 +714,6 @@ function Home() {
                                       </div>
                                     </div>
                                   </div>
-
-                                  {/* CTA Button - Centered and narrower on mobile */}
                                   <div className="flex justify-center">
                                     <button
                                       onClick={() =>
@@ -979,7 +960,6 @@ function Home() {
                                         <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-gray-700 hover:text-red-500" />
                                       </button>
 
-                                      {/* Product Image */}
                                       <div className="aspect-square mb-0.5 sm:mb-1 overflow-hidden rounded-lg flex items-center justify-center">
                                         <img
                                           src={
@@ -996,8 +976,6 @@ function Home() {
                                           }}
                                         />
                                       </div>
-
-                                      {/* Product Info */}
                                       <div className="flex-grow">
                                         <h3 className="text-xs truncate font-medium mb-0.5">
                                           {product.name.slice(0, 40)}
@@ -1037,8 +1015,6 @@ function Home() {
                   </div>
                 </>
               )}
-
-              {/* Image Cards Section */}
               <div className="w-full">
                 <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {offersToShow.map((offer) => {
@@ -1051,7 +1027,6 @@ function Home() {
                           product && navigateToProduct(product._id)
                         }
                       >
-                        {/* Background Image */}
                         <div
                           className="absolute inset-0"
                           style={{
@@ -1066,11 +1041,7 @@ function Home() {
                             backgroundPosition: "center",
                           }}
                         />
-
-                        {/* Overlay */}
                         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
-
-                        {/* Content */}
                         <div className="relative z-10 p-4 sm:p-6 h-full flex flex-col justify-between">
                           <div>
                             <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mb-2 sm:mb-4">
@@ -1085,7 +1056,6 @@ function Home() {
                               {offer.description}
                             </p>
                           </div>
-
                           <div className="flex items-center justify-between">
                             {product ? (
                               <div>
@@ -1103,7 +1073,6 @@ function Home() {
                                 No product
                               </span>
                             )}
-
                             <button className="bg-white/20 backdrop-blur-sm text-white px-2 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg hover:bg-white/30 transition-all duration-300 border border-white/30 text-xs sm:text-sm">
                               Shop Now
                             </button>
@@ -1113,10 +1082,7 @@ function Home() {
                     );
                   })}
                 </div>
-
-                {/* Mobile Slider Layout */}
                 <div className="md:hidden relative">
-                  {/* Slider Container */}
                   <div className="overflow-hidden rounded-xl">
                     <div
                       className="flex transition-transform duration-500 ease-in-out"
@@ -1134,7 +1100,6 @@ function Home() {
                               product && navigateToProduct(product._id)
                             }
                           >
-                            {/* Background Image */}
                             <div
                               className="absolute inset-0"
                               style={{
@@ -1150,10 +1115,8 @@ function Home() {
                               }}
                             />
 
-                            {/* Overlay */}
                             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all duration-300" />
 
-                            {/* Content */}
                             <div className="relative z-10 p-4 h-full flex flex-col justify-between">
                               <div>
                                 <span className="inline-block bg-yellow-400 text-black text-xs font-bold px-2 py-0.5 rounded-full mb-2">
@@ -1197,8 +1160,6 @@ function Home() {
                       })}
                     </div>
                   </div>
-
-                  {/* Navigation Arrows - Only show if more than 1 slide */}
                   {offersToShow.length > 1 && (
                     <>
                       <button
@@ -1242,8 +1203,6 @@ function Home() {
                       </button>
                     </>
                   )}
-
-                  {/* Dot Indicators - Only show if more than 1 slide */}
                   {offersToShow.length > 1 && (
                     <div className="flex justify-center space-x-2 mt-3">
                       {offersToShow.map((_, index) => (
@@ -1266,15 +1225,12 @@ function Home() {
           </div>
         </div>
       </div>
-
-      {/* Top Rated Section */}
       <div className="px-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold" id="top-rated-section">
             Top Rated Items
           </h2>
         </div>
-
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -1283,9 +1239,7 @@ function Home() {
           <div className="text-center py-10 text-red-500">{error}</div>
         ) : (
           <div className="relative mb-8">
-            {/* Desktop Slider - Hidden on mobile */}
             <div className="hidden md:block">
-              {/* Left Arrow */}
               <button
                 onClick={prevTopRatedSlide}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
@@ -1293,15 +1247,12 @@ function Home() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              {/* Right Arrow */}
               <button
                 onClick={nextTopRatedSlide}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
-
-              {/* Product Slider for Desktop */}
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{
@@ -1345,7 +1296,6 @@ function Home() {
                                   </span>
                                 )}
 
-                                {/* Wishlist Button */}
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -1355,8 +1305,6 @@ function Home() {
                                 >
                                   <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
                                 </button>
-
-                                {/* Product Image */}
                                 <div className="aspect-square -mb-8 overflow-hidden flex items-center justify-center p-6">
                                   <img
                                     src={
@@ -1373,8 +1321,6 @@ function Home() {
                                     }}
                                   />
                                 </div>
-
-                                {/* Product Info */}
                                 <div className="flex-grow">
                                   <h3 className="text-xs truncate sm:text-sm font-medium">
                                     {product.name.slice(0, 50)}
@@ -1408,8 +1354,6 @@ function Home() {
                 )}
               </div>
             </div>
-
-            {/* Mobile Horizontal Scroll */}
             <div className="md:hidden">
               <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
                 {topRatedProducts.map((product) => {
@@ -1421,7 +1365,6 @@ function Home() {
                             100
                         )
                       : 0;
-
                   return (
                     <div
                       key={product._id}
@@ -1433,14 +1376,11 @@ function Home() {
                           isDark ? "bg-gray-800" : "bg-white"
                         }  relative`}
                       >
-                        {/* Discount Badge */}
                         {discountPercentage > 0 && (
                           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded z-10">
                             {discountPercentage}% OFF
                           </span>
                         )}
-
-                        {/* Wishlist Button */}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1450,8 +1390,6 @@ function Home() {
                         >
                           <Heart className="w-3.5 h-3.5 text-gray-700 hover:text-red-500" />
                         </button>
-
-                        {/* Product Image */}
                         <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
                           <img
                             src={
@@ -1466,8 +1404,6 @@ function Home() {
                             }}
                           />
                         </div>
-
-                        {/* Product Info */}
                         <div className="flex-grow">
                           <h3 className="text-xs font-semibold mb-1 line-clamp-2 h-8">
                             {product.name.slice(0, 40)}
@@ -1497,8 +1433,6 @@ function Home() {
                 })}
               </div>
             </div>
-
-            {/* Tablet Grid - Shown only on tablet sizes */}
             <div className="hidden sm:block md:hidden">
               <div className="grid grid-cols-2 gap-2">
                 {topRatedProducts.slice(0, 6).map((product) => {
@@ -1510,7 +1444,6 @@ function Home() {
                             100
                         )
                       : 0;
-
                   return (
                     <div
                       key={product._id}
@@ -1518,14 +1451,11 @@ function Home() {
                         isDark ? "bg-gray-800" : "bg-white"
                       } shadow-md transition-shadow relative`}
                     >
-                      {/* Discount Badge */}
                       {discountPercentage > 0 && (
                         <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded z-10">
                           {discountPercentage}% OFF
                         </span>
                       )}
-
-                      {/* Wishlist Button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1535,8 +1465,6 @@ function Home() {
                       >
                         <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
                       </button>
-
-                      {/* Product Image */}
                       <div className="aspect-square mb-1 overflow-hidden rounded-lg flex items-center justify-center">
                         <img
                           src={
@@ -1551,8 +1479,6 @@ function Home() {
                           }}
                         />
                       </div>
-
-                      {/* Product Info */}
                       <div className="flex-grow">
                         <h3 className="text-sm font-semibold mb-1 line-clamp-2 h-10">
                           {product.name.slice(0, 45)}
@@ -1571,8 +1497,6 @@ function Home() {
                           </span>
                         </div>
                       </div>
-
-                      {/* View Product Button */}
                       <button
                         onClick={() => navigateToProduct(product._id)}
                         className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition-colors mt-auto"
@@ -1597,10 +1521,7 @@ function Home() {
           display: none;
         }
       `}</style>
-
-      {/* Deal 3 Card Product */}
       <div className="w-full">
-        {/* Section Header */}
         <div className="text-center">
           <h2 className="text-5xl font-extrabold  mb-6 bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 bg-clip-text text-transparent">
             Tech & Gadgets
@@ -1611,8 +1532,6 @@ function Home() {
             that blend performance, innovation, and value.
           </p>
         </div>
-
-        {/* Cards Container */}
         <div className="md:flex md:flex-wrap md:justify-center md:gap-6 overflow-x-auto md:overflow-x-visible scrollbar-hide">
           <div className="flex md:contents gap-4 md:gap-6 pb-6 md:pb-0">
             {carouselCards.map((card) => {
@@ -1623,7 +1542,6 @@ function Home() {
                   className="group flex-shrink-0 w-80 md:w-80 flex flex-col bg-white/80 backdrop-blur-sm rounded-3xl transition-all duration-500 transform  cursor-pointer overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 border border-white/20"
                   onClick={() => window.open(card.link, "_blank")}
                 >
-                  {/* Image Container */}
                   <div className="relative overflow-hidden h-56 flex-shrink-0 m-4">
                     <div className="absolute inset-0  bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl"></div>
                     <img
@@ -1635,61 +1553,13 @@ function Home() {
                           "https://source.unsplash.com/600x400/?gadget";
                       }}
                     />
-
-                    {/* Animated Gradient Overlay */}
-                    {/* <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl z-20"></div>  */}
-
-                    {/* Premium Badge */}
-                    {/* <div className="absolute top-3 left-3 px-3 py-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-x-2 group-hover:translate-x-0 z-30">
-                PREMIUM
-              </div> */}
-
-                    {/* Floating Action Button */}
-                    {/* <div className="absolute top-3 right-3 w-12 h-12 bg-white/95 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0 hover:scale-110 z-30"> 
-                <svg 
-                  className="w-5 h-5 text-blue-600" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
-                > 
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2.5} 
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
-                  /> 
-                </svg> 
-              </div> */}
-
-                    {/* Animated Corner Accent */}
-                    {/* <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-blue-500/20 to-transparent rounded-tl-3xl opacity-0 group-hover:opacity-100 transition-all duration-700"></div> */}
                   </div>
-
-                  {/* Content Section */}
                   <div className="p-6 flex flex-col flex-grow">
-                    {/* <h3 className="text-xl font-bold text-gray-900 mb-3"> 
-                {card.title} 
-              </h3> */}
-
-                    {/* Tech Specs Indicator */}
-                    {/* <div className="flex items-center gap-2 mb-4">
-                <div className="flex gap-1">
-                  {[1,2,3,4,5].map((i) => (
-                    <div key={i} className={`w-2 h-2 rounded-full ${i <= 4 ? 'bg-blue-500' : 'bg-gray-200'} group-hover:animate-pulse`}></div>
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500 font-medium">Performance Rating</span>
-              </div> */}
-
-                    {/* Bottom Action */}
                     <div className="flex items-center justify-between  border-t border-gray-100/50">
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
                           Explore Product
                         </span>
-                        {/* <span className="text-xs text-gray-400 mt-0.5">
-                    Premium Quality
-                  </span> */}
                       </div>
                       <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
@@ -1711,9 +1581,6 @@ function Home() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Animated Border Glow */}
-                  {/* <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10 blur-xl"></div> */}
                 </div>
               );
             })}
@@ -1738,7 +1605,6 @@ function Home() {
               New Arrivals
             </h2>
           </div>
-
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -1747,7 +1613,6 @@ function Home() {
             <div className="text-center py-10 text-red-500">{error}</div>
           ) : (
             <div className="relative overflow-hidden ">
-              {/* Desktop Navigation Arrows - Hidden on mobile */}
               <button
                 onClick={prevNewArrivalsSlide}
                 className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white shadow-md rounded-full hover:bg-gray-100"
@@ -1761,12 +1626,9 @@ function Home() {
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
-
-              {/* Mobile Horizontal Scroll */}
               <div className="md:hidden">
                 <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 px-2 -mx-2">
                   {latestProducts.map((product) => {
-                    // Calculate discount percentage
                     const discountPercentage =
                       product.price !== product.finalPrice
                         ? Math.round(
@@ -1775,7 +1637,6 @@ function Home() {
                               100
                           )
                         : 0;
-
                     return (
                       <div
                         key={product._id}
@@ -1847,8 +1708,6 @@ function Home() {
                   })}
                 </div>
               </div>
-
-              {/* Desktop Slider - Hidden on mobile */}
               <div className="hidden md:block">
                 <div
                   className="flex transition-transform duration-500 ease-in-out"
@@ -1869,7 +1728,6 @@ function Home() {
                               (slideIndex + 1) * itemsPerSlide
                             )
                             .map((product) => {
-                              // Calculate discount percentage
                               const discountPercentage =
                                 product.price !== product.finalPrice
                                   ? Math.round(
@@ -1887,14 +1745,12 @@ function Home() {
                                     isDark ? "bg-gray-800" : "bg-white"
                                   } relative w-full sm:w-auto`}
                                 >
-                                  {/* Sale Badge with Discount Percentage */}
                                   {product.price !== product.finalPrice && (
                                     <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded">
                                       -{discountPercentage}%
                                     </span>
                                   )}
 
-                                  {/* Wishlist Button */}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -1904,8 +1760,6 @@ function Home() {
                                   >
                                     <Heart className="w-4 h-4 text-gray-700 hover:text-red-500" />
                                   </button>
-
-                                  {/* Product Image */}
                                   <div className="aspect-square -mb-8 overflow-hidden rounded-lg flex items-center justify-center p-6">
                                     <img
                                       src={
@@ -1922,8 +1776,6 @@ function Home() {
                                       }}
                                     />
                                   </div>
-
-                                  {/* Product Info */}
                                   <div className="flex-grow">
                                     <h3 className="text-xs sm:text-sm truncate font-medium mb-1">
                                       {product.name.slice(0, 50)}
@@ -1961,18 +1813,14 @@ function Home() {
           )}
         </div>
       </div>
-
       <div className=" mb-5 px-4 sm:px-6 lg:px-8 bg-white">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center md:mb-12 text-gray-800">
           Our Brands
         </h2>
         {brands?.length > 0 ? (
           <div className="relative overflow-hidden">
-            {/* Gradient Overlays */}
             <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
             <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-12 md:w-16 lg:w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
-
-            {/* Sliding Container */}
             <div className="flex animate-scroll">
               {duplicatedBrands.map((brand, index) => (
                 <div
@@ -2002,8 +1850,6 @@ function Home() {
             {loading ? "Loading brands..." : "No brands available"}
           </div>
         )}
-
-        {/* Custom CSS for animation */}
         <style>{`
           @keyframes scroll {
             0% {
@@ -2036,8 +1882,6 @@ function Home() {
           }
         `}</style>
       </div>
-
-      {/* From Our Blog Section */}
       <section className="px-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">From Our Blog</h2>
@@ -2089,8 +1933,7 @@ function Home() {
           </div>
         )}
       </section>
-
-      <ToastContainer position="top-right" autoClose={3000} />
+         <Toaster position="top-center" reverseOrder={false} />
       <Footer />
     </>
   );
